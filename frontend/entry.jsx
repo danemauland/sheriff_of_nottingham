@@ -9,15 +9,17 @@ import * as sessionAPIUtil from "./util/session_api_util";
 
 document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById("root");
-    const store = configureStore();
-    const preloadedState;
+    let store;
     if (window.currentUser) {
-        preloadedState = {
+        const preloadedState = {
             session: {
                 username: window.currentUser.username,
             }
         }
-    }
+        store = configureStore(preloadedState);
+        delete window.currentUser;
+    } else { store = configureStore() }
+    
     ReactDOM.render(<Root store={store} />, root);
 
     //TESTING

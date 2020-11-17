@@ -3,7 +3,6 @@ import {RECEIVE_CURRENT_USER,
     from "../actions/session_actions.js";
 
 const defaultSessionState = {
-    userId: null,
     username: "",
 }
 

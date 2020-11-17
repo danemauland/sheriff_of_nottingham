@@ -22,7 +22,7 @@ export const login = user => dispatch => {
 
 export const logout = () => dispatch => {
     sessionAPIUtil.logout().then(
-        () => dispatch(logoutCurrentUser(user)),
+        () => dispatch(logoutCurrentUser()),
         errors => dispatch(receiveSessionErrors(errors.responseJSON))
     )
 }
