@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import configureStore from "./store/store.js"
 
 // TESTING
 import * as sessionAPIUtil from "./util/session_api_util";
@@ -7,12 +8,12 @@ import * as sessionAPIUtil from "./util/session_api_util";
 
 document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById("root");
+    const store = configureStore();
     ReactDOM.render(<h1>Test</h1>, root);
 
     //TESTING
     window.$ = $;
-    window.signup = sessionAPIUtil.signup; 
-    window.login = sessionAPIUtil.login;
-    window.logout = sessionAPIUtil.logout;
+    window.getState = store.getState;
+    window.dispatch = store.dispatch;
     //END TESTING
 });
