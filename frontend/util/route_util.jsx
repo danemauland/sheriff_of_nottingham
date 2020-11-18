@@ -19,7 +19,7 @@ export const AuthRoute = withRouter(
 
 const prot = ({component: Component, path, loggedIn, exact}) => (
     <Route path={path} exact={exact} render={props =>
-            loggedIn ? <Component {...props} /> : <Redirect to="/" />
+            loggedIn ? <Component {...props} /> : <Redirect to="/login" />
         }
     />
 );

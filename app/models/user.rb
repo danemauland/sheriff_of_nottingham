@@ -2,15 +2,30 @@ class User < ApplicationRecord
     validates :username, :password_digest, :session_token, presence: true
     validates :username, :session_token, uniqueness: true
     validates :password, length: {minimum: 8}, allow_nil: true
+    validate :demo_not_allowed, unless: :demo?
 
     after_initialize :ensure_session_token
 
     attr_reader :password
 
+    def demo_not_allowed
+        if username.start_with?("demo_")
+            errors.add(:username, "cannot start with 'demo_'")
+        end
+    end
+
     def self.find_by_credentials(username, password)
         user = User.find_by(username: username)
         return nil unless user && user.is_password?(password)
         user
+    end
+
+    def is_demo
+        @demo = true
+    end
+
+    def demo?
+        @demo ||= false
     end
 
     def is_password?(password)
