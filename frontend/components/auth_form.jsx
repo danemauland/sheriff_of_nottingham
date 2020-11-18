@@ -8,6 +8,7 @@ class AuthForm extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDemo = this.handleDemo.bind(this);
         this.state = {...props.user};
     }
 
@@ -19,6 +20,12 @@ class AuthForm extends React.Component {
 
     handleChange(field) {
         return e => this.setState({[field]: e.target.value})
+    }
+
+    handleDemo(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.props.createDemo()
     }
 
     render() {
@@ -51,6 +58,10 @@ class AuthForm extends React.Component {
                             </div>
                             <div className="button-div">
                                 <button><p>{this.props.formType}</p></button>
+                                { this.props.createDemo ? 
+                                    <button className="demo-button" onClick={this.handleDemo}>Demo</button> :
+                                    <></>
+                                }
                             </div>
                         </form>
                     </div>

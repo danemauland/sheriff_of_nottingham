@@ -98,6 +98,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 /*! namespace exports */
 /*! export LOGOUT_CURRENT_USER [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export RECEIVE_CURRENT_USER [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export createDemo [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export login [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export logout [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export signup [provided] [no usage info] [missing usage info prevents renaming] */
@@ -112,7 +113,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "LOGOUT_CURRENT_USER": () => /* binding */ LOGOUT_CURRENT_USER,
 /* harmony export */   "login": () => /* binding */ login,
 /* harmony export */   "logout": () => /* binding */ logout,
-/* harmony export */   "signup": () => /* binding */ signup
+/* harmony export */   "signup": () => /* binding */ signup,
+/* harmony export */   "createDemo": () => /* binding */ createDemo
 /* harmony export */ });
 /* harmony import */ var _util_session_api_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/session_api_util */ "./frontend/util/session_api_util.js");
 /* harmony import */ var _session_error_actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./session_error_actions */ "./frontend/actions/session_error_actions.js");
@@ -155,6 +157,15 @@ var logout = function logout() {
 var signup = function signup(user) {
   return function (dispatch) {
     _util_session_api_util__WEBPACK_IMPORTED_MODULE_0__.signup(user).then(function (user) {
+      return dispatch(receiveCurrentUser(user));
+    }, function (errors) {
+      return dispatch((0,_session_error_actions__WEBPACK_IMPORTED_MODULE_1__.receiveSessionErrors)(errors.responseJSON));
+    });
+  };
+};
+var createDemo = function createDemo() {
+  return function (dispatch) {
+    _util_session_api_util__WEBPACK_IMPORTED_MODULE_0__.createDemo().then(function (user) {
       return dispatch(receiveCurrentUser(user));
     }, function (errors) {
       return dispatch((0,_session_error_actions__WEBPACK_IMPORTED_MODULE_1__.receiveSessionErrors)(errors.responseJSON));
@@ -305,6 +316,7 @@ var AuthForm = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call(this, props);
     _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
+    _this.handleDemo = _this.handleDemo.bind(_assertThisInitialized(_this));
     _this.state = _objectSpread({}, props.user);
     return _this;
   }
@@ -324,6 +336,13 @@ var AuthForm = /*#__PURE__*/function (_React$Component) {
       return function (e) {
         return _this2.setState(_defineProperty({}, field, e.target.value));
       };
+    }
+  }, {
+    key: "handleDemo",
+    value: function handleDemo(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.props.createDemo();
     }
   }, {
     key: "render",
@@ -357,7 +376,10 @@ var AuthForm = /*#__PURE__*/function (_React$Component) {
         errors: this.props.errors
       }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "button-div"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, this.props.formType)))))));
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, this.props.formType)), this.props.createDemo ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
+        className: "demo-button",
+        onClick: this.handleDemo
+      }, "Demo") : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null))))));
     }
   }]);
 
@@ -676,6 +698,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     action: function action(user) {
       return dispatch((0,_actions_session_actions__WEBPACK_IMPORTED_MODULE_2__.signup)(user));
+    },
+    createDemo: function createDemo() {
+      return dispatch((0,_actions_session_actions__WEBPACK_IMPORTED_MODULE_2__.createDemo)());
     }
   };
 };
@@ -1022,6 +1047,7 @@ var ProtectedRoute = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.withRouter
   !*** ./frontend/util/session_api_util.js ***!
   \*******************************************/
 /*! namespace exports */
+/*! export createDemo [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export login [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export logout [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export signup [provided] [no usage info] [missing usage info prevents renaming] */
@@ -1034,7 +1060,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "signup": () => /* binding */ signup,
 /* harmony export */   "login": () => /* binding */ login,
-/* harmony export */   "logout": () => /* binding */ logout
+/* harmony export */   "logout": () => /* binding */ logout,
+/* harmony export */   "createDemo": () => /* binding */ createDemo
 /* harmony export */ });
 var signup = function signup(user) {
   return $.ajax({
@@ -1058,6 +1085,12 @@ var logout = function logout() {
   return $.ajax({
     url: "/api/session",
     method: "DELETE"
+  });
+};
+var createDemo = function createDemo() {
+  return $.ajax({
+    url: "/api/demos",
+    method: "POST"
   });
 };
 

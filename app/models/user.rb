@@ -25,7 +25,7 @@ class User < ApplicationRecord
     end
 
     def demo?
-        @demo ||= false
+        @demo || !self.new_record?
     end
 
     def is_password?(password)

@@ -33,3 +33,10 @@ export const signup = user => dispatch => {
         errors => dispatch(receiveSessionErrors(errors.responseJSON))
     )
 }
+
+export const createDemo = () => dispatch => {
+    sessionAPIUtil.createDemo().then(
+        user => dispatch(receiveCurrentUser(user)),
+        errors => dispatch(receiveSessionErrors(errors.responseJSON))
+    )
+}
