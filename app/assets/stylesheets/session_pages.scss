@@ -11,6 +11,7 @@
     background-size: cover;
     flex: 1 1 50vw;
     height: 100vh;
+    background-position: calc(-400px + 20vw + 0.25 * (1008px - 100vh))
 }
 
 .auth-form-div {
@@ -34,9 +35,13 @@
         line-height: 28px;
         margin-bottom: 12px;
     }
+    
     .button-div {
+        display: flex;
+        justify-content: space-between;
         margin-top: 24px;
     }
+
     button {
         box-sizing: border-box;
         border-color: rgb(0,200,5);
@@ -56,8 +61,25 @@
             white-space: nowrap;
         }
     }
+
+    .demo-button {
+        background-color: rgb(227,233,237);
+        background-color: rgb(227,233,237);
+        color: rgb(111,120,126);
+    }
+
+    .demo-button:hover {
+        background-color: rgb(180,189,194);
+        background-color: rgb(180,189,194);
+        color: rgb(227,233,237);
+    }
+
     button:focus {
         border: 2px solid black;
+    }
+    button:hover {
+        background-color: rgb(0,180,5);
+        border-color: rgb(0,180,5);
     }
 }
 
@@ -108,4 +130,18 @@
 
 .session-errors{
     font-weight: 700;
+}
+
+@media only screen and (max-width: 550px) {
+    .auth-image-div {
+        display: none;
+    }
+
+    .auth-section {
+        justify-content: center;
+    }
+    .auth-form-div {
+        display: flex;
+        justify-content: center;
+    }
 }
