@@ -1,0 +1,111 @@
+.auth-section {
+    display: flex;
+    justify-content: flex-start;
+    height: 100vh;
+    align-items: center;
+}
+
+.auth-image-div {
+    background-image: image_url("rsz_session_image.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    flex: 1 1 50vw;
+    height: 100vh;
+}
+
+.auth-form-div {
+    flex: 1 1 50vw;
+}
+
+.inner-auth-form-div {
+    display: block;
+    height: 400px;
+    margin-left: 52px;
+    margin-right: 52px;
+    max-width: 412px;
+}
+
+.auth-form {
+    display: block;
+    margin-top: 0em;
+    h3 {
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 28px;
+        margin-bottom: 12px;
+    }
+    .button-div {
+        margin-top: 24px;
+    }
+    button {
+        box-sizing: border-box;
+        border-color: rgb(0,200,5);
+        background-color: rgb(0,200,5);
+        height: 48px;
+        padding: 0 48px;
+        line-height: 1.15;
+        border-radius: 4px;
+        width: 139px;
+
+        
+        p {
+            font-size: 13px;
+            line-height: 1.15;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+    }
+    button:focus {
+        border: 2px solid black;
+    }
+}
+
+.input-div {
+    margin-bottom: 60px;
+    label {
+        display: block;
+        p {
+        padding: 9px 0px;
+        }
+    }
+    input {
+        box-sizing: border-box;
+        display: block;
+        height: 48px;
+        padding: 15px 20px;
+        background-color: rgb(245,248,250);
+        border-color: rgb(245,248,250);
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 4px;
+        line-height: 1.5em;
+        outline: 0;
+        transition: border-color 0.2s ease 0s;
+        width: 100%;
+        font: 400 13px Arial;
+
+    }
+    input:hover {
+        background-color: transparent;
+    }
+    
+    input:focus {
+        background-color: transparent;
+        border-color: rgb(0,200,5);
+    }
+
+    > p{
+        padding: 14px 0px;
+        font-weight: 500;
+        color: rgb(0,200,5);
+    }
+    a:focus {
+        border: 2px solid black;
+        border-radius: 4px;
+    }
+}
+
+.session-errors{
+    font-weight: 700;
+}
