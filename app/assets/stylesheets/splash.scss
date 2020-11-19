@@ -1,0 +1,141 @@
+@import "variables";
+
+.splash-nav {
+    height: 64px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    box-shadow: 0px 1px 4px 0px rgba($color: #000000, $alpha: 0.2);
+}
+
+nav.nested-links {
+    height: 128px;
+}
+
+.splash-nav-div {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+    .splash-nav-div {
+        padding: 0 24px;
+    }
+}
+
+.splash-nav-links-div {
+    display: flex;
+    ul {
+        display: none;
+    }
+    align-items: center;
+}
+
+.extended + ul {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    position: absolute;
+    top: 64px;
+    li {
+        margin-top: 0px;
+        margin-left: 30px;
+        display: inline-block;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 28px;
+        letter-spacing: -0.25px;
+        color: black;
+    }
+    li:hover {
+        color: $dark-green;
+    }
+    li:first-of-type {
+        margin-left: 0px;
+    }
+    .crypto-li {
+        padding-left: 30px;
+        border-left: 1px solid black;
+        color: rgb(218,65,107)
+    }
+    .crypto-li:hover {
+        color: rgb(218,65,107)
+    }
+}
+
+.dropdowns {
+    display: flex;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+
+    span {
+        margin-left: 48px;
+    }
+    button {
+        letter-spacing: normal;
+        word-spacing: normal;
+        text-transform: none;
+        box-sizing: border-box;
+        margin: 0em;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 28px;
+        display: flex;
+        align-items: center;
+        :first-child {
+            padding-left: 6px;
+        }
+    }
+    span:hover {
+        color: $dark-green;
+    }
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    width: 165px;
+    font-size: 25px;
+    :first-child {
+        padding-right: 6px;
+    }
+}
+
+.nav-session-auth-links {
+    display: flex;
+    a {
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 40px;
+        letter-spacing: 0px;
+        display: flex;
+        align-items: center;
+    }
+    .nav-auth-spacer {
+        width: 30px;
+    }
+    a.nav-signup {
+        background-color: $green;
+    }
+    a.nav-signup:hover {
+        background-color: $dark-green;
+    }
+    a.nav-login:hover {
+        color: $green;
+    }
+}
+
+.rounded-button {
+    height: 48px;
+    min-width: 144px;
+    box-sizing: border-box;
+    padding: 0 36px;
+    border-radius: 24px;
+    display: inline-flex;
+    align-items: center;
+}

@@ -1,11 +1,11 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import Navbar from "./navbar.jsx"
+import Header from "./header.jsx"
 
 export default (props) => (
     <>
         <div>
-            <Link to="/login">Log In</Link>
-            <Link to="/signup">Sign Up</Link>
+            <Navbar />
         </div>
     </>
 )

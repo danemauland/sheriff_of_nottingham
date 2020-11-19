@@ -1,3 +1,5 @@
+@import "variables";
+
 .auth-section {
     display: flex;
     justify-content: flex-start;
@@ -44,8 +46,8 @@
 
     button {
         box-sizing: border-box;
-        border-color: rgb(0,200,5);
-        background-color: rgb(0,200,5);
+        border-color: $green;
+        background-color: $green;
         height: 48px;
         padding: 0 48px;
         line-height: 1.15;
@@ -114,13 +116,13 @@
     
     input:focus {
         background-color: transparent;
-        border-color: rgb(0,200,5);
+        border-color: $green;
     }
 
     > p{
         padding: 14px 0px;
         font-weight: 500;
-        color: rgb(0,200,5);
+        color: $green;
     }
     a:focus {
         border: 2px solid black;

@@ -1,7 +1,5 @@
 import React from "react";
 import SessionErrors from "./session_errors";
-import debounce from "debounce";
-import {Link} from "react-router-dom"
 import SessionAlternative from "./session_alternative"
 
 class AuthForm extends React.Component {
@@ -10,6 +8,10 @@ class AuthForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDemo = this.handleDemo.bind(this);
         this.state = {...props.user};
+    }
+
+    componentWillUnmount() {
+        this.props.clearSessionErrors();
     }
 
     handleSubmit(e) {
@@ -32,7 +34,6 @@ class AuthForm extends React.Component {
         return (
             <div className="auth-section">
                 <div className="auth-image-div">
-                    {/* <img className="auth-image" src={window.session_image}/> */}
                 </div>
                 <div className="auth-form-div">
                     <div className="inner-auth-form-div">
