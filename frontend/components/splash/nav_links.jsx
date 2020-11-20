@@ -35,34 +35,48 @@ class NavLinks extends React.Component {
         }
     }
 
+    componentDidMount() {
+        $(".green-hover").mouseover(e => {
+            e.stopPropagation();
+            let tar = $(e.target);
+            while (tar.is("path") || tar.is("svg")) { tar = tar.parent() }
+            tar.addClass("dark-green");
+        }).mouseout(e => {
+            let tar = $(e.target);
+            while (tar.is("path") || tar.is("svg")) { tar = tar.parent() }
+            e.stopPropagation();
+            tar.removeClass("dark-green");
+        })
+    }
+
     render() {
         return (
             <div className="nav-bar-wrapper">
                 <div className="splash-nav-links-div">
                     <Logo />
-                    <div className="dropdowns">
+                    <div className="dropdowns small-menu hidden">
                         <span>
-                            <button onClick={this.addClickHandler("products")}>Products {this.state.selected === "products" ? <CgChevronDown /> : <CgChevronUp />}</button>
+                            <button className="green-hover" onClick={this.addClickHandler("products")}>Products {this.state.selected === "products" ? <CgChevronUp /> : <CgChevronDown />}</button>
                             <ul className="product-list">
-                                <li><a href="#">Stocks &amp; Funds</a></li>
-                                <li><a href="#">Options</a></li>
-                                <li><a href="#">Gold</a></li>
-                                <li><a href="#">Cash Management</a></li>
+                                <li className="green-hover"><a href="#">Stocks &amp; Funds</a></li>
+                                <li className="green-hover"><a href="#">Options</a></li>
+                                <li className="green-hover"><a href="#">Gold</a></li>
+                                <li className="green-hover"><a href="#">Cash Management</a></li>
                                 <li className="crypto-li"><a href="#">Crypto</a></li>
                             </ul>
                         </span>
                         <span>
-                            <button onClick={this.addClickHandler("learn")}>Learn  {this.state.selected === "learn" ? <CgChevronDown /> : <CgChevronUp />}</button>
+                            <button className="green-hover" onClick={this.addClickHandler("learn")}>Learn  {this.state.selected === "learn" ? <CgChevronUp /> : <CgChevronDown />}</button>
                             <ul className="learn-list">
-                                <li><a href="#">Learn</a></li>
-                                <li><a href="#">Snacks</a></li>
+                                <li className="green-hover"><a href="#">Snacks</a></li>
+                                <li className="green-hover"><a href="#">Learn</a></li>
                             </ul>
                         </span>
                         <span>
-                            <button onClick={this.addClickHandler("about")}>About Me {this.state.selected === "about" ? <CgChevronDown /> : <CgChevronUp />}</button>
+                            <button className="green-hover" onClick={this.addClickHandler("about")}>About Me {this.state.selected === "about" ? <CgChevronUp /> : <CgChevronDown />}</button>
                             <ul className="about-list">
-                                <li><a href="#">LinkedIn</a></li>
-                                <li><a href="#">Github</a></li>
+                                <li className="green-hover"><a href="#">LinkedIn</a></li>
+                                <li className="green-hover"><a href="#">Github</a></li>
                             </ul>
                         </span>
                     </div>

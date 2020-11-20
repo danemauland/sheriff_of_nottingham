@@ -1,11 +1,17 @@
 @import "variables";
 
+.hidden {
+    display: none;
+}
+
 .splash-nav {
     height: 64px;
     position: fixed;
     top: 0;
     width: 100%;
+    background-color: white;
     box-shadow: 0px 1px 4px 0px rgba($color: #000000, $alpha: 0.2);
+    z-index: 1;
 }
 
 nav.nested-links {
@@ -50,9 +56,6 @@ nav.nested-links {
         letter-spacing: -0.25px;
         color: black;
     }
-    li:hover {
-        color: $dark-green;
-    }
     li:first-of-type {
         margin-left: 0px;
     }
@@ -61,39 +64,20 @@ nav.nested-links {
         border-left: 1px solid black;
         color: rgb(218,65,107)
     }
-    .crypto-li:hover {
-        color: rgb(218,65,107)
-    }
 }
 
-.dropdowns {
-    display: flex;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
+// .dropdowns {
+//     position: fixed;
+//     top: 64px;
+//     left: 0px;
+//     right: 0px;
+//     bottom: 0px;
+//     background-color: white;
+//     padding: 30px;
+//     span {
 
-    span {
-        margin-left: 48px;
-    }
-    button {
-        letter-spacing: normal;
-        word-spacing: normal;
-        text-transform: none;
-        box-sizing: border-box;
-        margin: 0em;
-        font-size: 18px;
-        font-style: normal;
-        font-weight: normal;
-        line-height: 28px;
-        display: flex;
-        align-items: center;
-        :first-child {
-            padding-left: 6px;
-        }
-    }
-    span:hover {
-        color: $dark-green;
-    }
-}
+//     }
+// }
 
 .logo-link {
     display: flex;
@@ -106,15 +90,16 @@ nav.nested-links {
 }
 
 .nav-session-auth-links {
-    display: flex;
+    display: none;
     a {
         font-size: 18px;
         font-style: normal;
         font-weight: 700;
         line-height: 40px;
         letter-spacing: 0px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
     }
     .nav-auth-spacer {
         width: 30px;
@@ -136,6 +121,233 @@ nav.nested-links {
     box-sizing: border-box;
     padding: 0 36px;
     border-radius: 24px;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: 0px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+}
+
+.splash-header {
+    background-color: $light-green;
+    border-bottom: 1px solid black;
+    position: relative;
+    top: 64px;
+}
+
+.grid-container {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.splash-header-text-div {
+    margin-left: 6px;
+    margin-right: 6px;
+    width: calc(100% - 12px);
+    display: block;
+}
+
+.splash-header-div {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.splash-header-text-wrapper {
+    padding: 50px 0;
+    h1 {
+        margin-bottom: 18px;
+        font-size: 52px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 60px;
+        letter-spacing: -1.5px;
+    }
+    p {
+        margin-top: 24px;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 36px;
+        letter-spacing: 0;
+    }
+}
+
+.dark-green {
+    color: $dark-green;
+}
+
+.header-button-div {
+    display: none;
+    width: 100%;
+    margin: 16px;
+}
+
+.header-signup {
+    background-color: black;
+    color: white;
+}
+
+.header-signup:hover {
+    background-color: $dark-gray;
+}
+
+.splash-header-image-div {
+    margin-left: 6px;
+    margin-right: 6px;
+    width: calc(100% - 12px);
+    display: block;
+}
+
+.splash-header-image-wrapper {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    min-height: 603px;
+    pointer-events: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.splash-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+}
+
+.header-overlay {
+    position: absolute;
+}
+
+.menu-icon {
+    font-size: 45px;
+    cursor: pointer;
+}
+
+@media (min-width: 1280px) {
+    .splash-header-div {
+        width: 1280px;
+        padding: 0px, 37px;
+    }
+
+    .splash-header-text-div {
+        margin-left: 9px;
+        margin-right: 9px;
+        width: 492px;
+        display: block;
+    }
+
+    .splash-header-image-div {
+        margin-left: 9px;
+        margin-right: 9px;
+        width: 696px;
+        display: block;
+    }
+}
+
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .splash-header-div {
+        min-width: 1024px;
+        max-width: 100%;
+        padding: 0px, 36px;
+    }
+
+    .splash-header-text-div {
+        margin-left: 9px;
+        margin-right: 9px;
+        width: calc(41.667% - 18px);
+        display: block;
+    }
+
+    .splash-header-image-div {
+        margin-left: 9px;
+        margin-right: 9px;
+        width: calc(58.333% - 18px);
+        display: block;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+    .splash-header-div {
+        min-width: 768px;
+        max-width: 100%;
+        padding: 0px, 32px;
+    }
+    .splash-header-text-div {
+        margin-left: 7px;
+        margin-right: 7px;
+        width: calc(100% - 14px);
+        display: block;
+    }
+    .splash-header-image-div {
+        margin-left: 7px;
+        margin-right: 7px;
+        width: calc(100% - 14px);
+        display: block;
+    }
+    .header-button-div {
+        display: flex;
+        margin: 16px 0 32px;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 1280px) {
+    .splash-header-text-wrapper {
+        padding: 100px 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .header-button-div {
+        display: flex;
+        margin: 20px 0;
+        padding-top: 10px;
+        justify-content: flex-start;
+    }
+    div.dropdowns {
+        display: flex;
+        position: none;
+        top: 0px;
+        padding: 0px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        span {
+            margin-left: 48px;
+        }
+        button {
+            letter-spacing: normal;
+            word-spacing: normal;
+            text-transform: none;
+            box-sizing: border-box;
+            margin: 0em;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 28px;
+            display: flex;
+            align-items: center;
+        :first-child {
+            padding-left: 6px;
+            }
+        }
+    }
+    .nav-session-auth-links {
+        display: flex;
+    }
+    .menu-icon {
+        display: none;
+    }
 }

@@ -1,0 +1,120 @@
+@import "variables";
+
+.commission-div {
+    position: relative;
+    top: 64px;
+    border-bottom: 1px solid black;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    min-width: 320px;
+    max-width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    margin: 0 auto;
+
+    h2 {
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 40px;
+        text-align: center;
+        margin-bottom: 16px;
+        padding-top: 72px;
+    }
+    p {
+        text-align: center;
+        margin-bottom: 36px;
+        font-size: 18px;
+        line-height: 28px;
+
+        a {
+            font-weight: 600;
+        }
+    }
+}
+
+.inner-commission-div {
+    width: calc(100% - 12px);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    button {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 28px;
+        color: $gray;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+
+        svg {
+            padding-right: 10px;
+            height: 28;
+            width: 28;
+            font-size: 28px;
+        }
+    }
+
+    button:hover {
+        color: $dark-green;
+    }
+}
+
+.commission-padding-div {
+    display: block;
+    padding-bottom: 72px;
+}
+
+.commissions-disclosure-header {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
+}
+
+.commissions-disclosure-text {
+    font-size: 13px;
+    line-height: 20px;
+    margin: 18px 0;
+}
+
+
+@media (max-width: 1023px) and (min-width: 768px) {
+    .commission-div {
+        min-width: 768px;
+        max-width: 100%;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    .inner-commission-div {
+        width: calc(66.667% - 14px);
+    }
+}
+
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .commission-div {
+        min-width: 1024px;
+        max-width: 100%;
+        padding-left: 36px;
+        padding-right: 36px;
+    }
+
+    .inner-commission-div {
+        width: calc(50% - 18px);
+    }
+}
+
+@media (min-width: 1280px) {
+    .commission-div {
+        width: 1280px;
+        padding-left: 37px;
+        padding-right: 37px;
+    }
+
+    .inner-commission-div {
+        width: 594px;
+    }
+}
