@@ -8,6 +8,11 @@ class User < ApplicationRecord
 
     attr_reader :password
 
+    has_many :trades,
+        foreign_key: :trader_id,
+        class_name: :Trade
+    has_many :cash_transactions
+    
     def demo_not_allowed
         if username.start_with?("demo_")
             errors.add(:username, "cannot start with 'demo_'")
@@ -50,5 +55,12 @@ class User < ApplicationRecord
         self.save!
         self.session_token
     end
-    
+
+    # def positions
+    #     self.trades.select('"trades"."ticker", SUM("trades"."num_shares") AS "total_shares"').having('SUM("trades"."num_shares") != 0').group("trades.ticker").order("")
+    # end
+
+    # def cash_bal
+    #     self.cash_transactions.sum('"cash_transactions"."amount"')
+    # end
 end

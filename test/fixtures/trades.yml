@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  trader_id: 1
+  direction: MyString
+  num_shares: 1
+  position_open_price: 1
+  ticker: MyString
+
+two:
+  trader_id: 1
+  direction: MyString
+  num_shares: 1
+  position_open_price: 1
+  ticker: MyString
