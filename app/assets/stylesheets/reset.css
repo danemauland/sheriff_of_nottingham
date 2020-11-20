@@ -48,11 +48,3 @@ input[type="submit"],
 a {
   cursor: pointer;
 }
-
-#controller {
-  display: none !important;
-}
-
-#controls {
-  display: none !important;
-}
