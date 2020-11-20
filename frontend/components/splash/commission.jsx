@@ -17,12 +17,14 @@ class Commission extends React.Component {
 
     render() {
         return (
-            <div className="commission-div">
-                <div className="inner-commission-div">
-                    <h2>Break Free from Commission Fees</h2>
-                    <p>Make unlimited commission-free trades in stocks, ETFs, and options with Robinhood Financial, as well as buy and sell cryptocurrencies with Robinhood Crypto. See our <Link to="#" className="dark-green-hover">fee schedule</Link> to learn more about cost.</p>
-                    <div className="commission-padding-div">
-                        <button onClick={this.handleClick}><AiOutlineInfoCircle /> Commissions Disclosure</button>
+            <div className="outer-commission-div">
+                <div className="commission-div">
+                    <div className="inner-commission-div">
+                        <h2>Break Free from Commission Fees</h2>
+                        <p>Make unlimited commission-free trades in stocks, ETFs, and options with Robinhood Financial, as well as buy and sell cryptocurrencies with Robinhood Crypto. See our <Link to="#" className="dark-green-hover">fee schedule</Link> to learn more about cost.</p>
+                        <div className="commission-padding-div">
+                            <button onClick={this.handleClick}><AiOutlineInfoCircle /> Commissions Disclosure</button>
+                        </div>
                     </div>
                 </div>
             </div>
