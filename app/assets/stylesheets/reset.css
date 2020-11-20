@@ -50,9 +50,9 @@ a {
 }
 
 #controller {
-  display: none;
+  display: none !important;
 }
 
 #controls {
-  display: none;
+  display: none !important;
 }
