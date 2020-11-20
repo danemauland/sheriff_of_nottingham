@@ -16,6 +16,7 @@ export default () => (
                 </div>
                 <div className="splash-header-image-div">
                     <div className="splash-header-image-wrapper">
+                        <div className="video-control-cover"></div>
                         <video className="splash-video"
                             playsInline
                             preload="auto"
