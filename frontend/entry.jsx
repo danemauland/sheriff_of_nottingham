@@ -5,6 +5,8 @@ import Root from "./components/root"
 
 // TESTING
 import * as sessionAPIUtil from "./util/session_api_util";
+import {login} from "./actions/session_actions";
+import { fetchCandles, fetchQuote } from "./actions/external_api_actions";
 // END TESTING
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
     window.$ = $;
     window.getState = store.getState;
     window.dispatch = store.dispatch;
-    window.login = sessionAPIUtil.login;
+    window.APILogin = sessionAPIUtil.login;
+    window.login = login;
+    window.fetchCandles = fetchCandles;
+    window.fetchQuote = fetchQuote;
     //END TESTING
 });
