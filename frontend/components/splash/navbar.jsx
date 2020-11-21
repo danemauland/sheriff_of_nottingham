@@ -14,7 +14,6 @@ class Navbar extends React.Component {
     handleClick(e) {
         e.preventDefault();
         this.setState({expanded: !this.state.expanded});
-        console.log($(".small-menu"))
         $(".small-menu").toggleClass("hidden");
         
     }

@@ -16,7 +16,6 @@ const defaultState = {};
 export default (state = defaultState, action) => {
     Object.freeze(state)
     let newState;
-    debugger;
     switch (action.type) {
         case RECEIVE_CURRENT_USER:
             const trades = [...action.user.trades];

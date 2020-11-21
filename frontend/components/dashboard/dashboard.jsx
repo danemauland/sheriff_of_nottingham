@@ -1,9 +1,17 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import Header from "./header";
 import LogoutContainer from "./logout_container"
 
-export default (props) => (
-    <>
-        <LogoutContainer />
-    </>
-)
+class Dashboard extends React.Component {
+
+    render() {
+        return (
+            <>
+                <Header />
+                {/* <LogoutContainer /> */}
+            </>
+        )
+    }
+}
+export default Dashboard;
