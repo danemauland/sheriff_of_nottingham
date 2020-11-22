@@ -8,7 +8,6 @@ import Sidebar from "./sidebar";
 
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
-    trades: state.entities.trades,
     state: state,
 })
 
@@ -21,7 +20,7 @@ const mapDispatchToProps = dispatch => {
 class Dashboard extends React.Component {
 
     componentDidMount() {
-        this.props.initializeAssets(this.props.trades);
+        this.props.initializeAssets(this.props.state);
         
     }
 

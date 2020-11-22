@@ -114,7 +114,8 @@ export const fetchQuote = ticker => dispatch => {
     q.push(action);
 }
 
-export const initializeAssets = trades => ({
+export const initializeAssets = state => ({
     type: INITIALIZE_ASSETS,
-    trades
+    trades: state.entities.trades,
+    cashTransactions: state.entities.cashTransactions,
 })
