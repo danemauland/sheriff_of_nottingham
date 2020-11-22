@@ -23,7 +23,7 @@ class Navbar extends React.Component {
             <nav className="splash-nav" onClick={e => e.stopPropagation()}>
                 <div className="splash-nav-div">
                     <NavLinks />
-                    <div className="nav-session-auth-links small-menu hidden" >
+                    <div className="nav-session-auth-links" >
                         <Link className="nav-login" to="/login">Log In</Link>
                         <div className="nav-auth-spacer"></div>
                         <Link className="nav-signup rounded-button" to="/signup">Sign Up</Link>

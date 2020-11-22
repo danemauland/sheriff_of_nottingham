@@ -59,7 +59,7 @@
 }
 
 .search-bar-and-dropdown-container:hover,
-.search-bar-and-dropdown-container:focus {
+.search-bar-and-dropdown-container:focus-within {
     box-shadow: 0px 12px 24px $shadow, 0px -12px 24px $shadow; 
     // background-color: $darker-gray;
 }
@@ -181,4 +181,37 @@
 
 .port-val-div {
     margin-right: 36px;
+}
+
+.account-dropdown-container {
+    border-bottom: 1px solid $darkishish-gray;
+    a {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        height: 48px;
+        padding: 0 24px;
+        :hover {
+            background-color: $darkish-gray;
+        }
+    }
+}
+
+.logout {
+    border-bottom: none;
+}
+
+.account-dropdown-item:hover {
+    background-color: $darkish-gray;
+}
+
+.account-dropdown-item-container {
+    display: flex;
+    align-items: center;
+
+    svg {
+        height: 24px;
+        width: 24px;
+        margin-right: 12px;
+    }
 }

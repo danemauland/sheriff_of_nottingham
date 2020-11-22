@@ -1,6 +1,8 @@
 // TODO
 // ADD MOBILE MENU ON SPLASH
 // ADD BADGE SYMBOL TO LOGIN/SIGNUP TO ALLOW NAVIGATION BACK TO SPLASH
+// add linkedig and github links
+// remove event handlers when component unmounts
 // ADD SEPARATE SIGNUP PAGE
 // signin page image
 // Clicking free stocks creates a pop up saying they're all free
@@ -9,8 +11,6 @@
 // tab header
 // history
 // search dropdown
-// not a todo but found a bug in robinhood's css. shadow doesn't show up
-//    in dark made because the alpha value and black background
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";

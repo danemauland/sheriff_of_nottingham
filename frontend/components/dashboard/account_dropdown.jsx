@@ -1,6 +1,7 @@
 import React from "react";
 import AccountDropdownHeader from "./account_dropdown_header";
 import LogoutContainer from "./logout_container";
+import AccountDropdownNav from "./account_dropdown_nav";
 
 class AccountDropdown extends React.Component {
     constructor(props) {
@@ -11,7 +12,7 @@ class AccountDropdown extends React.Component {
         return (
             <div className="account-dropdown hidden">
                 <AccountDropdownHeader />
-                <LogoutContainer />
+                <AccountDropdownNav />
             </div>
         )
     }
