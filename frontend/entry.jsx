@@ -11,6 +11,7 @@
 // tab header
 // history
 // search dropdown
+// dynamic coloring based on increase/decrease in value
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";

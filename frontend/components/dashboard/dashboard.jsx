@@ -3,6 +3,8 @@ import {Link} from "react-router-dom";
 import Header from "./header";
 import {fetchQuote, initializeAssets} from "../../actions/external_api_actions";
 import {connect} from "react-redux";
+import DashboardContent from "./dashboard_content";
+import Sidebar from "./sidebar";
 
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
@@ -35,6 +37,14 @@ class Dashboard extends React.Component {
         return (
             <>
                 <Header />
+                <div className="scroll-bar-correction">
+                    <div className="dashboard-centering-div">
+                        <div className="dashboard-main-div">
+                            <DashboardContent />
+                            <Sidebar />
+                        </div>
+                    </div>
+                </div>
             </>
         )
     }
