@@ -9,11 +9,11 @@
 User.create([{username: "test", password: "password"},
     {username: "test2", password: "password"},
 ])
-Trade.create([{trader_id: 1, num_shares: 100, trade_price: 1234567, ticker: "GOOG"},
-    {trader_id: 1, num_shares: -100, trade_price: 2234567, ticker: "GOOG"},
-    {trader_id: 1, num_shares: 100, trade_price: 1934567, ticker: "FB"},
-    {trader_id: 1, num_shares: -100, trade_price: 61234567, ticker: "AAPL"},
-    {trader_id: 2, num_shares: 100, trade_price: 91234567, ticker: "NFLX"},
+Trade.create([{trader_id: 1, num_shares: 1, trade_price: 10000, ticker: "GOOG"},
+    {trader_id: 1, num_shares: -1, trade_price: 20000, ticker: "GOOG"},
+    {trader_id: 1, num_shares: 1, trade_price: 25000, ticker: "FB"},
+    {trader_id: 1, num_shares: -1, trade_price: 18000, ticker: "AAPL"},
+    {trader_id: 2, num_shares: 1, trade_price: 92367, ticker: "NFLX"},
 ])
 
 CashTransaction.create([{user_id: 1, amount: 1000000},

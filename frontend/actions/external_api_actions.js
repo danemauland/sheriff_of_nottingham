@@ -13,6 +13,7 @@ export const RECEIVE_MONTHLY_CANDLES = "RECEIVE_MONTHLY_CANDLES";
 export const RECEIVE_THREE_MONTH_CANDLES = "RECEIVE_THREE_MONTH_CANDLES";
 export const RECEIVE_ANNUAL_CANDLES = "RECEIVE_ANNUAL_CANDLES";
 export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
+export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
 
 const receiveCandles = (ticker, candles, type) => ({
     type,
@@ -35,6 +36,7 @@ const q = queue(action => {
             break;
         case FETCH_QUOTE:
             finnhubClient.quote(action.ticker, (error, data, response) => {
+                console.log(error);
                 action.dispatch(receiveQuote(action.ticker, data))
             })
         default:
@@ -111,3 +113,8 @@ export const fetchQuote = ticker => dispatch => {
     }
     q.push(action);
 }
+
+export const initializeAssets = trades => ({
+    type: INITIALIZE_ASSETS,
+    trades
+})

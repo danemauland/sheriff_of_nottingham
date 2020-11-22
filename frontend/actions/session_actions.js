@@ -4,7 +4,7 @@ import {receiveSessionErrors} from "./session_error_actions"
 export const RECEIVE_CURRENT_USER = 'RECEIVE_CURRENT_USER';
 export const LOGOUT_CURRENT_USER = 'LOGOUT_CURRENT_USER';
 
-const receiveCurrentUser = user => ({
+export const receiveCurrentUser = user => ({
     type: RECEIVE_CURRENT_USER,
     user,
 })

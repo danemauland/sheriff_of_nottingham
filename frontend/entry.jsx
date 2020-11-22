@@ -1,19 +1,21 @@
 // TODO
 // ADD MOBILE MENU ON SPLASH
 // ADD BADGE SYMBOL TO LOGIN/SIGNUP TO ALLOW NAVIGATION BACK TO SPLASH
-// PULL ENTITIES ON REFRESH INSTEAD OF LOGIN
 // ADD SEPARATE SIGNUP PAGE
-// ADD MESSAGES
+// signin page image
 // Clicking free stocks creates a pop up saying they're all free
 // Clicking cash expands buying power to show cash bal options
 // Add in messages/trade confirms
 // tab header
+// history
+// search dropdown
 // not a todo but found a bug in robinhood's css. shadow doesn't show up
 //    in dark made because the alpha value and black background
 import React from "react";
 import ReactDOM from "react-dom";
-import configureStore from "./store/store"
-import Root from "./components/root"
+import configureStore from "./store/store";
+import Root from "./components/root";
+import {receiveCurrentUser} from "./actions/session_actions";
 
 // TESTING
 import * as sessionAPIUtil from "./util/session_api_util";
@@ -28,6 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const preloadedState = {
             session: {
                 username: window.currentUser.username,
+            },
+            entities: {
+                cashTransactions: [...window.currentUser.cashTransactions],
+                trades: [...window.currentUser.trades],
             }
         }
         store = configureStore(preloadedState);

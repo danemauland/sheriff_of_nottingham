@@ -8,7 +8,6 @@ class Initialize extends React.Component {
     componentDidUpdate() {
         const tag = $('meta[name="color-scheme"]');
         const body = $("body");
-        console.log(this.props);
         if (tag.length === 1) {
             if (this.props.location.pathname.slice(0, 10) === "/dashboard") {
                 tag.attr("content", "dark");

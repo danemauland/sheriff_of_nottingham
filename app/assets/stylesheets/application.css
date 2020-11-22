@@ -49,3 +49,15 @@
 .dark-green-hover:hover{
   color: rgb(0,180,5);
 }
+
+.hidden {
+  display: none;
+}
+
+.orange-red {
+  color: rgb(255,80,0);
+}
+
+.orange-red.orange-red-bottom-border {
+  border-bottom: 2px solid rgb(255,80,0);
+}
