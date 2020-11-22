@@ -1,11 +1,11 @@
 import React from "react";
-import {calcCashBal, calcPortfolioVal, formatToDollar} from "../../util/dashboard_calcs";
+import {calcPortfolioVal, formatToDollar} from "../../util/dashboard_calcs";
 import {connect} from "react-redux";
 
 const mapStateToProps = state => {
     return ({
         username: state.session.username,
-        cashTransactions: state.entities.cashTransactions,
+        cashBal: state.entities.summary.cashHistory.balances[state.entities.summary.cashHistory.balances.length - 1],
         trades: state.entities.trades,
         displayedAssets: state.entities.displayedAssets,
     })
@@ -17,8 +17,7 @@ class AccountSummaryHeader extends React.Component {
     }
 
     render() {
-        let cashBal = calcCashBal(this.props.cashTransactions, this.props.trades);
-        let portfolioVal = calcPortfolioVal(this.props.displayedAssets, cashBal);
+        let portfolioVal = calcPortfolioVal(this.props.displayedAssets, this.props.cashBal);
         portfolioVal = formatToDollar(portfolioVal);
         return (
             <header className="account-summary-header">

@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById("root");
     let store;
     if (window.currentUser) {
-        debugger;
         const preloadedState = {
             session: {
                 username: window.currentUser.username,

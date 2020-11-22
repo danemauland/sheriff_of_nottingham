@@ -31,7 +31,7 @@ const mergeTransactions = (cash, trades) => {
     return merged;
 }
 
-const defaultState = {};
+const defaultState = {times: [], balances: []};
 export default (state = defaultState, action) => {
     Object.freeze(state)
     switch (action.type) {

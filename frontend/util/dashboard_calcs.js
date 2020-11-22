@@ -1,11 +1,3 @@
-export const calcCashBal = (cashTransactions, trades) => {
-    let totCash = 0;
-    cashTransactions.forEach(transaction => totCash += transaction.amount)
-    let totTrades = 0;
-    trades.forEach(trade => totTrades += (trade.numShares * trade.tradePrice))
-    return totCash - totTrades;
-}
-
 export const calcPosVal = displayedAssets => {
     let totVal = 0;
     Object.values(displayedAssets).forEach(asset => {
