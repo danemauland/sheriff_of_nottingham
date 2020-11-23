@@ -45,14 +45,18 @@ export default (state = defaultState, action) => {
             newState[action.ticker].times ||= {};
             newState[action.ticker].prices ||= {};
             newState[action.ticker].times.oneDay = action.candles.t;
-            newState[action.ticker].prices.oneDay = action.candles.c;
+            newState[action.ticker].prices.oneDay = action.candles.c.map(price => (
+                Math.floor(price * 100)
+            ));
             return newState;
         case RECEIVE_WEEKLY_CANDLES:
             newState = {...state};
             newState[action.ticker].times ||= {};
             newState[action.ticker].prices ||= {};
             newState[action.ticker].times.oneWeek = action.candles.t;
-            newState[action.ticker].prices.oneWeek = action.candles.c;
+            newState[action.ticker].prices.oneWeek = action.candles.c.map(price => (
+                Math.floor(price * 100)
+            ));
             return newState;
         // case RECEIVE_MONTHLY_CANDLES:
         //     newState = { ...state };
@@ -67,7 +71,9 @@ export default (state = defaultState, action) => {
             newState[action.ticker].times ||= {};
             newState[action.ticker].prices ||= {};
             newState[action.ticker].times.oneYear = action.candles.t;
-            newState[action.ticker].prices.oneYear = action.candles.c;
+            newState[action.ticker].prices.oneYear = action.candles.c.map(price => (
+                Math.floor(price * 100)
+            ));
             return newState;
         case RECEIVE_QUOTE:
             return Object.assign({}, state, {[action.ticker]:
