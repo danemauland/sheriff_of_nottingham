@@ -130,6 +130,12 @@ export default (state = defaultState, action) => {
             newState[action.ticker].prices.oneWeek = action.candles.c.map(price => (
                 Math.floor(price * 100)
             ));
+            newState[action.ticker].valueHistory ||= {};
+            newState[action.ticker].valueHistory.oneWeek = calcValues(
+                newState[action.ticker].times.oneWeek,
+                newState[action.ticker].prices.oneWeek,
+                newState[action.ticker].ownershipHistory
+            )
             return newState;
         // case RECEIVE_MONTHLY_CANDLES:
         //     newState = { ...state };
@@ -147,6 +153,12 @@ export default (state = defaultState, action) => {
             newState[action.ticker].prices.oneYear = action.candles.c.map(price => (
                 Math.floor(price * 100)
             ));
+            newState[action.ticker].valueHistory ||= {};
+            newState[action.ticker].valueHistory.oneYear = calcValues(
+                newState[action.ticker].times.oneYear,
+                newState[action.ticker].prices.oneYear,
+                newState[action.ticker].ownershipHistory
+            )
             return newState;
         case RECEIVE_QUOTE:
             return Object.assign({}, state, {[action.ticker]:
