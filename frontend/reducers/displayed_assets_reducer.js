@@ -16,7 +16,7 @@ const initializeState = initialTrades => {
     const newState = {};
     trades.forEach(trade => {
         if (newState[trade.ticker]) {
-            newState[trade.ticker].ownershipHistory.times.push(trade.createdAt);
+            newState[trade.ticker].ownershipHistory.times.push(trade.createdAt / 1000);
             const lastIndex = newState[trade.ticker].ownershipHistory.numShares.length - 1;
             newState[trade.ticker].ownershipHistory.numShares.push(
                 trade.numShares + 
@@ -24,7 +24,7 @@ const initializeState = initialTrades => {
         } else {
             newState[trade.ticker] = {}; 
             newState[trade.ticker].ownershipHistory = {};
-            newState[trade.ticker].ownershipHistory.times = [trade.createdAt];
+            newState[trade.ticker].ownershipHistory.times = [trade.createdAt / 1000];
             newState[trade.ticker].ownershipHistory.numShares = [trade.numShares];
             newState[trade.ticker].ticker = trade.ticker;
     }});
@@ -67,13 +67,35 @@ const calcValues = (times, prices, ownershipHistory) => {
     }
     let pricesPointer;
     let historyPointer;
+    const values = [];
     if (times[0] > ownershipHistory.times[0]) {
         pricesPointer = 0;
-        historyPointer = binarySearch(ownershipHistory.times, times[0], -1)
+        historyPointer = binarySearch(ownershipHistory.times, times[0], -1);
     }
     while (values.length < prices.length) {
+        debugger;
+        if (historyPointer === 0 && 
+            times[pricesPointer] < ownershipHistory.times[historyPointer]
+        ) {
+            values.push[0];
+            pricesPointer++;
+        } else {
+            if (times[pricesPointer] >= ownershipHistory.times[historyPointer]) {
+                if (times[pricesPointer] >= ownershipHistory.times[historyPointer + 1]) {
+                    historyPointer++;
+                } else {
+                    values.push(ownershipHistory.numShares[historyPointer]
+                        * prices[pricesPointer]    
+                    )
+                    pricesPointer++;
+                }
+            } else {
+                pricesPointer++;
+            }
+        }
 
     }
+    return values;
 }
 
 const defaultState = {};
@@ -93,6 +115,12 @@ export default (state = defaultState, action) => {
             newState[action.ticker].prices.oneDay = action.candles.c.map(price => (
                 Math.floor(price * 100)
             ));
+            newState[action.ticker].valueHistory ||= {};
+            newState[action.ticker].valueHistory.oneDay = calcValues(
+                newState[action.ticker].times.oneDay,
+                newState[action.ticker].prices.oneDay,
+                newState[action.ticker].ownershipHistory
+            )
             return newState;
         case RECEIVE_WEEKLY_CANDLES:
             newState = {...state};
