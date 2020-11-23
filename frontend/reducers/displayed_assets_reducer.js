@@ -4,12 +4,12 @@ import {
 } from "../actions/session_actions.js";
 import {RECEIVE_DAILY_CANDLES,
     RECEIVE_WEEKLY_CANDLES,
-    // RECEIVE_MONTHLY_CANDLES,
-    // RECEIVE_THREE_MONTH_CANDLES,
     RECEIVE_ANNUAL_CANDLES,
     RECEIVE_QUOTE,
     INITIALIZE_ASSETS,
+    dstAdjustment,
 } from "../actions/external_api_actions";
+import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 
 const initializeState = initialTrades => {
     const trades = [...initialTrades];
@@ -98,10 +98,84 @@ const calcValues = (times, prices, ownershipHistory) => {
     return values;
 }
 
+const inMarketHours = time => {
+    const date = new Date(time * 1000);
+    const dst = date.isDSTObserved();
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const marketOpenHour = (dst ? 13 : 14);
+    if (hours < marketOpenHour || ((hours < (marketOpenHour + 1) && minutes < 30))) {
+        return false;
+    } else if (hours >= marketOpenHour + 7) {return false};
+    return true;
+}
+
+const isLastPeriod= (time, type) => {
+    const date = new Date(time * 1000);
+    const dst = date.isDSTObserved();
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const marketCloseHour = (dst ? 20 : 21);
+    switch (type) {
+        case RECEIVE_DAILY_CANDLES:
+            if (hours === marketCloseHour - 1 && minutes === 55) {return true}
+            else {return false};
+        case RECEIVE_WEEKLY_CANDLES:
+            if (hours === marketCloseHour - 1 && minutes === 30) { return true }
+            else { return false };
+        default:
+            break;
+    }
+}
+
+const pullTimesAndPrices = (candles, type) => {
+    const arrs = [[],[]];
+    let newTime;
+    for(let i = 0; i < candles.t.length; i++ ) {
+        if (inMarketHours(candles.t[i])) {
+            arrs[0].push(candles.t[i]);
+            arrs[1].push(Math.floor(candles.o[i] * 100));
+            if (i === candles.t.length - 1) {
+                newTime = new Date(candles.t[i] * 1000);
+                switch (type) {
+                    case RECEIVE_DAILY_CANDLES:
+                        if (newTime.getUTCMinutes() + 5 >= 60) {
+                            newTime.setUTCHours(newTime.getUTCHours() + 1);
+                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 5) % 60);
+                        } else {
+                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 5));
+                        }
+                        break;
+                    case RECEIVE_WEEKLY_CANDLES:
+                        if (newTime.getUTCMinutes() + 30 >= 60) {
+                            newTime.setUTCHours(newTime.getUTCHours() + 1);
+                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 30) % 60);
+                        } else {
+                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 30));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                arrs[0].push(Date.parse(newTime) / 1000);
+                arrs[1].push(Math.floor(candles.c[i] * 100));
+            } else if (isLastPeriod(candles.t[i], type)) {
+                newTime = new Date(candles.t[i] * 1000);
+                newTime.setUTCHours(newTime.getUTCHours() + 1)
+                newTime.setUTCMinutes(0)
+                arrs[0].push(Date.parse(newTime) / 1000);
+                arrs[1].push(candles.c[i]);
+            }
+        }
+    }
+    return arrs;
+}
+
 const defaultState = {};
 export default (state = defaultState, action) => {
     Object.freeze(state)
     let newState;
+    let timesAndPrices;
     switch (action.type) {
         case INITIALIZE_ASSETS:
             return initializeState(action.trades);
@@ -111,40 +185,32 @@ export default (state = defaultState, action) => {
             newState = {...state};
             newState[action.ticker].times ||= {};
             newState[action.ticker].prices ||= {};
-            newState[action.ticker].times.oneDay = action.candles.t;
-            newState[action.ticker].prices.oneDay = action.candles.c.map(price => (
-                Math.floor(price * 100)
-            ));
+            timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_DAILY_CANDLES);
+            newState[action.ticker].times.oneDay = timesAndPrices[0];
+            newState[action.ticker].prices.oneDay = timesAndPrices[1];
             newState[action.ticker].valueHistory ||= {};
             newState[action.ticker].valueHistory.oneDay = calcValues(
                 newState[action.ticker].times.oneDay,
                 newState[action.ticker].prices.oneDay,
                 newState[action.ticker].ownershipHistory
-            )
+            );
+            newState[action.ticker].MATERIAL_CHANGE = true;
             return newState;
         case RECEIVE_WEEKLY_CANDLES:
             newState = {...state};
             newState[action.ticker].times ||= {};
             newState[action.ticker].prices ||= {};
-            newState[action.ticker].times.oneWeek = action.candles.t;
-            newState[action.ticker].prices.oneWeek = action.candles.c.map(price => (
-                Math.floor(price * 100)
-            ));
+            timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_WEEKLY_CANDLES);
+            newState[action.ticker].times.oneWeek = timesAndPrices[0];
+            newState[action.ticker].prices.oneWeek = timesAndPrices[1];
             newState[action.ticker].valueHistory ||= {};
             newState[action.ticker].valueHistory.oneWeek = calcValues(
                 newState[action.ticker].times.oneWeek,
                 newState[action.ticker].prices.oneWeek,
                 newState[action.ticker].ownershipHistory
-            )
+            );
+            newState[action.ticker].MATERIAL_CHANGE = true;
             return newState;
-        // case RECEIVE_MONTHLY_CANDLES:
-        //     newState = { ...state };
-        //     newState[action.ticker].oneMonthCandle = action.candles;
-        //     return newState;
-        // case RECEIVE_THREE_MONTH_CANDLES:
-        //     newState = { ...state };
-        //     newState[action.ticker].threeMonthCandle = action.candles;
-        //     return newState;
         case RECEIVE_ANNUAL_CANDLES:
             newState = {...state};
             newState[action.ticker].times ||= {};
@@ -158,11 +224,16 @@ export default (state = defaultState, action) => {
                 newState[action.ticker].times.oneYear,
                 newState[action.ticker].prices.oneYear,
                 newState[action.ticker].ownershipHistory
-            )
+            );
+            newState[action.ticker].MATERIAL_CHANGE = true;
             return newState;
         case RECEIVE_QUOTE:
             return Object.assign({}, state, {[action.ticker]:
                 Object.assign({}, state[action.ticker], {currentPrice: Math.floor(100*action.quote.c)})})
+        case UPDATE_SUMMARY_VALUE_HISTORY:
+            newState = {...state};
+            Object.keys(newState).forEach(key => newState[key].MATERIAL_CHANGE = false);
+            return newState;
         default:
             return state;
     }

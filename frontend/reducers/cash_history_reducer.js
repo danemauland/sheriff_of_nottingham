@@ -7,24 +7,24 @@ const mergeTransactions = (cash, trades) => {
     const merged = {times: [], amounts: []};
     while (cashPointer < cash.length && tradesPointer < trades.length) {
         if (cash[cashPointer].createdAt < trades[tradesPointer].createdAt) {
-            merged.times.push(cash[cashPointer].createdAt);
+            merged.times.push(cash[cashPointer].createdAt / 1000);
             merged.amounts.push(cash[cashPointer].amount);
             cashPointer++;
         } else {
             let amount = -trades[tradesPointer].numShares * trades[tradesPointer].tradePrice;
-            merged.times.push(trades[tradesPointer].createdAt);
+            merged.times.push(trades[tradesPointer].createdAt / 1000);
             merged.amounts.push(amount);
             tradesPointer++
         }
     }
     while (cashPointer < cash.length) {
-        merged.times.push(cash[cashPointer].createdAt);
+        merged.times.push(cash[cashPointer].createdAt / 1000);
         merged.amounts.push(cash[cashPointer].amount);
         cashPointer++;
     }
     while (tradesPointer < trades.length) {
         let amount = -trades[tradesPointer].numShares * trades[tradesPointer].tradePrice;
-        merged.times.push(trades[tradesPointer].createdAt);
+        merged.times.push(trades[tradesPointer].createdAt / 1000);
         merged.amounts.push(amount);
         tradesPointer++
     }

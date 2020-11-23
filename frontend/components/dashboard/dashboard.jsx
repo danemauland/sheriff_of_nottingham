@@ -1,11 +1,11 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import Header from "./header";
 import {fetchCandles,
     initializeAssets,
 RECEIVE_WEEKLY_CANDLES,
 RECEIVE_ANNUAL_CANDLES,
 } from "../../actions/external_api_actions";
+import {updateSummaryValueHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
 import DashboardContent from "./dashboard_content";
 import Sidebar from "./sidebar";
@@ -13,13 +13,13 @@ import Sidebar from "./sidebar";
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
     state: state,
-})
+});
 
-const mapDispatchToProps = dispatch => {
-    return ({
+const mapDispatchToProps = dispatch => ({
         initializeAssets: trades => dispatch(initializeAssets(trades)),
-        fetchCandles: (ticker, subtype) => dispatch(fetchCandles(ticker, subtype)),
-})}
+        fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
+        updateSummaryValueHistory: state => dispatch(updateSummaryValueHistory(state)),
+});
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -39,10 +39,20 @@ class Dashboard extends React.Component {
                 }
             })
             Object.values(this.props.displayedAssets).forEach(asset => {
-                if (asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]) {
+                if (typeof(asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]) === "number") {
                     if (asset.valueHistory === undefined) {
                     this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
                     this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
+                    }
+                }
+            })
+        } else {
+            let breakLoop = false;
+            Object.values(this.props.displayedAssets).forEach(asset => {
+                if (!breakLoop) {
+                    if (asset.MATERIAL_CHANGE) {
+                        breakLoop = true;
+                        this.props.updateSummaryValueHistory(this.props.state);
                     }
                 }
             })

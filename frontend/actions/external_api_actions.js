@@ -1,3 +1,5 @@
+import { GiTwirlyFlower } from "react-icons/gi";
+
 const queue = require("async/queue");
 const finnhub = require('finnhub');
 
@@ -28,14 +30,12 @@ const receiveQuote = (ticker, quote) => ({
 const q = queue(action => {
     switch (action.type) {
         case FETCH_CANDLES:
-            console.log(`${action.ticker} ${action.resolution} ${action.start} ${action.subtype} `)
             finnhubClient.stockCandles(action.ticker, action.resolution, action.start, action.end, {}, (error, data, response) => {
                 action.dispatch(receiveCandles(action.ticker, data, action.subtype))
             })
             break;
         case FETCH_QUOTE:
             finnhubClient.quote(action.ticker, (error, data, response) => {
-                console.log(error);
                 action.dispatch(receiveQuote(action.ticker, data))
             })
             break;
@@ -44,35 +44,45 @@ const q = queue(action => {
     }
 }, 15)
 
-const getStartTime = () => {
+//Date prototype functions added in entry file
+export const dstAdjustment = time => {
+    if ((new Date()).isDSTObserved()) {
+        time.setUTCHours(time.getUTCHours() - 1)
+    }
+    return time;
+}
+
+const getStartTime = () => { //daylight savings adjustment made, but it will be wrong for
+                             //the weekly candles if DST changed in the last week
     const startTime = new Date();
+    const dst = startTime.isDSTObserved();
     const minutes = startTime.getUTCMinutes();
     const hours = startTime.getUTCHours();
-    if (hours < 13 || (hours === 10 && minutes < 30)) {
+    if (hours < (dst ? 13 : 14) || ((hours < (dst ? 14 : 15) && minutes < 30))) {
         startTime.setUTCDate(startTime.getUTCDate() - 1);
     }
-    startTime.setUTCHours(13);
+    startTime.setUTCHours((dst ? 13 : 14));
     startTime.setMinutes(30);
     startTime.setSeconds(0);
     startTime.setMilliseconds(0);
     const day = startTime.getUTCDay();
     if (day === 6) {startTime.setUTCDate(startTime.getUTCDate() - 1)}
     else if (day === 0) { startTime.setUTCDate(startTime.getUTCDate() - 2)};
-    return startTime;
+    return dstAdjustment(startTime);
 }
 
 const getEndTime = () => {
     const startTime = getStartTime();
     const now = new Date();
-    if (now - startTime > (8.5 * 60 * 60 * 1000)) {
-        startTime.setUTCHours(22);
+    if (now - startTime > (6.5 * 60 * 60 * 1000)) {
+        startTime.setUTCHours(startTime.getUTCHours() + 7);
         startTime.setMinutes(0);
         return startTime;
     }
     return now;
 }
 
-export const fetchCandles = (ticker, subtype = RECEIVE_DAILY_CANDLES) => dispatch => {
+export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) => {
     const startTime = getStartTime();
     const endTime = getEndTime();
     let resolution = 5;
@@ -81,7 +91,7 @@ export const fetchCandles = (ticker, subtype = RECEIVE_DAILY_CANDLES) => dispatc
             break;
         case RECEIVE_WEEKLY_CANDLES:
             startTime.setUTCDate(startTime.getUTCDate() - 7);
-            resolution = 60;
+            resolution = 30;
             break;
         case RECEIVE_ANNUAL_CANDLES:
             startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
@@ -90,7 +100,6 @@ export const fetchCandles = (ticker, subtype = RECEIVE_DAILY_CANDLES) => dispatc
         default:
             break;
     }
-    
     const action = {
         type: FETCH_CANDLES,
         subtype,
@@ -100,7 +109,6 @@ export const fetchCandles = (ticker, subtype = RECEIVE_DAILY_CANDLES) => dispatc
         end: Date.parse(endTime) / 1000,
         dispatch,
     }
-    console.log(action);
     q.push(action)
 }
 
