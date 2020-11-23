@@ -65,23 +65,23 @@ const calcValues = (times, prices, ownershipHistory) => {
         for(let i = 0; i < times.length; i++) {zeros.push(0)};
         return zeros;
     }
-    let pricesPointer;
-    let historyPointer;
+    let pricesPointer = 0;
+    let historyPointer = 0;
     const values = [];
     if (times[0] > ownershipHistory.times[0]) {
         pricesPointer = 0;
         historyPointer = binarySearch(ownershipHistory.times, times[0], -1);
     }
     while (values.length < prices.length) {
-        debugger;
-        if (historyPointer === 0 && 
-            times[pricesPointer] < ownershipHistory.times[historyPointer]
+        if ((historyPointer === 0) && 
+            (times[pricesPointer] < ownershipHistory.times[historyPointer])
         ) {
-            values.push[0];
+            values.push(0);
             pricesPointer++;
         } else {
             if (times[pricesPointer] >= ownershipHistory.times[historyPointer]) {
-                if (times[pricesPointer] >= ownershipHistory.times[historyPointer + 1]) {
+                if (ownershipHistory.times[historyPointer + 1] && 
+                    times[pricesPointer] >= ownershipHistory.times[historyPointer + 1]) {
                     historyPointer++;
                 } else {
                     values.push(ownershipHistory.numShares[historyPointer]

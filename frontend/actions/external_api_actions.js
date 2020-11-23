@@ -9,8 +9,6 @@ export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
 export const RECEIVE_DAILY_CANDLES = "RECEIVE_DAILY_CANDLES";
 export const RECEIVE_WEEKLY_CANDLES = "RECEIVE_WEEKLY_CANDLES";
-// export const RECEIVE_MONTHLY_CANDLES = "RECEIVE_MONTHLY_CANDLES";
-// export const RECEIVE_THREE_MONTH_CANDLES = "RECEIVE_THREE_MONTH_CANDLES";
 export const RECEIVE_ANNUAL_CANDLES = "RECEIVE_ANNUAL_CANDLES";
 export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
 export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
@@ -30,6 +28,7 @@ const receiveQuote = (ticker, quote) => ({
 const q = queue(action => {
     switch (action.type) {
         case FETCH_CANDLES:
+            console.log(`${action.ticker} ${action.resolution} ${action.start} ${action.subtype} `)
             finnhubClient.stockCandles(action.ticker, action.resolution, action.start, action.end, {}, (error, data, response) => {
                 action.dispatch(receiveCandles(action.ticker, data, action.subtype))
             })
@@ -39,6 +38,7 @@ const q = queue(action => {
                 console.log(error);
                 action.dispatch(receiveQuote(action.ticker, data))
             })
+            break;
         default:
             break;
     }
@@ -82,15 +82,11 @@ export const fetchCandles = (ticker, subtype = RECEIVE_DAILY_CANDLES) => dispatc
         case RECEIVE_WEEKLY_CANDLES:
             startTime.setUTCDate(startTime.getUTCDate() - 7);
             resolution = 60;
-        // case RECEIVE_MONTHLY_CANDLES:
-        //     startTime.setUTCMonth(startTime.getUTCMonth() - 1);
-        //     resolution = "D";
-        // case RECEIVE_THREE_MONTH_CANDLES:
-        //     startTime.setUTCMonth(startTime.getUTCMonth() - 3);
-        //     resolution = "D";
+            break;
         case RECEIVE_ANNUAL_CANDLES:
             startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
             resolution = "D";
+            break;
         default:
             break;
     }
@@ -104,6 +100,7 @@ export const fetchCandles = (ticker, subtype = RECEIVE_DAILY_CANDLES) => dispatc
         end: Date.parse(endTime) / 1000,
         dispatch,
     }
+    console.log(action);
     q.push(action)
 }
 

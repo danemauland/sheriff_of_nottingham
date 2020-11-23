@@ -1,7 +1,11 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import Header from "./header";
-import {fetchCandles, initializeAssets} from "../../actions/external_api_actions";
+import {fetchCandles,
+    initializeAssets,
+RECEIVE_WEEKLY_CANDLES,
+RECEIVE_ANNUAL_CANDLES,
+} from "../../actions/external_api_actions";
 import {connect} from "react-redux";
 import DashboardContent from "./dashboard_content";
 import Sidebar from "./sidebar";
@@ -28,11 +32,21 @@ class Dashboard extends React.Component {
     }
 
     componentDidUpdate() {
-        Object.values(this.props.displayedAssets).forEach(asset => {
-            if (asset.prices === undefined) {
-                this.props.fetchCandles(asset.ticker)
-            }
-        })
+        if (this.timesComponentUpdated === 1) {
+            Object.values(this.props.displayedAssets).forEach(asset => {
+                if (asset.prices === undefined) {
+                    this.props.fetchCandles(asset.ticker)
+                }
+            })
+            Object.values(this.props.displayedAssets).forEach(asset => {
+                if (asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]) {
+                    if (asset.valueHistory === undefined) {
+                    this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
+                    this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
+                    }
+                }
+            })
+        }
         this.timesComponentUpdated++
     }
 
