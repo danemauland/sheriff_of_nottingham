@@ -55,12 +55,4 @@ class User < ApplicationRecord
         self.save!
         self.session_token
     end
-
-    # def positions
-    #     self.trades.select('"trades"."ticker", SUM("trades"."num_shares") AS "total_shares"').having('SUM("trades"."num_shares") != 0').group("trades.ticker").order("")
-    # end
-
-    # def cash_bal
-    #     self.cash_transactions.sum('"cash_transactions"."amount"')
-    # end
 end
