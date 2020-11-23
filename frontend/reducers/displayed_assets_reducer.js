@@ -4,8 +4,8 @@ import {
 } from "../actions/session_actions.js";
 import {RECEIVE_DAILY_CANDLES,
     RECEIVE_WEEKLY_CANDLES,
-    RECEIVE_MONTHLY_CANDLES,
-    RECEIVE_THREE_MONTH_CANDLES,
+    // RECEIVE_MONTHLY_CANDLES,
+    // RECEIVE_THREE_MONTH_CANDLES,
     RECEIVE_ANNUAL_CANDLES,
     RECEIVE_QUOTE,
     INITIALIZE_ASSETS,
@@ -36,31 +36,38 @@ export default (state = defaultState, action) => {
     Object.freeze(state)
     let newState;
     switch (action.type) {
-        // case RECEIVE_CURRENT_USER:
-        //     return initializeState(action.user.trades);
         case INITIALIZE_ASSETS:
             return initializeState(action.trades);
         case LOGOUT_CURRENT_USER:
             return defaultState;
         case RECEIVE_DAILY_CANDLES:
             newState = {...state};
-            newState[action.ticker].oneDayCandle = action.candles;
+            newState[action.ticker].times ||= {};
+            newState[action.ticker].prices ||= {};
+            newState[action.ticker].times.oneDay = action.candles.t;
+            newState[action.ticker].prices.oneDay = action.candles.c;
             return newState;
         case RECEIVE_WEEKLY_CANDLES:
-            newState = { ...state };
-            newState[action.ticker].oneWeekCandle = action.candles;
+            newState = {...state};
+            newState[action.ticker].times ||= {};
+            newState[action.ticker].prices ||= {};
+            newState[action.ticker].times.oneWeek = action.candles.t;
+            newState[action.ticker].prices.oneWeek = action.candles.c;
             return newState;
-        case RECEIVE_MONTHLY_CANDLES:
-            newState = { ...state };
-            newState[action.ticker].oneMonthCandle = action.candles;
-            return newState;
-        case RECEIVE_THREE_MONTH_CANDLES:
-            newState = { ...state };
-            newState[action.ticker].threeMonthCandle = action.candles;
-            return newState;
+        // case RECEIVE_MONTHLY_CANDLES:
+        //     newState = { ...state };
+        //     newState[action.ticker].oneMonthCandle = action.candles;
+        //     return newState;
+        // case RECEIVE_THREE_MONTH_CANDLES:
+        //     newState = { ...state };
+        //     newState[action.ticker].threeMonthCandle = action.candles;
+        //     return newState;
         case RECEIVE_ANNUAL_CANDLES:
-            newState = { ...state };
-            newState[action.ticker].oneYearCandle = action.candles;
+            newState = {...state};
+            newState[action.ticker].times ||= {};
+            newState[action.ticker].prices ||= {};
+            newState[action.ticker].times.oneYear = action.candles.t;
+            newState[action.ticker].prices.oneYear = action.candles.c;
             return newState;
         case RECEIVE_QUOTE:
             return Object.assign({}, state, {[action.ticker]:

@@ -18,10 +18,13 @@ const mapDispatchToProps = dispatch => {
 })}
 
 class Dashboard extends React.Component {
-
+    constructor(props) {
+        super(props);
+        this.timesComponentUpdated = 0;
+    }
     componentDidMount() {
         this.props.initializeAssets(this.props.state);
-        
+        this.timesComponentUpdated++;
     }
 
     componentDidUpdate() {
@@ -30,6 +33,7 @@ class Dashboard extends React.Component {
                 this.props.fetchQuote(asset.ticker)
             }
         })
+        this.timesComponentUpdated++
     }
 
     render() {
