@@ -13,20 +13,18 @@ import {RECEIVE_DAILY_CANDLES,
 
 const initializeState = initialTrades => {
     const trades = [...initialTrades];
-    const sumSharesCounter = {};
+    const newState = {};
     trades.forEach(trade => {
-        if (sumSharesCounter[trade.ticker]) { sumSharesCounter[trade.ticker] += trade.numShares}
-        else {sumSharesCounter[trade.ticker] = trade.numShares}
-    });
-    const newState = {}
-    Object.keys(sumSharesCounter).forEach(ticker => {
-        if (sumSharesCounter[ticker]) { 
-            newState[ticker] = {
-                ticker,
-                numShares: sumSharesCounter[ticker]
-            }
-        }
-    })
+        if (newState[trade.ticker]) {
+            newState[trade.ticker].ownershipHistory.times.push(trade.createdAt);
+            newState[trade.ticker].ownershipHistory.numShares.push(trade.numShares);
+        } else {
+            newState[trade.ticker] = {}; 
+            newState[trade.ticker].ownershipHistory = {};
+            newState[trade.ticker].ownershipHistory.times = [trade.createdAt];
+            newState[trade.ticker].ownershipHistory.numShares = [trade.numShares];
+            newState[trade.ticker].ticker = trade.ticker;
+    }});
     return newState;
 }
 
