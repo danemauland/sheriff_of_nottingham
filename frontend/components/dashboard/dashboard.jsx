@@ -1,7 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import Header from "./header";
-import {fetchQuote, initializeAssets} from "../../actions/external_api_actions";
+import {fetchCandles, initializeAssets} from "../../actions/external_api_actions";
 import {connect} from "react-redux";
 import DashboardContent from "./dashboard_content";
 import Sidebar from "./sidebar";
@@ -14,7 +14,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => {
     return ({
         initializeAssets: trades => dispatch(initializeAssets(trades)),
-        fetchQuote: ticker => dispatch(fetchQuote(ticker)),
+        fetchCandles: (ticker, subtype) => dispatch(fetchCandles(ticker, subtype)),
 })}
 
 class Dashboard extends React.Component {
@@ -29,8 +29,8 @@ class Dashboard extends React.Component {
 
     componentDidUpdate() {
         Object.values(this.props.displayedAssets).forEach(asset => {
-            if (asset.currentPrice === undefined) {
-                this.props.fetchQuote(asset.ticker)
+            if (asset.prices === undefined) {
+                this.props.fetchCandles(asset.ticker)
             }
         })
         this.timesComponentUpdated++

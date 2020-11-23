@@ -52,8 +52,10 @@ const getStartTime = () => {
         startTime.setUTCDate(startTime.getUTCDate() - 1);
     }
     startTime.setUTCHours(13);
-    startTime.setMinutes(30)
-    const day = startTime.day;
+    startTime.setMinutes(30);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+    const day = startTime.getUTCDay();
     if (day === 6) {startTime.setUTCDate(startTime.getUTCDate() - 1)}
     else if (day === 0) { startTime.setUTCDate(startTime.getUTCDate() - 2)};
     return startTime;
