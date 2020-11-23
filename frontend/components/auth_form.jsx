@@ -27,7 +27,7 @@ class AuthForm extends React.Component {
     handleDemo(e) {
         e.preventDefault();
         e.stopPropagation();
-        this.props.createDemo()
+        this.props.createDemo();
     }
 
     render() {
