@@ -1,8 +1,11 @@
 export const calcPosVal = displayedAssets => {
     let totVal = 0;
     Object.values(displayedAssets).forEach(asset => {
-        if (asset.numShares && asset.currentPrice !== undefined) { 
-            totVal += (asset.numShares * asset.currentPrice)
+        if (asset.ownershipHistory
+            && asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]
+            && asset.currentPrice !== undefined) { 
+            totVal += (asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]
+                * asset.currentPrice)
         }
     })
     return totVal;

@@ -17,7 +17,10 @@ const initializeState = initialTrades => {
     trades.forEach(trade => {
         if (newState[trade.ticker]) {
             newState[trade.ticker].ownershipHistory.times.push(trade.createdAt);
-            newState[trade.ticker].ownershipHistory.numShares.push(trade.numShares);
+            const lastIndex = newState[trade.ticker].ownershipHistory.numShares.length - 1;
+            newState[trade.ticker].ownershipHistory.numShares.push(
+                trade.numShares + 
+                newState[trade.ticker].ownershipHistory.numShares[lastIndex]);
         } else {
             newState[trade.ticker] = {}; 
             newState[trade.ticker].ownershipHistory = {};
