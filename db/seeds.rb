@@ -16,7 +16,7 @@ Trade.create([{trader_id: 1, num_shares: 1, trade_price: 10000, ticker: "GOOG", 
     {trader_id: 2, num_shares: 1, trade_price: 92367, ticker: "NFLX", created_at: "2020-11-01 00:00:00"},
 ])
 
-CashTransaction.create([{user_id: 1, amount: 1000000, created_at: "2020-11-01 00:00:00"},
-    {user_id: 1, amount: -100000, created_at: "2020-11-04 00:00:00"},
+CashTransaction.create([{user_id: 1, amount: 10000, created_at: "2020-11-01 00:00:00"},
+    {user_id: 1, amount: -100, created_at: "2020-11-04 00:00:00"},
     {user_id: 2, amount: 500000, created_at: "2020-11-01 00:00:00"},
 ])

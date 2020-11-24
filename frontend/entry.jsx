@@ -7,6 +7,7 @@
 // signin page image
 // Clicking free stocks creates a pop up saying they're all free
 // Clicking cash expands buying power to show cash bal options
+// loading screen
 // Add in messages/trade confirms
 // tab header
 // history

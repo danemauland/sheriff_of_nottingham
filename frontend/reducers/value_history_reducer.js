@@ -1,5 +1,6 @@
 import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 import { LOGOUT_CURRENT_USER } from "../actions/session_actions.js";
+var merge = require('lodash.merge');
 
 const mergeHistories = (cashHistory, values, times) => {
     let cashPointer = 0;
@@ -69,7 +70,7 @@ const defaultState = {
 
 export default (state = defaultState, action) => {
     Object.freeze(state)
-    let newState = {...defaultState};
+    let newState = merge({}, defaultState);
     switch (action.type) {
         case UPDATE_SUMMARY_VALUE_HISTORY:
             let breakLoop = false;

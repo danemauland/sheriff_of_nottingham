@@ -5,3 +5,9 @@ export const formatToDollar = num => {
     else if (num[num.length - 3] !== ".") {num += ".00"};
     return "$" + num;
 }
+
+export const ONE_DAY = "ONE_DAY";
+export const ONE_WEEK = "ONE_WEEK";
+export const ONE_MONTH = "ONE_MONTH";
+export const THREE_MONTH = "THREE_MONTH";
+export const ONE_YEAR = "ONE_YEAR";

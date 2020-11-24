@@ -164,7 +164,7 @@ const pullTimesAndPrices = (candles, type) => {
                 newTime.setUTCHours(newTime.getUTCHours() + 1)
                 newTime.setUTCMinutes(0)
                 arrs[0].push(Date.parse(newTime) / 1000);
-                arrs[1].push(candles.c[i]);
+                arrs[1].push(Math.floor(candles.c[i] * 100));
             }
         }
     }
