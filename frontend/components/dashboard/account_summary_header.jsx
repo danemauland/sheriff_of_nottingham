@@ -12,6 +12,7 @@ const mapStateToProps = state => {
     return ({
         username: state.session.username,
         cashBal: state.entities.summary.cashHistory.balances[state.entities.summary.cashHistory.balances.length - 1],
+        startingCashBal: state.entities.summary.cashHistory.balances[0],
         portfolioVal: state.entities.summary.valueHistory.values.oneDay[state.entities.summary.valueHistory.values.oneDay.length - 1],
         valueHistory: state.entities.summary.valueHistory,
         trades: state.entities.trades,
@@ -23,7 +24,7 @@ Chart.Tooltip.positioners.custom = (elements, position) => {
     if (elements.length === 0) return false;
     return {
         x: position.x,
-        y: 0,
+        y: 9,
     }
 }
 
@@ -31,8 +32,8 @@ class AccountSummaryHeader extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            view: ONE_WEEK,
-            display: 0,
+            view: ONE_DAY,
+            display: this.props.portfolioVal,
         }
         this.resetHeader = this.resetHeader.bind(this)
         this.hideGraphView = this.hideGraphView.bind(this)
@@ -44,6 +45,7 @@ class AccountSummaryHeader extends React.Component {
 
     resetHeader() {
         $(".graph-view").removeClass("hidden");
+        $("#chartjs-tooltip").remove();
         this.setState({
             display: this.props.portfolioVal,
         })
@@ -74,12 +76,19 @@ class AccountSummaryHeader extends React.Component {
             default:
                 break;
         }
-        delta = (this.state.display || this.props.portfolioVal) - pastVal;
+        let subtractant = (this.state.display === undefined ?
+            this.props.portfolioVal :
+            this.state.display
+        );
+        let subtractor = pastVal;
+        delta = subtractant - subtractor;
         this.delta = delta;
         sign = (delta < 0 ? "-" : "+");
         delta = Math.abs(delta);
-        percentage = ((delta / pastVal) * 100).toFixed(2);
-        strChange += sign
+        let base = (pastVal || this.props.startingCashBal);
+        percentage = (delta === 0 ? 0 : delta / base);
+        percentage = (percentage * 100).toFixed(2);
+        strChange += sign;
         strChange += formatToDollar(delta);
         strChange += ` (${sign}${percentage}%)`;
         return strChange;
@@ -149,21 +158,116 @@ class AccountSummaryHeader extends React.Component {
     }
 
     componentDidMount() {
+        const tooltipFunction = () => {
+            const setState = this.setState.bind(this);
+            return function (tooltipModel) {
+                if (tooltipModel.dataPoints === undefined) return;
+                if (tooltipModel.dataPoints[0] === undefined) return;
+                let tooltipEl = document.getElementById("chartjs-tooltip");
+                let tooltipTitle = document.getElementById("chartjs-tooltip-title");
+                let tooltipLine = document.getElementById("chartjs-tooltip-line");
+                let tooltipCircle = document.getElementById("chartjs-tooltip-circle");
+                if (!tooltipEl) {
+                    tooltipEl = document.createElement("div");
+                    tooltipEl.id = "chartjs-tooltip";
+                    tooltipTitle = document.createElement("div");
+                    tooltipTitle.id = "chartjs-tooltip-title";
+                    tooltipLine = document.createElement("div");
+                    tooltipLine.id = "chartjs-tooltip-line";
+                    tooltipCircle = document.createElement("div");
+                    tooltipCircle.id = "chartjs-tooltip-circle";
+                    tooltipEl.appendChild(tooltipTitle);
+                    tooltipEl.appendChild(tooltipLine);
+                    tooltipEl.appendChild(tooltipCircle);
+                    document.body.appendChild(tooltipEl);
+                }
+
+                if (tooltipModel.opacity === 0) {
+                    tooltipEl.style.opacity = 0;
+                    return;
+                }
+                if (tooltipModel.dataPoints[0]) {
+                    setState({
+                        display: Math.floor(tooltipModel.dataPoints[0].yLabel * 100),
+                    })
+                }
+                const position = this._chart.canvas.getBoundingClientRect();
+                tooltipTitle.innerHTML = tooltipModel.title;
+                tooltipEl.style.opacity = 1;
+                tooltipEl.style.position = 'absolute';
+                tooltipLine.style.height = position.bottom - position.top + "px";
+                tooltipLine.style.width = 0 + "px";
+                tooltipLine.style.borderRight = "1px solid rgba(121,133,139,1)";
+                tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - (tooltipTitle.offsetWidth / 2) + 'px';
+                tooltipEl.style.top = position.top - 20 + 'px';
+                tooltipLine.style.position = "absolute";
+                tooltipLine.style.top = "20px"
+                tooltipCircle.style.position = "absolute";
+                tooltipCircle.style.top = tooltipModel.dataPoints[0].y + 14 + 'px';
+                tooltipCircle.style.backgroundColor = this._data.datasets[0].borderColor;
+                tooltipCircle.style.width = "8px";
+                tooltipCircle.style.height = "8px";
+                tooltipCircle.style.borderRadius = "8px";
+                tooltipCircle.style.border = "2px solid black";
+                tooltipEl.style.pointerEvents = 'none';
+            }
+        }
         const ctx = document.getElementById("myChart");
         this.lineChart = new Chart(ctx, {
             type: "line",
             data: {
                 labels: [],
-                datasets: [{
-                    data: [],
-                    borderColor: (this.delta < 0 ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)"),
-                    backgroundColor: "transparent",
-                    hoverRadius: 20,
-                    radius: 0,
-                }],
+                datasets: [
+                    {
+                        data: [],
+                        borderColor: (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)"),
+                        backgroundColor: "transparent",
+                        borderWidth: 2,
+                    },
+                    {
+                        data: [],
+                        borderColor: (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,0.5)" : "rgba(0,200,5,0.5)"),
+                        backgroundColor: "transparent",
+                        borderWidth: 2,
+                    },
+                    {
+                        data: [],
+                        borderColor: "transparent",
+                        backgroundColor: "transparent",
+                        pointStyle: "line",
+                        pointRotation: 90,
+                        pointRadius: 1,
+                        pointHoverRadius: 1,
+                        pointBorderColor: "rgba(121,133,139,1)",
+                    },
+                    {
+                        data: [],
+                        borderColor: "transparent",
+                        backgroundColor: "transparent",
+                        pointStyle: "line",
+                        pointRotation: 90,
+                        pointRadius: 1,
+                        pointHoverRadius: 1,
+                        pointBorderColor: "rgba(121,133,139,0.5)",
+                    },
+                ],
             },
             options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                elements: {
+                    point: {
+                        mode: "index",
+                        intersect: false,
+                        radius: 0,
+                        hoverRadius: 0,
+                    },
+                    line: {
+                        tension: 0,
+                    },
+                },
                 legend: { display: false },
+                title: {display: false},
                 scales: {
                     yAxes: [{
                         display: false,
@@ -173,20 +277,13 @@ class AccountSummaryHeader extends React.Component {
                     }]
                 },
                 tooltips: {
-                    yAlign: "top",
+                    enabled: false,
+                    custom: tooltipFunction(),
                     mode: "index",
                     intersect: false,
-                    backgroundColor: "transparent",
                     titleFontColor: "rgba(121,133,139,1)",
-                    titleFontSize: 13,
-                    position: "custom",
-                    callbacks: {
-                        label: context => {
-                            this.setState({
-                                display: context.yLabel * 100,
-                            });
-                            return "";
-                        }
+                    filter: function(tooltipItem) {
+                        return tooltipItem.datasetIndex < 2;
                     }
                 },
                 hover: {
@@ -198,22 +295,59 @@ class AccountSummaryHeader extends React.Component {
     }
 
     componentDidUpdate() {
-        let data;
+        let inMarketHoursData = [];
+        let outMarketHoursData = [];
         let labels;
+        let inMarketHoursPastVals = [];
+        let outMarketHoursPastVals = [];
         switch (this.state.view) {
             case ONE_DAY:
-                labels = this.props.valueHistory.times.oneDay.map(time => (
+                let times = [];
+                let startTime = this.props.valueHistory.times.oneDay[0];
+                for(let i = 6; i > 0; i--) {
+                    times.push(startTime - (5 * 60 * i))
+                }
+                times = times.concat(this.props.valueHistory.times.oneDay)
+                while (times.length < 109) {
+                    const newTime = times[times.length - 1] + (5 * 60)
+                    times.push(newTime)
+                }
+                for(let i = 0; i < 6; i++) {
+                    outMarketHoursData.push(this.props.valueHistory.values.oneDay[0] / 100);
+                    inMarketHoursData.push(undefined);
+                }
+                this.props.valueHistory.values.oneDay.forEach(val => {
+                    outMarketHoursData.push(undefined);
+                    inMarketHoursData.push(val / 100);
+                });
+                outMarketHoursData.pop()
+                outMarketHoursData[6] = this.props.valueHistory.values.oneDay[0] / 100;
+                if (inMarketHoursData.length === 85) {
+                    for(let i = 84; i < 109; i++) {
+                        if (times[i] < new Date().getTime() / 1000) {
+                            outMarketHoursData.push(inMarketHoursData[inMarketHoursData.length - 1])
+                        }
+                    }
+                }
+                const pastVal = this.props.valueHistory.values.oneYear[this.props.valueHistory.values.oneYear.length - 2] / 100;
+                for(let i = 0; i < 109; i++) {
+                    if (i > 6 && i < 85) {
+                        inMarketHoursPastVals.push(pastVal)
+                        outMarketHoursPastVals.push(undefined)
+                    } else {
+                        inMarketHoursPastVals.push(undefined)
+                        outMarketHoursPastVals.push(pastVal)
+                    }
+                }
+                labels = times.map(time => (
                     this.formatTime(new Date(time * 1000))
                 ))
-                data = this.props.valueHistory.values.oneDay.map(val => (
-                    val / 100
-                ));
                 break;
             case ONE_WEEK:
                 labels = this.props.valueHistory.times.oneWeek.map(time => (
                     this.formatDateTime(new Date(time * 1000))
                 ))
-                data = this.props.valueHistory.values.oneWeek.map(val => (
+                inMarketHoursData = this.props.valueHistory.values.oneWeek.map(val => (
                     val / 100
                 ));
                 break;
@@ -224,7 +358,7 @@ class AccountSummaryHeader extends React.Component {
                 ).map(time => (
                     this.formatDateTime(new Date(time * 1000))
                 ))
-                data = this.props.valueHistory.values.oneYear.slice(
+                inMarketHoursData = this.props.valueHistory.values.oneYear.slice(
                     this.props.valueHistory.values.oneYear.length - 32,
                     this.props.valueHistory.values.oneYear.length
                 ).map(val => (
@@ -238,7 +372,7 @@ class AccountSummaryHeader extends React.Component {
                 ).map(time => (
                     this.formatDateTime(new Date(time * 1000))
                 ))
-                data = this.props.valueHistory.values.oneYear.slice(
+                inMarketHoursData = this.props.valueHistory.values.oneYear.slice(
                     this.props.valueHistory.values.oneYear.length - 92,
                     this.props.valueHistory.values.oneYear.length
                 ).map(val => (
@@ -249,39 +383,75 @@ class AccountSummaryHeader extends React.Component {
                 labels = this.props.valueHistory.times.oneYear.map(time => (
                     this.formatDateTime(new Date(time * 1000))
                 ))
-                data = this.props.valueHistory.values.oneYear.map(val => (
+                inMarketHoursData = this.props.valueHistory.values.oneYear.map(val => (
                     val / 100
                 ));
                 break;
             default:
                 break;
         }
-        while (this.lineChart.data.datasets[0].data.length > 0) {
-            this.lineChart.data.datasets[0].data.pop();
-        }
+        this.lineChart.data.datasets.forEach(set => {
+            while (set.data.length > 0) {
+                set.data.pop()
+            }
+        })
         while (this.lineChart.data.labels.length > 0) {
             this.lineChart.data.labels.pop();
         }
-        for(let i = 0; i < data.length; i++) {
-            this.lineChart.data.datasets[0].data.push(data[i])
+        for(let i = 0; i < inMarketHoursData.length; i++) {
+            this.lineChart.data.datasets[0].data.push(inMarketHoursData[i])
+        }
+        for (let i = 0; i < outMarketHoursData.length; i++) {
+            this.lineChart.data.datasets[1].data.push(outMarketHoursData[i])
+        }
+        for (let i = 0; i < inMarketHoursPastVals.length; i++) {
+            this.lineChart.data.datasets[2].data.push(inMarketHoursPastVals[i])
+        }
+        for (let i = 0; i < outMarketHoursPastVals.length; i++) {
+            this.lineChart.data.datasets[3].data.push(outMarketHoursPastVals[i])
         }
         for (let i = 0; i < labels.length; i++) {
             this.lineChart.data.labels.push(labels[i])
         }
-        this.lineChart.data.datasets[0].borderColor = (this.delta < 0 ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)");
+        this.lineChart.chart.options.scales.yAxes[0].ticks.max = Math.max(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined))
+        this.lineChart.chart.options.scales.yAxes[0].ticks.min = Math.min(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined))
+        this.lineChart.data.datasets[0].borderColor = (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)");
+        this.lineChart.data.datasets[1].borderColor = (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,0.5)" : "rgba(0,200,5,0.5)");
         this.lineChart.update();
+    }
+
+    generateChartChanger(field) {
+        return e => {
+            e.preventDefault();
+            $(".chart-selector-link-selected").removeClass("chart-selector-link-selected")
+            $(e.target).addClass("chart-selector-link-selected")
+            this.setState({
+                view: field,
+            })
+        }
     }
 
     render() {
         return (
             <>
                 <header className="account-summary-header">
-                    <h1>{formatToDollar(this.state.display || this.props.portfolioVal)}</h1>
+                    <h1>{formatToDollar(this.state.display === undefined ?
+                        this.props.portfolioVal :
+                        this.state.display)}</h1>
                     <div className="account-summary-header-subinfo">
                         <p>{this.calcChange()} <span className="graph-view">{this.graphView()}</span></p>
                     </div>
                 </header>
-                <canvas id="myChart" onMouseEnter={this.hideGraphView} onMouseLeave={this.resetHeader}></canvas>
+                <canvas id="myChart" onMouseEnter={this.hideGraphView} onMouseLeave={this.resetHeader} width="676px" height="196px" display="block"></canvas>
+                <div className="chart-selector-spacer">
+                    <div className="chart-selector-flex-container">
+                        <a className="chart-selector-link chart-selector-link-selected" onClick={this.generateChartChanger(ONE_DAY)}>1D</a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_WEEK)}>1W</a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_MONTH)}>1M</a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(THREE_MONTH)}>3M</a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_YEAR)}>1Y</a>
+                    </div>
+                </div>
             </>
         )
     }

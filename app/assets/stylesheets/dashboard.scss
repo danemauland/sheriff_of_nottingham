@@ -293,3 +293,38 @@
     color: $lightish-gray;
     font-weight: 400;
 }
+
+#chartjs-tooltip {
+    color: $lightish-gray;
+    display: flex;
+    justify-content: center;
+}
+
+.chart-selector-spacer {
+    border-bottom: 1px solid $darkishish-gray;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    display: relative;
+    height: 31px
+}
+
+.chart-selector-flex-container {
+    display: flex;
+    font-weight: 700;
+}
+
+.chart-selector-link {
+    margin-right: 24px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid transparent;
+}
+
+.chart-selector-link:hover {
+    color: $dark-green;
+}
+
+.chart-selector-link-selected {
+    color: $dark-green;
+    border-bottom: 2px solid $green;
+}
