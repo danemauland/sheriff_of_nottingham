@@ -1,6 +1,5 @@
 import React from "react";
 import AccountDropdownHeader from "./account_dropdown_header";
-import LogoutContainer from "./logout_container";
 import AccountDropdownNav from "./account_dropdown_nav";
 
 class AccountDropdown extends React.Component {

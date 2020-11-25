@@ -1,5 +1,3 @@
-import { GiTwirlyFlower } from "react-icons/gi";
-
 const queue = require("async/queue");
 const finnhub = require('finnhub');
 
@@ -46,7 +44,7 @@ const q = queue(action => {
 
 //Date prototype functions added in entry file
 export const dstAdjustment = time => {
-    if ((new Date()).isDSTObserved()) {
+    if (new Date().isDSTObserved()) {
         time.setUTCHours(time.getUTCHours() - 1)
     }
     return time;
@@ -83,7 +81,7 @@ const getEndTime = () => {
 }
 
 export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) => {
-    const startTime = getStartTime();
+    let startTime = getStartTime();
     const endTime = getEndTime();
     let resolution = 5;
     switch (subtype) {
@@ -95,6 +93,8 @@ export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) 
             break;
         case RECEIVE_ANNUAL_CANDLES:
             startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
+            startTime.setUTCHours(startTime.getUTCHours() + 1); // Needed because API provider will return prices for (only) some stocks for the previous day otherwise
+            startTime.setMinutes(0);
             resolution = "D";
             break;
         default:

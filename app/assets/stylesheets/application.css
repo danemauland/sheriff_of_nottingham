@@ -50,16 +50,28 @@
   color: rgb(0,180,5);
 }
 
+.red-hover:hover{
+  color: rgb(255,80,0);
+}
+
 .hidden {
   display: none !important;
 }
 
-.orange-red {
+.red {
   color: rgb(255,80,0);
 }
 
-.orange-red.orange-red-bottom-border {
+.red-bottom-border {
   border-bottom: 2px solid rgb(255,80,0);
+}
+
+.dark-green {
+  color: rgb(0,180,5);
+}
+
+.dark-green-bottom-border {
+  border-bottom: 2px solid rgb(0,180,5);
 }
 
 @media (max-width: 1023px) {

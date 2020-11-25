@@ -6,6 +6,8 @@ import {formatToDollar,
     THREE_MONTH,
     ONE_YEAR,
 } from "../../util/dashboard_calcs";
+import { updateValueIncreased } from "../../actions/value_increased_actions";
+import { updateChart } from "../../actions/chart_selected_actions";
 import {connect} from "react-redux";
 
 const mapStateToProps = state => {
@@ -17,8 +19,15 @@ const mapStateToProps = state => {
         valueHistory: state.entities.summary.valueHistory,
         trades: state.entities.trades,
         displayedAssets: state.entities.displayedAssets,
+        valueIncreased: state.ui.valueIncreased,
+        chartSelected: state.ui.chartSelected,
     })
 }
+
+const mapDispatchToProps = dispatch => ({
+    updateValueIncreased: bool => dispatch(updateValueIncreased(bool)),
+    updateChart: chartType => dispatch(updateChart(chartType)),
+})
 
 Chart.Tooltip.positioners.custom = (elements, position) => {
     if (elements.length === 0) return false;
@@ -34,18 +43,22 @@ class AccountSummaryHeader extends React.Component {
         this.state = {
             view: ONE_DAY,
             display: this.props.portfolioVal,
+            change: "",
         }
-        this.resetHeader = this.resetHeader.bind(this)
-        this.hideGraphView = this.hideGraphView.bind(this)
+        this.checkUpdate = true;
+        this.resetHeader = this.resetHeader.bind(this);
+        this.hideGraphView = this.hideGraphView.bind(this);
     }
 
     hideGraphView() {
         $(".graph-view").addClass("hidden");
+        this.checkUpdate = false;
     }
 
     resetHeader() {
         $(".graph-view").removeClass("hidden");
         $("#chartjs-tooltip").remove();
+        this.checkUpdate = true;
         this.setState({
             display: this.props.portfolioVal,
         })
@@ -57,7 +70,7 @@ class AccountSummaryHeader extends React.Component {
         let sign;
         let strChange = "";
         let percentage;
-        switch (this.state.view) {
+        switch (this.props.chartSelected) {
             case ONE_DAY:
                 pastVal = this.props.valueHistory.values.oneYear[this.props.valueHistory.values.oneYear.length - 2];
                 break;
@@ -83,6 +96,11 @@ class AccountSummaryHeader extends React.Component {
         let subtractor = pastVal;
         delta = subtractant - subtractor;
         this.delta = delta;
+        if (this.checkUpdate) {
+            if (this.props.valueIncreased != this.delta >= 0) {
+                this.props.updateValueIncreased(this.delta >= 0);
+            }
+        }
         sign = (delta < 0 ? "-" : "+");
         delta = Math.abs(delta);
         let base = (pastVal || this.props.startingCashBal);
@@ -91,11 +109,16 @@ class AccountSummaryHeader extends React.Component {
         strChange += sign;
         strChange += formatToDollar(delta);
         strChange += ` (${sign}${percentage}%)`;
+        if (this.state.change !== strChange) {
+            this.setState({
+                change: strChange,
+            })
+        }
         return strChange;
     }
 
     graphView() {
-        switch (this.state.view) {
+        switch (this.props.chartSelected) {
             case ONE_DAY:
                 return "Today";
             case ONE_WEEK:
@@ -220,13 +243,13 @@ class AccountSummaryHeader extends React.Component {
                 datasets: [
                     {
                         data: [],
-                        borderColor: (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)"),
+                        borderColor: (this.props.valueIncreased ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)"),
                         backgroundColor: "transparent",
                         borderWidth: 2,
                     },
                     {
                         data: [],
-                        borderColor: (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,0.5)" : "rgba(0,200,5,0.5)"),
+                        borderColor: (this.props.valueIncreased ? "rgba(0,200,5,0.5)" : "rgba(255,80,0,0.5)"),
                         backgroundColor: "transparent",
                         borderWidth: 2,
                     },
@@ -295,12 +318,13 @@ class AccountSummaryHeader extends React.Component {
     }
 
     componentDidUpdate() {
+        this.calcChange();
         let inMarketHoursData = [];
         let outMarketHoursData = [];
         let labels;
         let inMarketHoursPastVals = [];
         let outMarketHoursPastVals = [];
-        switch (this.state.view) {
+        switch (this.props.chartSelected) {
             case ONE_DAY:
                 let times = [];
                 let startTime = this.props.valueHistory.times.oneDay[0];
@@ -415,20 +439,25 @@ class AccountSummaryHeader extends React.Component {
         }
         this.lineChart.chart.options.scales.yAxes[0].ticks.max = Math.max(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined)) + 1
         this.lineChart.chart.options.scales.yAxes[0].ticks.min = Math.min(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined)) - 1
-        this.lineChart.data.datasets[0].borderColor = (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)");
-        this.lineChart.data.datasets[1].borderColor = (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,0.5)" : "rgba(0,200,5,0.5)");
+        this.lineChart.data.datasets[0].borderColor = (this.props.valueIncreased ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)");
+        this.lineChart.data.datasets[1].borderColor = (this.props.valueIncreased ? "rgba(0,200,5,0.5)" : "rgba(255,80,0,0.5)");
         this.lineChart.update();
     }
 
     generateChartChanger(field) {
         return e => {
             e.preventDefault();
-            $(".chart-selector-link-selected").removeClass("chart-selector-link-selected")
-            $(e.currentTarget).addClass("chart-selector-link-selected")
-            this.setState({
-                view: field,
-            })
+            this.props.updateChart(field);
         }
+    }
+
+    generateClassNames(type) {
+        let classNames = "chart-selector-link ";
+        classNames += (this.props.valueIncreased ? "dark-green-hover " : "red-hover ");
+        if (type === this.props.chartSelected) {
+            classNames += (this.props.valueIncreased ? "chart-selector-link-selected-green " : "chart-selector-link-selected-red ")
+        }
+        return classNames;
     }
 
     render() {
@@ -439,17 +468,17 @@ class AccountSummaryHeader extends React.Component {
                         this.props.portfolioVal :
                         this.state.display)}</h1>
                     <div className="account-summary-header-subinfo">
-                        <p>{this.calcChange()} <span className="graph-view">{this.graphView()}</span></p>
+                        <p>{this.state.change} <span className="graph-view">{this.graphView()}</span></p>
                     </div>
                 </header>
                 <canvas id="myChart" onMouseEnter={this.hideGraphView} onMouseLeave={this.resetHeader} width="676px" height="196px" display="block"></canvas>
                 <div className="chart-selector-spacer">
                     <div className="chart-selector-flex-container">
-                        <a className="chart-selector-link chart-selector-link-selected" onClick={this.generateChartChanger(ONE_DAY)}><div className="chart-selector-link-text">1D</div></a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_WEEK)}><div className="chart-selector-link-text">1W</div></a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_MONTH)}><div className="chart-selector-link-text">1M</div></a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(THREE_MONTH)}><div className="chart-selector-link-text">3M</div></a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_YEAR)}><div className="chart-selector-link-text">1Y</div></a>
+                        <a className={this.generateClassNames(ONE_DAY)} onClick={this.generateChartChanger(ONE_DAY)}><div className="chart-selector-link-text">1D</div></a>
+                        <a className={this.generateClassNames(ONE_WEEK)} onClick={this.generateChartChanger(ONE_WEEK)}><div className="chart-selector-link-text">1W</div></a>
+                        <a className={this.generateClassNames(ONE_MONTH)} onClick={this.generateChartChanger(ONE_MONTH)}><div className="chart-selector-link-text">1M</div></a>
+                        <a className={this.generateClassNames(THREE_MONTH)} onClick={this.generateChartChanger(THREE_MONTH)}><div className="chart-selector-link-text">3M</div></a>
+                        <a className={this.generateClassNames(ONE_YEAR)} onClick={this.generateChartChanger(ONE_YEAR)}><div className="chart-selector-link-text">1Y</div></a>
                     </div>
                 </div>
             </>
@@ -457,4 +486,4 @@ class AccountSummaryHeader extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(AccountSummaryHeader);
+export default connect(mapStateToProps, mapDispatchToProps)(AccountSummaryHeader);

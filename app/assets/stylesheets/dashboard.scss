@@ -36,10 +36,6 @@
     }
 }
 
-.dashboard-logo-link:hover {
-    color: $orange-red;
-}
-
 .search-bar-sizer {
     flex-basis: 480px;
     min-width: 160px;
@@ -124,10 +120,6 @@
     box-sizing: border-box;
     font-weight: 700;
     letter-spacing: 0.25px;
-}
-
-.navbar-link:hover {
-    color: $orange-red;
 }
 
 .navbar-link {
@@ -331,11 +323,12 @@
     padding-left: 0px;
 }
 
-.chart-selector-link:hover {
-    color: $dark-green;
-}
-
-.chart-selector-link-selected > .chart-selector-link-text {
+.chart-selector-link-selected-green > .chart-selector-link-text {
     color: $dark-green;
     border-bottom: 2px solid $green;
+}
+
+.chart-selector-link-selected-red > .chart-selector-link-text {
+    color: $red;
+    border-bottom: 2px solid $red;
 }
