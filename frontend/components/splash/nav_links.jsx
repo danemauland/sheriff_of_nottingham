@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "./logo"
+import Logo from "./logo";
 import { CgChevronDown, CgChevronUp } from "react-icons/cg";
 
 class NavLinks extends React.Component {

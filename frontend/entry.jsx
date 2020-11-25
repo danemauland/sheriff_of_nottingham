@@ -1,5 +1,4 @@
 // TODO
-// ADD MOBILE MENU ON SPLASH
 // ADD BADGE SYMBOL TO LOGIN/SIGNUP TO ALLOW NAVIGATION BACK TO SPLASH
 // add linkedig and github links
 // remove event handlers when component unmounts

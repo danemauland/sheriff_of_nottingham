@@ -1,6 +1,7 @@
 import React from "react";
 import SessionErrors from "./session_errors";
-import SessionAlternative from "./session_alternative"
+import SessionAlternative from "./session_alternative";
+import Logo from "./splash/logo";
 
 class AuthForm extends React.Component {
     constructor(props) {
@@ -38,7 +39,7 @@ class AuthForm extends React.Component {
                 <div className="auth-form-div">
                     <div className="inner-auth-form-div">
                         <form className="auth-form" onSubmit={this.handleSubmit}>
-                            <h3>Welcome to Sheriff of Nottingham</h3>
+                            <h3>Welcome to <Logo /></h3>
                             <div className="input-div">
                                 <label><p>Username</p>
                                     <input type="text"

@@ -32,12 +32,32 @@
     display: block;
     margin-top: 0em;
     h3 {
+        display: flex;
+        align-items: center;
+        text-align: center;
         font-size: 21px;
         font-weight: 500;
         line-height: 28px;
         margin-bottom: 12px;
     }
     
+    a.logo-link {
+        display: inline-flex;
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 28px;
+        align-items: center;
+        text-decoration: underline;
+        padding-left: 5px;
+        svg {
+            display: none;
+        }
+    }
+
+    .logo {
+        display: inline;
+    }
+
     .button-div {
         display: flex;
         justify-content: space-between;
@@ -129,6 +149,8 @@
         border-radius: 4px;
     }
 }
+
+
 
 .session-errors{
     font-weight: 700;
