@@ -413,8 +413,8 @@ class AccountSummaryHeader extends React.Component {
         for (let i = 0; i < labels.length; i++) {
             this.lineChart.data.labels.push(labels[i])
         }
-        this.lineChart.chart.options.scales.yAxes[0].ticks.max = Math.max(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined))
-        this.lineChart.chart.options.scales.yAxes[0].ticks.min = Math.min(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined))
+        this.lineChart.chart.options.scales.yAxes[0].ticks.max = Math.max(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined)) + 1
+        this.lineChart.chart.options.scales.yAxes[0].ticks.min = Math.min(...inMarketHoursData.concat(outMarketHoursData).concat(inMarketHoursPastVals).filter(ele => ele !== undefined)) - 1
         this.lineChart.data.datasets[0].borderColor = (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,1)" : "rgba(0,200,5,1)");
         this.lineChart.data.datasets[1].borderColor = (this.pastVal > this.props.portfolioVal ? "rgba(255,80,0,0.5)" : "rgba(0,200,5,0.5)");
         this.lineChart.update();
