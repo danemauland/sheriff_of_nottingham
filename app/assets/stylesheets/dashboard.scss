@@ -315,16 +315,27 @@
 }
 
 .chart-selector-link {
-    margin-right: 24px;
+    padding-right: 12px;
+    padding-left: 12px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.chart-selector-link-text {
     padding-bottom: 10px;
     border-bottom: 2px solid transparent;
+    box-sizing: border-box;
+}
+
+.chart-selector-link:first-child {
+    padding-left: 0px;
 }
 
 .chart-selector-link:hover {
     color: $dark-green;
 }
 
-.chart-selector-link-selected {
+.chart-selector-link-selected > .chart-selector-link-text {
     color: $dark-green;
     border-bottom: 2px solid $green;
 }

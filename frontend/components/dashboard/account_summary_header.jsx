@@ -424,7 +424,7 @@ class AccountSummaryHeader extends React.Component {
         return e => {
             e.preventDefault();
             $(".chart-selector-link-selected").removeClass("chart-selector-link-selected")
-            $(e.target).addClass("chart-selector-link-selected")
+            $(e.currentTarget).addClass("chart-selector-link-selected")
             this.setState({
                 view: field,
             })
@@ -445,11 +445,11 @@ class AccountSummaryHeader extends React.Component {
                 <canvas id="myChart" onMouseEnter={this.hideGraphView} onMouseLeave={this.resetHeader} width="676px" height="196px" display="block"></canvas>
                 <div className="chart-selector-spacer">
                     <div className="chart-selector-flex-container">
-                        <a className="chart-selector-link chart-selector-link-selected" onClick={this.generateChartChanger(ONE_DAY)}>1D</a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_WEEK)}>1W</a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_MONTH)}>1M</a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(THREE_MONTH)}>3M</a>
-                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_YEAR)}>1Y</a>
+                        <a className="chart-selector-link chart-selector-link-selected" onClick={this.generateChartChanger(ONE_DAY)}><div className="chart-selector-link-text">1D</div></a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_WEEK)}><div className="chart-selector-link-text">1W</div></a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_MONTH)}><div className="chart-selector-link-text">1M</div></a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(THREE_MONTH)}><div className="chart-selector-link-text">3M</div></a>
+                        <a className="chart-selector-link" onClick={this.generateChartChanger(ONE_YEAR)}><div className="chart-selector-link-text">1Y</div></a>
                     </div>
                 </div>
             </>
