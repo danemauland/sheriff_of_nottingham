@@ -1,8 +1,8 @@
 class Api::CashTransactionsController < ApplicationController
     def create
-        params = cash_transactions_params
-        params.created_at = Time.at(params.createdAt).to_datetime.to_s
-        @transaction = current_user.cash_transactions.new(cash_transactions_params)
+        mapped_params = cash_transaction_params
+        mapped_params[:created_at] = Time.at(mapped_params[:created_at].to_i / 1000).to_datetime.to_s
+        @transaction = current_user.cash_transactions.new(mapped_params)
         if @transaction.save
             render :show
         end
@@ -12,7 +12,7 @@ class Api::CashTransactionsController < ApplicationController
         @transaction = current_user.cash_transactions
     end
 
-    def cash_transactions_params
-        params.require(:cash_transactions).permit(:amount, :createdAt)
+    def cash_transaction_params
+        params.require(:cash_transaction).permit(:amount, :created_at)
     end
 end

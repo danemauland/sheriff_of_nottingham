@@ -18,6 +18,7 @@ import * as sessionAPIUtil from "./util/session_api_util";
 import {login} from "./actions/session_actions";
 import { fetchCandles, fetchQuote } from "./actions/external_api_actions";
 const finnhub = require('finnhub');
+import {postCashTransaction} from "./util/cash_transactions_api_util";
 // END TESTING
 
 Date.prototype.stdTimezoneOffset = function () {
@@ -59,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.fetchQuote = fetchQuote;
     const api_key = finnhub.ApiClient.instance.authentications['api_key'];
     api_key.apiKey = window.finnhubAPIKey;
-    window.finnhubClient = new finnhub.DefaultApi()
+    window.finnhubClient = new finnhub.DefaultApi();
+    window.postCashTransaction = postCashTransaction;
     //END TESTING
 });
