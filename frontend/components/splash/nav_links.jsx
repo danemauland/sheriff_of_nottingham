@@ -73,8 +73,8 @@ class NavLinks extends React.Component {
                         <span>
                             <button className="green-hover" onClick={this.addClickHandler("about")}>About Me {this.state.selected === "about" ? <CgChevronUp /> : <CgChevronDown />}</button>
                             <ul className="about-list">
-                                <li className="green-hover"><a href="#">LinkedIn</a></li>
-                                <li className="green-hover"><a href="#">Github</a></li>
+                                <li className="green-hover"><a target="_blank" href="https://www.linkedin.com/in/dane-m-63a34412a/">LinkedIn</a></li>
+                                <li className="green-hover"><a target="_blank" href="https://github.com/danemauland">Github</a></li>
                             </ul>
                         </span>
                     </div>
