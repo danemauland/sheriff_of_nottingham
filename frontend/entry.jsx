@@ -1,13 +1,12 @@
 // TODO
 // remove event handlers when component unmounts
 // ADD SEPARATE SIGNUP PAGE
-// Clicking free stocks creates a pop up saying they're all free
+// Change free stocks to random stocks
 // Clicking cash expands buying power to show cash bal options
 // loading screen
 // Add in messages/trade confirms
 // history
 // search dropdown
-// dynamic coloring based on increase/decrease in value
 // 
 import React from "react";
 import ReactDOM from "react-dom";
