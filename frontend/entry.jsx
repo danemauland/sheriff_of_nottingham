@@ -9,10 +9,11 @@
 // Clicking cash expands buying power to show cash bal options
 // loading screen
 // Add in messages/trade confirms
-// tab header
+// links change color if up or down
 // history
 // search dropdown
 // dynamic coloring based on increase/decrease in value
+// 
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";

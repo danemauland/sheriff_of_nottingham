@@ -18,8 +18,6 @@ class NavLinks extends React.Component {
         return e => {
             let tar = $(e.target);
             while (tar.is("path") || tar.is("svg")) { tar = tar.parent() }
-            // console.log(e.target);
-            // console.log(tar);
             if (!tar.hasClass("extended")) {
                 $(".splash-nav").addClass("nested-links");
                 $(".extended").removeClass("extended");
@@ -54,7 +52,7 @@ class NavLinks extends React.Component {
             <div className="nav-bar-wrapper">
                 <div className="splash-nav-links-div">
                     <Logo />
-                    <div className="dropdowns small-menu hidden">
+                    <div className="dropdowns small-menu hidden-1024">
                         <span>
                             <button className="green-hover" onClick={this.addClickHandler("products")}>Products {this.state.selected === "products" ? <CgChevronUp /> : <CgChevronDown />}</button>
                             <ul className="product-list">

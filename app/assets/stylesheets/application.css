@@ -51,7 +51,7 @@
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .orange-red {
@@ -60,4 +60,10 @@
 
 .orange-red.orange-red-bottom-border {
   border-bottom: 2px solid rgb(255,80,0);
+}
+
+@media (max-width: 1023px) {
+  .hidden-1024 {
+    display: none !important;
+  }
 }

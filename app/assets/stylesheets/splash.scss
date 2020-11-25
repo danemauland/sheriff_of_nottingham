@@ -11,7 +11,7 @@
 }
 
 nav.nested-links {
-    height: 128px;
+    height: 64px;
 }
 
 .splash-nav-div {
@@ -34,46 +34,6 @@ nav.nested-links {
     }
     align-items: center;
 }
-
-.extended + ul {
-    display: flex;
-    align-items: center;
-    height: 64px;
-    position: absolute;
-    top: 64px;
-    li {
-        margin-top: 0px;
-        margin-left: 30px;
-        display: inline-block;
-        font-size: 18px;
-        font-style: normal;
-        font-weight: normal;
-        line-height: 28px;
-        letter-spacing: -0.25px;
-        color: black;
-    }
-    li:first-of-type {
-        margin-left: 0px;
-    }
-    .crypto-li {
-        padding-left: 30px;
-        border-left: 1px solid black;
-        color: rgb(218,65,107)
-    }
-}
-
-// .dropdowns {
-//     position: fixed;
-//     top: 64px;
-//     left: 0px;
-//     right: 0px;
-//     bottom: 0px;
-//     background-color: white;
-//     padding: 30px;
-//     span {
-
-//     }
-// }
 
 .logo-link {
     display: flex;
@@ -306,7 +266,94 @@ nav.nested-links {
     }
 }
 
+.dropdowns {
+    position: fixed;
+    top: 64px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: white;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    span {
+        margin-left: 0;
+        margin-top: 20px;
+        button {
+            padding: 12px 18px;
+            width: 100%;
+            background-color: $very-light-gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: normal;
+            word-spacing: normal;
+            text-transform: none;
+            box-sizing: border-box;
+            margin: 0px;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 28px;
+        }
+    }
+}
+
+.extended + ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    padding: 0px 0px 12px 32px;
+    
+    li {
+        display: block;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 28px;
+        letter-spacing: -0.25px;
+        color: black;
+        margin-top: 20px;
+        padding: 0px;
+        width: 100%;
+
+        a {
+            display: inline-block;
+            width: 100%;
+        }
+    }
+    .crypto-li {
+        color: rgb(218,65,107);
+        padding-top: 20px;
+        border-top: 1px solid $pretty-light-gray;
+    }
+}
+
 @media (min-width: 1024px) {
+    .extended + ul {
+        flex-direction: row;
+        align-items: center;
+        position: absolute;
+        height: 64px;
+        top: 64px;
+        padding: 0px;
+        li {
+            display: inline-block;
+            margin-top: 0px;
+            margin-left: 30px;
+            width: auto;
+        }
+        li:first-of-type {
+            margin-left: 0px;
+        }
+        .crypto-li {
+            padding-left: 30px;
+            border-left: 1px solid black;
+            padding-top: 0px;
+        }
+    }
+
     .header-button-div {
         display: flex;
         margin: 20px 0;
@@ -314,27 +361,19 @@ nav.nested-links {
         justify-content: flex-start;
     }
     div.dropdowns {
-        display: flex;
-        position: none;
+        flex-direction: row;
         top: 0px;
         padding: 0px;
         margin-block-start: 1em;
         margin-block-end: 1em;
+        position: static;
         span {
+            margin-top: 0;
             margin-left: 48px;
         }
         button {
-            letter-spacing: normal;
-            word-spacing: normal;
-            text-transform: none;
-            box-sizing: border-box;
-            margin: 0em;
-            font-size: 18px;
-            font-style: normal;
-            font-weight: normal;
-            line-height: 28px;
-            display: flex;
-            align-items: center;
+            padding: 0;
+            background-color: white;
         :first-child {
             padding-left: 6px;
             }
@@ -345,5 +384,8 @@ nav.nested-links {
     }
     .menu-icon {
         display: none;
+    }
+    nav.nested-links {
+        height: 124px;
     }
 }
