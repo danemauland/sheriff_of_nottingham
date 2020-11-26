@@ -38,7 +38,9 @@ export default (state = defaultState, action) => {
     switch (action.type) {
         case UPDATE_CASH_HISTORY:
         case INITIALIZE_ASSETS:
-            const merged = mergeTransactions(action.cashTransactions, action.trades)
+            const sortedCashTransactions = [...action.cashTransactions].sort((a, b) => a.createdAt - b.createdAt);
+            const sortedTrades = [...action.trades].sort((a, b) => a.createdAt - b.createdAt)
+            const merged = mergeTransactions(sortedCashTransactions, sortedTrades)
             const newState = {times: [...merged.times], balances: []};
 
             merged.amounts.forEach((amount, i) => {

@@ -379,7 +379,7 @@
 .cash-form-div {
     visibility: hidden;
     opacity: 0;
-    transition: visiblity 0s, opacity 0.4s ease;
+    transition: visiblity 0s, opacity 0.4s ease, padding-top 400ms ease 0s, padding 400ms ease 0s;
     padding: 24px;
 }
 
@@ -390,11 +390,6 @@
 
 .cash-deposit-toggle-wrapper {
  margin: 0 6px;
-}
-
-.cash-deposit-toggle-container > button {
-    transition: color 0.4s ease;
-    margin-bottom: 24px;
 }
 
 .cash-buttons {
@@ -409,7 +404,13 @@
     border-radius: 24px;
     font-size: 15px;
     line-height: 20px;
-    transition: background-color 0.4s ease;
+    transition: 0.4s ease;
+    
+}
+
+.cash-button:hover {
+    transition: 0s;
+    opacity: 0.8;
 }
 
 .cash-button > span {
@@ -420,10 +421,26 @@
 .cash-toggles-container {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 24px;
+    button {
+        transition: color 0.4s ease;
+    }
 }
 
 .cash-options-toggle-container {
     button {
         transition: color 0.4s ease;        
     }
+}
+
+.cash-form-options-div {
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.4s ease;
+    padding: 24px;
+}
+
+.cash-form-options-div-expanded {
+    visibility: visible;
+    opacity: 1;
 }

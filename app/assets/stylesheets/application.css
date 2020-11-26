@@ -50,7 +50,15 @@
   color: rgb(0,180,5);
 }
 
+.dark-green-hover.hovered{
+  color: rgb(0,180,5);
+}
+
 .red-hover:hover{
+  color: rgb(255,80,0);
+}
+
+.red-hover.hovered{
   color: rgb(255,80,0);
 }
 
@@ -143,4 +151,6 @@ input:checked + .slider:before {
 
 .no-height {
   height: 0;
+  padding: 0;
+  margin: 0;
 }

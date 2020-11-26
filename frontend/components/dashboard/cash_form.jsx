@@ -34,6 +34,8 @@ class Cash extends React.Component {
         this.setDeposit = this.setDeposit.bind(this);
         this.setWithdraw = this.setWithdraw.bind(this);
         this.toggleExpandedOptions = this.toggleExpandedOptions.bind(this);
+        this.mouseEnterSiblings = this.mouseEnterSiblings.bind(this);
+        this.mouseLeaveSiblings = this.mouseLeaveSiblings.bind(this);
     }
     
     handleClick(e) {
@@ -70,6 +72,7 @@ class Cash extends React.Component {
         };
         const amount = parseInt(strNum) * 100;
         return e => {
+            e.preventDefault();
             this.props.postCashTransaction({
                 amount: amount * (this.state.deposit ? 1 : -1),
                 created_at: new Date().getTime() - (24 * 60 *60 * 1000), //ADJUSTMENT FOR TESTING DURING THANKSGIVING, REMOVE THE ONE DAY OFFSET
@@ -78,9 +81,20 @@ class Cash extends React.Component {
     }
 
     toggleExpandedOptions(e) {
+        if ($(e.target).is("button")) {e.preventDefault()}
         this.setState({
             expandedOptions: !this.state.expandedOptions,
         })
+        $(".cash-form-options-div").toggleClass("no-height")
+        $(".cash-form-options-div").toggleClass("cash-form-options-div-expanded")
+    }
+
+    mouseEnterSiblings(e) {
+        $(e.currentTarget).siblings().addClass("hovered")
+    }
+
+    mouseLeaveSiblings(e) {
+        $(e.currentTarget).siblings().removeClass("hovered")
     }
 
     render() {
@@ -89,7 +103,7 @@ class Cash extends React.Component {
                 <div className="cash-toggles-container">
                     <div className="cash-deposit-toggle-container">
                         <button onClick={this.setDeposit} className={this.state.deposit ? "" : "dark-green-hover black"}>Deposit</button>
-                        <span className="cash-deposit-toggle-wrapper">
+                        <span className="cash-deposit-toggle-wrapper" onMouseEnter={this.mouseEnterSiblings} onMouseLeave={this.mouseLeaveSiblings}>
                             <label className="switch" id="cash-deposit-toggle">
                                 <input type="checkbox" onClick={this.toggleDeposit}/>
                                 <span className="slider"></span>
@@ -98,8 +112,8 @@ class Cash extends React.Component {
                         <button onClick={this.setWithdraw} className={this.state.deposit ? "red-hover black" : ""}>Withdraw</button>
                     </div>
                     <div className="cash-options-toggle-container">
-                        <button className={this.state.expandedOptions ? "red-hover" : "dark-green-hover black"} onClick={this.toggleExpandedOptions}>Expanded Options</button>
-                        <span className="cash-deposit-toggle-wrapper">
+                        <button className={this.state.expandedOptions ? "dark-green-hover" : "red-hover black"} onClick={this.toggleExpandedOptions}>Expanded Options</button>
+                        <span className="cash-deposit-toggle-wrapper" onMouseEnter={this.mouseEnterSiblings} onMouseLeave={this.mouseLeaveSiblings}>
                             <label className="switch" id="cash-deposit-toggle">
                                 <input type="checkbox" checked={!this.state.expandedOptions} onChange={this.toggleExpandedOptions}/>
                                 <span className="slider"></span>
@@ -115,6 +129,9 @@ class Cash extends React.Component {
                     <button className={"cash-button rounded-button " + (this.state.deposit ? "dark-green-background" : "red-background")} onClick={this.generateClickHandler(TEN_THOUSAND)}>{<span>{(this.state.deposit ? "+" : "-")}</span>}{"$" + TEN_THOUSAND}</button>
                     <button className={"cash-button rounded-button " + (this.state.deposit ? "dark-green-background" : "red-background")} onClick={this.generateClickHandler(HUNDRED_THOUSAND)}>{<span>{(this.state.deposit ? "+" : "-")}</span>}{"$" + HUNDRED_THOUSAND}</button>
                     <button className={"cash-button rounded-button " + (this.state.deposit ? "dark-green-background" : "red-background")} onClick={this.generateClickHandler(MILLION)}>{<span>{(this.state.deposit ? "+" : "-")}</span>}{"$" + MILLION}</button>
+                </div>
+                <div className="cash-form-options-div no-height">
+
                 </div>
             </form>
         )

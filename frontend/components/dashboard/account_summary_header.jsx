@@ -42,7 +42,7 @@ class AccountSummaryHeader extends React.Component {
         super(props)
         this.state = {
             view: ONE_DAY,
-            display: this.props.portfolioVal,
+            display: undefined,
             change: "",
         }
         this.checkUpdate = true;
@@ -60,7 +60,7 @@ class AccountSummaryHeader extends React.Component {
         $("#chartjs-tooltip").remove();
         this.checkUpdate = true;
         this.setState({
-            display: this.props.portfolioVal,
+            display: undefined,
         })
     }
 

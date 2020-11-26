@@ -19,6 +19,7 @@ const mergeHistories = (cashHistory, values, times) => {
             valuesPointer++;
         }
     }
+    debugger;
     return totals;
 }
 
