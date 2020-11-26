@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 trades: [...window.currentUser.trades],
             }
         }
-        debugger;
         store = configureStore(preloadedState);
         delete window.currentUser;
     } else { store = configureStore() }

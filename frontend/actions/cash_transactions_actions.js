@@ -3,14 +3,14 @@ import {receiveCashTransactionErrors} from "./cash_transactions_errors_actions";
 
 export const RECEIVE_CASH_TRANSACTION = 'RECEIVE_CASH_TRANSACTION';
 
-const receiveCashTransaction = transaction => ({
+const receiveCashTransaction = cashTransaction => ({
     type: RECEIVE_CASH_TRANSACTION,
-    transaction,
+    cashTransaction,
 })
 
 export const postCashTransaction = transaction => dispatch => {
     cashTransactionsAPIUtil.postCashTransaction(transaction).then(
-        transaction => dispatch(receiveCashTransaction(transaction)),
+        cashTransaction => dispatch(receiveCashTransaction(cashTransaction)),
         errors => dispatch(receiveCashTransactionErrors(errors.responseJSON))
     )
 }

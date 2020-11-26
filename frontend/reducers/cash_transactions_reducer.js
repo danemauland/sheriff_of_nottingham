@@ -14,7 +14,7 @@ export default (state = defaultState, action) => {
             return newState;
         case RECEIVE_CASH_TRANSACTION:
             newState = [...state];
-            newState.push(action.transaction);
+            newState.push(action.cashTransaction);
             newState.sort((a, b) => a.createdAt - b.createdAt);
             return newState;
         case LOGOUT_CURRENT_USER:

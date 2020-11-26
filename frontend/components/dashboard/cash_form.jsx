@@ -65,11 +65,13 @@ class Cash extends React.Component {
     generateClickHandler(field) {
         let strNum = "";
         for (let i = 0; i < field.length; i++) {
-            if (field[i] === ",") {num += field[i]}
+            if (field[i] !== ",") {strNum += field[i]}
         };
-        const amount = parseInt(strNum);
+        const amount = parseInt(strNum) * 100;
         return e => {
-            this.props.postCashTransaction({amount})
+            this.props.postCashTransaction({amount,
+                created_at: new Date().getTime(),
+            })
         }
     }
 

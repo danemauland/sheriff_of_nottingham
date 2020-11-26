@@ -1,5 +1,3 @@
-json.cashTransaction do
-    json.id @transaction.id
-    json.amount @transaction.amount
-    json.createdAt @transaction.created_at
-end
+json.id @transaction.id
+json.amount @transaction.amount
+json.createdAt @transaction.created_at.to_f * 1000
