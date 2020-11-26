@@ -1,5 +1,7 @@
 import React from "react";
-import AccountSummary from "./account_summary"
+import AccountSummary from "./account_summary";
+import Cash from "./cash";
+
 class DashboardContent extends React.Component {
     constructor(props) {
         super(props)
@@ -9,6 +11,7 @@ class DashboardContent extends React.Component {
         return (
             <div className="dashboard-main-content">
                 <AccountSummary />
+                <Cash />
             </div>
         )
     }

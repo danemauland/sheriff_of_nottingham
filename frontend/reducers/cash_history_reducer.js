@@ -1,5 +1,6 @@
 import {INITIALIZE_ASSETS} from "../actions/external_api_actions.js";
 import {LOGOUT_CURRENT_USER} from "../actions/session_actions.js";
+import {UPDATE_CASH_HISTORY} from "../actions/summary_actions";
 
 const mergeTransactions = (cash, trades) => {
     let cashPointer = 0;
@@ -35,6 +36,7 @@ const defaultState = {times: [], balances: []};
 export default (state = defaultState, action) => {
     Object.freeze(state)
     switch (action.type) {
+        case UPDATE_CASH_HISTORY:
         case INITIALIZE_ASSETS:
             const merged = mergeTransactions(action.cashTransactions, action.trades)
             const newState = {times: [...merged.times], balances: []};

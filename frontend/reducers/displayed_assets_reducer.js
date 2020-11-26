@@ -194,7 +194,6 @@ export default (state = defaultState, action) => {
                 newState[action.ticker].prices.oneDay,
                 newState[action.ticker].ownershipHistory
             );
-            newState[action.ticker].MATERIAL_CHANGE = true;
             return newState;
         case RECEIVE_WEEKLY_CANDLES:
             newState = {...state};
@@ -209,7 +208,6 @@ export default (state = defaultState, action) => {
                 newState[action.ticker].prices.oneWeek,
                 newState[action.ticker].ownershipHistory
             );
-            newState[action.ticker].MATERIAL_CHANGE = true;
             return newState;
         case RECEIVE_ANNUAL_CANDLES:
             newState = {...state};
@@ -225,15 +223,11 @@ export default (state = defaultState, action) => {
                 newState[action.ticker].prices.oneYear,
                 newState[action.ticker].ownershipHistory
             );
-            newState[action.ticker].MATERIAL_CHANGE = true;
             return newState;
         case RECEIVE_QUOTE:
-            return Object.assign({}, state, {[action.ticker]:
+            return (Object.assign({}, state, {[action.ticker]:
                 Object.assign({}, state[action.ticker], {currentPrice: Math.floor(100*action.quote.c)})})
-        case UPDATE_SUMMARY_VALUE_HISTORY:
-            newState = {...state};
-            Object.keys(newState).forEach(key => newState[key].MATERIAL_CHANGE = false);
-            return newState;
+            )
         default:
             return state;
     }

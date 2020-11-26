@@ -5,7 +5,7 @@ import {fetchCandles,
 RECEIVE_WEEKLY_CANDLES,
 RECEIVE_ANNUAL_CANDLES,
 } from "../../actions/external_api_actions";
-import {updateSummaryValueHistory} from "../../actions/summary_actions"
+import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
 import DashboardContent from "./dashboard_content";
 import Sidebar from "./sidebar";
@@ -19,6 +19,7 @@ const mapDispatchToProps = dispatch => ({
         initializeAssets: trades => dispatch(initializeAssets(trades)),
         fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
         updateSummaryValueHistory: state => dispatch(updateSummaryValueHistory(state)),
+        updateCashHistory: state => dispatch(updateCashHistory(state)),
 });
 
 class Dashboard extends React.Component {
@@ -47,15 +48,11 @@ class Dashboard extends React.Component {
                 }
             })
         } else {
-            let breakLoop = false;
-            Object.values(this.props.displayedAssets).forEach(asset => {
-                if (!breakLoop) {
-                    if (asset.MATERIAL_CHANGE) {
-                        breakLoop = true;
-                        this.props.updateSummaryValueHistory(this.props.state);
-                    }
-                }
-            })
+            if (this.props.state.ui.updatesNeeded.cashHistory) {
+                this.props.updateCashHistory(this.props.state);
+            } else if (this.props.state.ui.updatesNeeded.valueHistory) {
+                this.props.updateSummaryValueHistory(this.props.state);
+            }
         }
         this.timesComponentUpdated++
     }

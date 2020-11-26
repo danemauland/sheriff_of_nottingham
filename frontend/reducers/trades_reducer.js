@@ -8,10 +8,7 @@ export default (state = defaultState, action) => {
     Object.freeze(state)
     switch (action.type) {
         case RECEIVE_CURRENT_USER:
-            const newState = [...action.user.trades];
-            newState.forEach(trade => {
-                trade.createdAt = new Date(trade.createdAt)
-            });
+            const newState = [...action.user.trades].sort((a, b) => a.createdAt - b.createdAt);
             return newState;
         case LOGOUT_CURRENT_USER:
             return defaultState;

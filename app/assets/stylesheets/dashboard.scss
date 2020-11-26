@@ -232,7 +232,7 @@
 }
 
 .dashboard-sidebar-spacer {
-    flex: 0 0 27.77778%;
+    flex: 0 0 25%;
     padding-left: 6px;
     padding-right: 6px;
 }
@@ -331,4 +331,67 @@
 .chart-selector-link-selected-red > .chart-selector-link-text {
     color: $red;
     border-bottom: 2px solid $red;
+}
+
+.cash-spacer {
+    margin-bottom: 60px;
+    margin-top: -4px;
+}
+
+.cash-container {
+    box-sizing: border-box;
+    border-radius: 4px;
+    transition: background-color 400ms ease 0s, box-shadow 400ms ease 0s, margin-bottom 400ms ease 0s;
+    margin: 0 -24px 12px -24px;
+}
+
+.cash-container-expanded {
+    background-color: $darker-gray;
+}
+
+.cash-expander-button {
+    border-radius: 4px;
+    padding: 0 24px;
+    width: 100%;
+}
+
+.cash-expander-button:hover {
+    background-color: $darker-gray;
+}
+
+.cash-button-clicked {
+    background-color: $darkish-gray !important;
+}
+
+.cash-button-expanded {
+    background-color: $darker-gray;
+}
+
+.cash-button-text-container {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 15px;
+    border-bottom: 1px solid $darkish-gray;
+    padding: 24px 0;
+}
+
+.cash-form-div {
+    visibility: hidden;
+    opacity: 0;
+    transition: visiblity 0s, opacity 0.4s ease;
+    padding: 24px;
+}
+
+.cash-form-div-expanded {
+    visibility: visible;
+    opacity: 1;
+}
+
+.cash-deposit-toggle-wrapper {
+ margin: 0 6px;
+}
+
+.cash-deposit-toggle-container > button {
+    transition: color 0.4s ease;
 }
