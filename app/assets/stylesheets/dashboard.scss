@@ -380,7 +380,7 @@
     visibility: hidden;
     opacity: 0;
     transition: visiblity 0s, opacity 0.4s ease, padding-top 400ms ease 0s, padding 400ms ease 0s;
-    padding: 24px;
+    padding: 24px 24px 0 24px;
 }
 
 .cash-form-div-expanded {
@@ -395,6 +395,7 @@
 .cash-buttons {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 24px;
 }
 
 .cash-buttons > .cash-button {
@@ -437,10 +438,32 @@
     visibility: hidden;
     opacity: 0;
     transition: 0.4s ease;
-    padding: 24px;
+    padding: 24px 0;
+    border-top: 1px solid $darkishish-gray;
 }
 
 .cash-form-options-div-expanded {
     visibility: visible;
     opacity: 1;
+}
+
+.cash-form-options-div {
+    display: flex;
+    justify-content: space-between;
+    input {
+        margin-left: 12px;
+    }
+}
+
+.dollar-input {
+    background-color: $darkish-gray;
+    border: 1px solid $darkish-gray;
+    font-weight: 400;
+    text-align: right;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 0 12px;
+    transition: border-color 0.2s ease;
+    height: 36px;
+    width: 136px;
 }

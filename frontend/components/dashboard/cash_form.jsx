@@ -1,6 +1,7 @@
 import React from "react";
 import {postCashTransaction} from "../../actions/cash_transactions_actions";
 import {connect} from "react-redux";
+import {formatToDollar} from "../../util/dashboard_calcs";
 
 const ONE = "1";
 const TEN = "10";
@@ -25,8 +26,9 @@ class Cash extends React.Component {
             expanded: false,
             transaction: {
                 createdAt: "",
-                amount: 0,
+                amount: "",
             },
+            numDecimals: 0,
             deposit: true,
             expandedOptions: false,
         }
@@ -36,6 +38,7 @@ class Cash extends React.Component {
         this.toggleExpandedOptions = this.toggleExpandedOptions.bind(this);
         this.mouseEnterSiblings = this.mouseEnterSiblings.bind(this);
         this.mouseLeaveSiblings = this.mouseLeaveSiblings.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
     
     handleClick(e) {
@@ -97,6 +100,31 @@ class Cash extends React.Component {
         $(e.currentTarget).siblings().removeClass("hovered")
     }
 
+    handleChange(e) {
+        const val = e.target.value;
+        if (val === "$") {this.setState({transaction: {amount: ""}}); return;}
+        const allowableChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
+        let numStr = "";
+        let numDecimals = 0;
+        for(let i = 0; i < val.length; i++) {
+            if (allowableChars.includes(val[i])) {
+                if (numDecimals === 0) {
+                    numStr += val[i]
+                    if (val[i] === ".") {numDecimals = -1}
+                } else if (val[i] !== ".") {
+                    numStr += val[i]
+                    if (numDecimals === -1) {
+                        numDecimals = 1;
+                    } else if (numDecimals === 1) {
+                        numDecimals = 2;
+                    }
+                }
+            }
+        }
+        const amount = parseInt(numStr) * 100;
+        this.setState({transaction: {amount}, numDecimals})
+    }
+
     render() {
         return (
             <form>
@@ -131,7 +159,9 @@ class Cash extends React.Component {
                     <button className={"cash-button rounded-button " + (this.state.deposit ? "dark-green-background" : "red-background")} onClick={this.generateClickHandler(MILLION)}>{<span>{(this.state.deposit ? "+" : "-")}</span>}{"$" + MILLION}</button>
                 </div>
                 <div className="cash-form-options-div no-height">
-
+                    <label>Amount<input type="text" placeholder="$0.00" className="dollar-input" onChange={this.handleChange} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
+                    <label>Time<input type="datetime-local"/></label>
+                    <button>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
                 </div>
             </form>
         )
