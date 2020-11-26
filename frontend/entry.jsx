@@ -7,7 +7,7 @@
 // Add in messages/trade confirms
 // history
 // search dropdown
-// 
+// reflect changes in cash balance outside market hours for the day
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";

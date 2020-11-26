@@ -394,4 +394,36 @@
 
 .cash-deposit-toggle-container > button {
     transition: color 0.4s ease;
+    margin-bottom: 24px;
+}
+
+.cash-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cash-buttons > .cash-button {
+    height: 36px;
+    min-width: 72px;
+    padding: 0 18px;
+    border-radius: 24px;
+    font-size: 15px;
+    line-height: 20px;
+    transition: background-color 0.4s ease;
+}
+
+.cash-button > span {
+    width: 8px;
+    text-align: right;
+}
+
+.cash-toggles-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cash-options-toggle-container {
+    button {
+        transition: color 0.4s ease;        
+    }
 }
