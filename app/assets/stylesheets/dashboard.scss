@@ -447,17 +447,21 @@
     border-top: 1px solid $darkishish-gray;
 }
 
+.cash-form-options-wrapper {
+    display: flex;
+    justify-content: space-between;
+    input {
+        margin-left: 9px;
+    }
+}
+
 .cash-form-options-div-expanded {
     visibility: visible;
     opacity: 1;
 }
 
 .cash-form-options-div {
-    display: flex;
-    justify-content: space-between;
-    input {
-        margin-left: 9px;
-    }
+    
 }
 
 .dollar-input {

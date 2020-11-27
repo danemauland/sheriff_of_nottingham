@@ -95,7 +95,7 @@ class Cash extends React.Component {
             e.preventDefault();
             this.props.postCashTransaction({
                 amount: amount * (this.state.deposit ? 1 : -1),
-                created_at: new Date().getTime() - (24 * 60 *60 * 1000), //ADJUSTMENT FOR TESTING DURING THANKSGIVING, REMOVE THE ONE DAY OFFSET
+                created_at: new Date().getTime(),
             })
         }
     }
@@ -163,7 +163,7 @@ class Cash extends React.Component {
             this.setState({datetimeError: false});
             this.props.postCashTransaction({
                 amount: this.state.transaction.amount * (this.state.deposit ? 1 : -1),
-                created_at: datetime - (24 * 60 *60 * 1000), //ADJUSTMENT FOR TESTING DURING THANKSGIVING, REMOVE THE ONE DAY OFFSET
+                created_at: datetime,
             })
         }
     }
@@ -208,10 +208,12 @@ class Cash extends React.Component {
                     <button className={"cash-button rounded-button " + (this.state.deposit ? "dark-green-background" : "red-background")} onClick={this.generateClickHandler(MILLION)}>{<span>{(this.state.deposit ? "+" : "-")}</span>}{"$" + MILLION}</button>
                 </div>
                 <div className="cash-form-options-div no-height">
-                    <label>Amount<input type="text" placeholder="$0.00" className={"dollar-input " + (this.state.deposit ? "dark-green-border-focus" : "red-border-focus")} onChange={this.handleChange} onBlur={this.handleBlur} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
-                    <label>Date<input type="date" id="cash-option-date" cursor="pointer" className={"cash-form-date " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleDateChange}/></label>
-                    <label>Time<input type="time" id="cash-option-time" cursor="pointer" className={"cash-form-time " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleTimeChange} step="60"/></label>
-                    <button className={"rounded-button cash-option-submit " + (this.state.deposit ? "dark-green-background" : "red-background")}>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
+                    <div className="cash-form-options-wrapper">
+                        <label>Amount<input type="text" placeholder="$0.00" className={"dollar-input " + (this.state.deposit ? "dark-green-border-focus" : "red-border-focus")} onChange={this.handleChange} onBlur={this.handleBlur} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
+                        <label>Date<input type="date" id="cash-option-date" cursor="pointer" className={"cash-form-date " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleDateChange}/></label>
+                        <label>Time<input type="time" id="cash-option-time" cursor="pointer" className={"cash-form-time " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleTimeChange} step="60"/></label>
+                        <button className={"rounded-button cash-option-submit " + (this.state.deposit ? "dark-green-background" : "red-background")}>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
+                    </div>
                     {this.state.datetimeError ? <div className="cash-submit-error-wrapper"><div className="cash-submit-error red">You can only travel backwards in time, not forwards</div></div> : <></>}
                 </div>
             </form>

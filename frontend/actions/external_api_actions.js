@@ -66,9 +66,6 @@ const getStartTime = () => { //daylight savings adjustment made, but it will be 
     const day = startTime.getUTCDay();
     if (day === 6) {startTime.setUTCDate(startTime.getUTCDate() - 1)}
     else if (day === 0) { startTime.setUTCDate(startTime.getUTCDate() - 2)};
-    startTime.setUTCDate(startTime.getUTCDate() - 1) ///ADJUSTMENT TO STILL GET DATA WHILE
-    /// I WORK ON THIS DURING THANKSGIVING. THIS NEEDS TO BE REMOVED, ALONG WITH THE CHANGE
-    // IN CASH_FORM.JS COMPONENT
     return dstAdjustment(startTime);
 }
 
