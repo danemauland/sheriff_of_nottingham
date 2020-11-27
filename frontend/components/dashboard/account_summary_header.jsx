@@ -174,10 +174,11 @@ class AccountSummaryHeader extends React.Component {
         }
     }
 
-    formatDateTime(date) {
+    formatDateTime(date, includeTime = true) {
         const month = this.parseMonth(date);
         const day = date.getDate();
-        return `${month} ${day}, ${this.formatTime(date)}`
+        if (includeTime) return `${month} ${day}, ${this.formatTime(date)}`;
+        else return `${month} ${day}`
     }
 
     componentDidMount() {
@@ -259,8 +260,8 @@ class AccountSummaryHeader extends React.Component {
                         backgroundColor: "transparent",
                         pointStyle: "line",
                         pointRotation: 90,
-                        pointRadius: 1,
-                        pointHoverRadius: 1,
+                        pointRadius: 2,
+                        pointHoverRadius: 2,
                         pointBorderColor: "rgba(121,133,139,1)",
                     },
                     {
@@ -269,8 +270,8 @@ class AccountSummaryHeader extends React.Component {
                         backgroundColor: "transparent",
                         pointStyle: "line",
                         pointRotation: 90,
-                        pointRadius: 1,
-                        pointHoverRadius: 1,
+                        pointRadius: 2,
+                        pointHoverRadius: 2,
                         pointBorderColor: "rgba(121,133,139,0.5)",
                     },
                 ],
@@ -380,7 +381,7 @@ class AccountSummaryHeader extends React.Component {
                     this.props.valueHistory.times.oneYear.length - 32,
                     this.props.valueHistory.times.oneYear.length
                 ).map(time => (
-                    this.formatDateTime(new Date(time * 1000))
+                    this.formatDateTime(new Date(time * 1000), false)
                 ))
                 inMarketHoursData = this.props.valueHistory.values.oneYear.slice(
                     this.props.valueHistory.values.oneYear.length - 32,
@@ -394,7 +395,7 @@ class AccountSummaryHeader extends React.Component {
                     this.props.valueHistory.times.oneYear.length - 92,
                     this.props.valueHistory.times.oneYear.length
                 ).map(time => (
-                    this.formatDateTime(new Date(time * 1000))
+                    this.formatDateTime(new Date(time * 1000), false)
                 ))
                 inMarketHoursData = this.props.valueHistory.values.oneYear.slice(
                     this.props.valueHistory.values.oneYear.length - 92,
@@ -405,7 +406,7 @@ class AccountSummaryHeader extends React.Component {
                 break;
             case ONE_YEAR:
                 labels = this.props.valueHistory.times.oneYear.map(time => (
-                    this.formatDateTime(new Date(time * 1000))
+                    this.formatDateTime(new Date(time * 1000), false)
                 ))
                 inMarketHoursData = this.props.valueHistory.values.oneYear.map(val => (
                     val / 100

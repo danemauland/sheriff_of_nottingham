@@ -8,6 +8,7 @@
 // history
 // search dropdown
 // reflect changes in cash balance outside market hours for the day
+// reflect changes in value for current day for longerr history graphs
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";

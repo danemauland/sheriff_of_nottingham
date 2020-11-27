@@ -62,6 +62,26 @@
   color: rgb(255,80,0);
 }
 
+.red-border-focus:focus{
+  border-color: rgb(255,80,0);
+}
+
+.red-border{
+  border-color: rgb(255,80,0);
+}
+
+.dark-green-border-focus:focus{
+  border-color: rgb(0,180,5)
+}
+
+.red-border-focus-within:focus-within{
+  border-color: rgb(255,80,0);
+}
+
+.dark-green-border-focus-within:focus-within{
+  border-color: rgb(0,180,5)
+}
+
 .hidden {
   display: none !important;
 }
@@ -123,6 +143,10 @@
   bottom: 0;
 }
 
+.slider-reversed {
+  background-color:rgb(255,80,0);
+}
+
 .slider:before {
   position: absolute;
   content: "";
@@ -137,6 +161,10 @@
 
 input:checked + .slider {
   background-color: rgb(255,80,0);
+}
+
+input:checked + .slider-reversed {
+  background-color: rgb(0,180,5);
 }
 
 input:checked + .slider:before {

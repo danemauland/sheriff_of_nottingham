@@ -403,15 +403,20 @@
     min-width: 72px;
     padding: 0 18px;
     border-radius: 24px;
-    font-size: 15px;
+    font-size: 13px;
     line-height: 20px;
     transition: 0.4s ease;
-    
+    border: 2px solid transparent;
+    font-weight: 600;
 }
 
 .cash-button:hover {
     transition: 0s;
     opacity: 0.8;
+}
+
+.cash-button:active:hover {
+    border: 2px solid black;
 }
 
 .cash-button > span {
@@ -451,7 +456,7 @@
     display: flex;
     justify-content: space-between;
     input {
-        margin-left: 12px;
+        margin-left: 9px;
     }
 }
 
@@ -466,4 +471,96 @@
     transition: border-color 0.2s ease;
     height: 36px;
     width: 136px;
+}
+
+.dollar-input {
+    background-color: $darkish-gray;
+    border: 1px solid $darkish-gray;
+    font-weight: 400;
+    text-align: right;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 0 12px;
+    transition: border-color 0.2s ease;
+    height: 36px;
+    width: 136px;
+}
+
+.dollar-input:hover {
+    background-color: $darker-gray;
+}
+
+.dollar-input:focus {
+    background-color: $darker-gray;
+}
+
+.cash-form-time {
+    background-color: $darkish-gray;
+    border: 1px solid $darkish-gray;
+    font-weight: 400;
+    text-align: right;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 0 12px;
+    transition: border-color 0.2s ease;
+    height: 36px;
+    width: 120px;
+    cursor: text !important;
+}
+
+.cash-form-date {
+    background-color: $darkish-gray;
+    border: 1px solid $darkish-gray;
+    font-weight: 400;
+    text-align: right;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 0 12px;
+    transition: border-color 0.2s ease;
+    height: 36px;
+    width: 150px;
+    cursor: text;
+}
+
+.cash-form-date:hover {
+    background-color: $darker-gray;
+}
+
+.cash-form-time:hover {
+    background-color: $darker-gray;
+}
+
+
+.cash-form-date:focus-within, .cash-form-time:focus-within {
+    background-color: $darker-gray;
+}
+
+.rounded-button.cash-option-submit {
+    height: 36px;
+    min-width: 117px;
+    padding: 0 27px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: 0.4s;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+}
+
+.cash-option-submit:hover {
+    transition: 0s;
+    opacity: 0.8;
+}
+
+.cash-option-submit:active:hover {
+    border: 2px solid black;
+}
+
+.cash-submit-error-wrapper {
+    position: absolute;
+}
+
+.cash-submit-error {
+    position: relative;
+    top: 40px;
+    left: 240px;
 }

@@ -25,12 +25,14 @@ class Cash extends React.Component {
         this.state = {
             expanded: false,
             transaction: {
-                createdAt: "",
                 amount: "",
             },
             numDecimals: 0,
             deposit: true,
             expandedOptions: false,
+            date: "",
+            time: "",
+            datetimeError: false,
         }
         this.toggleDeposit = this.toggleDeposit.bind(this);
         this.setDeposit = this.setDeposit.bind(this);
@@ -39,6 +41,21 @@ class Cash extends React.Component {
         this.mouseEnterSiblings = this.mouseEnterSiblings.bind(this);
         this.mouseLeaveSiblings = this.mouseLeaveSiblings.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
+        this.handleTimeChange = this.handleTimeChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
+    }
+
+    componentDidUpdate() {
+        const dateInput = document.getElementById("cash-option-date");
+        const timeInput = document.getElementById("cash-option-time");
+        if (this.state.date !== "" && this.state.date !== undefined) {
+            dateInput.valueAsNumber = this.state.date;
+        }
+        if (this.state.time !== "" && this.state.date !== undefined) {
+            timeInput.valueAsNumber = this.state.time;
+        }
     }
     
     handleClick(e) {
@@ -102,7 +119,6 @@ class Cash extends React.Component {
 
     handleChange(e) {
         const val = e.target.value;
-        if (val === "$") {this.setState({transaction: {amount: ""}}); return;}
         const allowableChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
         let numStr = "";
         let numDecimals = 0;
@@ -121,13 +137,46 @@ class Cash extends React.Component {
                 }
             }
         }
-        const amount = parseInt(numStr) * 100;
+        if (numStr === "$" || numStr === "") {this.setState({transaction: {amount: ""}}); return;}
+        const amount = Math.floor(parseFloat(numStr) * 100);
         this.setState({transaction: {amount}, numDecimals})
+    }
+
+    handleTimeChange(e) {
+        this.setState({
+            time: e.currentTarget.valueAsNumber
+        })
+    }
+
+    handleDateChange(e) {
+        this.setState({
+            date: e.currentTarget.valueAsNumber
+        })
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        const datetime = this.state.date + this.state.time;
+        if (datetime > new Date().getTime()) {
+            this.setState({datetimeError: true})
+        } else {
+            this.setState({datetimeError: false});
+            this.props.postCashTransaction({
+                amount: this.state.transaction.amount * (this.state.deposit ? 1 : -1),
+                created_at: datetime - (24 * 60 *60 * 1000), //ADJUSTMENT FOR TESTING DURING THANKSGIVING, REMOVE THE ONE DAY OFFSET
+            })
+        }
+    }
+
+    handleBlur(e) {
+        const val = e.target.value;
+        if (val === "$" || val === "") return;
+        this.setState({numDecimals: 2})
     }
 
     render() {
         return (
-            <form>
+            <form onSubmit={this.handleSubmit}>
                 <div className="cash-toggles-container">
                     <div className="cash-deposit-toggle-container">
                         <button onClick={this.setDeposit} className={this.state.deposit ? "" : "dark-green-hover black"}>Deposit</button>
@@ -140,11 +189,11 @@ class Cash extends React.Component {
                         <button onClick={this.setWithdraw} className={this.state.deposit ? "red-hover black" : ""}>Withdraw</button>
                     </div>
                     <div className="cash-options-toggle-container">
-                        <button className={this.state.expandedOptions ? "dark-green-hover" : "red-hover black"} onClick={this.toggleExpandedOptions}>Expanded Options</button>
+                        <button className={!this.state.expandedOptions ? "dark-green-hover black" : "red-hover "} onClick={this.toggleExpandedOptions}>Expanded Options</button>
                         <span className="cash-deposit-toggle-wrapper" onMouseEnter={this.mouseEnterSiblings} onMouseLeave={this.mouseLeaveSiblings}>
                             <label className="switch" id="cash-deposit-toggle">
-                                <input type="checkbox" checked={!this.state.expandedOptions} onChange={this.toggleExpandedOptions}/>
-                                <span className="slider"></span>
+                                <input type="checkbox" checked={this.state.expandedOptions} onChange={this.toggleExpandedOptions}/>
+                                <span className="slider slider-reversed"></span>
                             </label>
                         </span>
                     </div>
@@ -159,9 +208,11 @@ class Cash extends React.Component {
                     <button className={"cash-button rounded-button " + (this.state.deposit ? "dark-green-background" : "red-background")} onClick={this.generateClickHandler(MILLION)}>{<span>{(this.state.deposit ? "+" : "-")}</span>}{"$" + MILLION}</button>
                 </div>
                 <div className="cash-form-options-div no-height">
-                    <label>Amount<input type="text" placeholder="$0.00" className="dollar-input" onChange={this.handleChange} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
-                    <label>Time<input type="datetime-local"/></label>
-                    <button>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
+                    <label>Amount<input type="text" placeholder="$0.00" className={"dollar-input " + (this.state.deposit ? "dark-green-border-focus" : "red-border-focus")} onChange={this.handleChange} onBlur={this.handleBlur} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
+                    <label>Date<input type="date" id="cash-option-date" cursor="pointer" className={"cash-form-date " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleDateChange}/></label>
+                    <label>Time<input type="time" id="cash-option-time" cursor="pointer" className={"cash-form-time " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleTimeChange} step="60"/></label>
+                    <button className={"rounded-button cash-option-submit " + (this.state.deposit ? "dark-green-background" : "red-background")}>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
+                    {this.state.datetimeError ? <div className="cash-submit-error-wrapper"><div className="cash-submit-error red">You can only travel backwards in time, not forwards</div></div> : <></>}
                 </div>
             </form>
         )
