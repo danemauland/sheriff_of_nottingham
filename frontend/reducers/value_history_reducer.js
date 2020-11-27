@@ -7,7 +7,6 @@ const mergeHistories = (cashHistory, values, times) => {
     let valuesPointer = 0;
     const totals = [];
     while (valuesPointer < values.length) {
-        if (times[valuesPointer] === 1606230000) debugger;
         if (cashHistory.times[cashPointer] <= times[valuesPointer]) {
             if (cashHistory.times[cashPointer + 1] !== undefined && cashHistory.times[cashPointer + 1] <= times[valuesPointer]) {
                 cashPointer++;
@@ -79,7 +78,7 @@ export default (state = defaultState, action) => {
                 if (breakLoop) {}
                 else if (asset.times && Object.values(asset.times).length === 3) {
                     breakLoop = true;
-                    newState.times = {...asset.times}
+                    newState.times = merge({},asset.times);
                 }
             })
             let aggPositionValues = calcAggPositionValues(action.state.entities.displayedAssets, newState.times);

@@ -8,8 +8,9 @@ class Api::CashTransactionsController < ApplicationController
         end
     end
 
-    def destroy
-        @transaction = current_user.cash_transactions
+    def demolish
+        current_user.cash_transactions.destroy_all
+        render json: {}
     end
 
     def cash_transaction_params

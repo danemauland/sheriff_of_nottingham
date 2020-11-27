@@ -94,6 +94,7 @@ class AccountSummaryHeader extends React.Component {
             this.state.display
         );
         let subtractor = pastVal;
+        console.log(subtractor)
         delta = subtractant - subtractor;
         this.delta = delta;
         if (this.checkUpdate) {
