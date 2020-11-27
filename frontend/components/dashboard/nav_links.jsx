@@ -13,6 +13,7 @@ class NavLinks extends React.Component {
     constructor(props) {
         super(props);
         this.toggleHidden = this.toggleHidden.bind(this);
+        this.highlightCash = this.highlightCash.bind(this);
     }
 
     toggleHidden(e) {
@@ -44,13 +45,26 @@ class NavLinks extends React.Component {
         }
     }
 
+    highlightCash(e) {
+        e.preventDefault();
+        const cashContainer = $(".cash-container");
+        const cashExpanderButton = $(".cash-expander-button");
+        if (!cashContainer.hasClass("cash-container-expanded")) {
+            cashExpanderButton.trigger("click");
+        }
+        cashContainer.addClass("flash");
+        window.setTimeout(() => {
+            cashContainer.removeClass("flash")
+        },1000)
+    }
+
     render() {
         return (
             <div className="dashboard-nav-links-positioner">
                 <ul className="dashboard-nav-links-wrapper">
                     <li><a className={"navbar-link " + (this.props.valueIncreased ? "dark-green-hover" : "red-hover")} href="" onClick={e => e.preventDefault()}>Free Stocks</a></li>
                     <li><a className={"navbar-link " + (this.props.valueIncreased ? "dark-green-hover" : "red-hover")} href="" onClick={e => e.preventDefault()}>Portfolio</a></li>
-                    <li><a className={"navbar-link " + (this.props.valueIncreased ? "dark-green-hover" : "red-hover")} href="" onClick={e => e.preventDefault()}>Cash</a></li>
+                    <li><a className={"navbar-link " + (this.props.valueIncreased ? "dark-green-hover" : "red-hover")} href="" onClick={this.highlightCash}>Cash</a></li>
                     <li><a className={"navbar-link " + (this.props.valueIncreased ? "dark-green-hover" : "red-hover")} href="" onClick={e => e.preventDefault()}>Messages</a></li>
                     <li>
                         <div className="absolute-positioner">

@@ -21,8 +21,10 @@ class Cash extends React.Component {
     
     handleClick(e) {
         e.preventDefault();
-        $(".cash-form-div").toggleClass("no-height")
-        $(".cash-form-div").toggleClass("cash-form-div-expanded")
+        $(".cash-form-div").toggleClass("no-height");
+        $(".cash-form-div").toggleClass("cash-form-div-expanded");
+        $(".cash-container").toggleClass("cash-container-expanded");
+        $(".cash-expander-button").toggleClass("cash-button-expanded");
         this.setState({
             expanded: !this.state.expanded
         })
@@ -44,8 +46,8 @@ class Cash extends React.Component {
     render() {
         return (
             <div className="cash-spacer">
-                <div className={"cash-container " + (this.state.expanded ? "cash-container-expanded" : "")}>
-                    <button className={"cash-expander-button " + (this.state.expanded ? "cash-button-expanded" : "")} onClick={this.handleClick} onMouseDown={this.handleMouseDown}>
+                <div className="cash-container">
+                    <button className="cash-expander-button" onClick={this.handleClick} onMouseDown={this.handleMouseDown}>
                         <div className="cash-button-text-container">
                             <span>Buying Power</span>
                             <span>{formatToDollar(this.props.cashBal)}</span>

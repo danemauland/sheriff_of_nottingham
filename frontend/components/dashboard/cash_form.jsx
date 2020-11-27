@@ -1,8 +1,7 @@
 import React from "react";
-import {postCashTransaction, } from "../../actions/cash_transactions_actions";
+import { postCashTransaction, demolishCashTransactions} from "../../actions/cash_transactions_actions";
 import {connect} from "react-redux";
 import {formatToDollar} from "../../util/dashboard_calcs";
-import { demolishCashTransactions } from "../../util/cash_transactions_api_util";
 
 const ONE = "1";
 const TEN = "10";
@@ -223,7 +222,7 @@ class Cash extends React.Component {
                         <button className={"rounded-button cash-option-submit " + (this.state.deposit ? "dark-green-background" : "red-background")}>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
                     </div>
                     <div className = "cash-form-options-bottom-text">
-                        <a onClick={this.handleCashReset}>Clear cash history</a>
+                        <a onClick={this.handleCashReset}>Reset cash</a>
                         <span className="cash-submit-error red">{this.state.datetimeError ? "You can only travel backwards in time, not forwards" : ""}</span>
                     </div>
                 </div>

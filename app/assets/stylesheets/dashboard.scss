@@ -341,7 +341,7 @@
 .cash-container {
     box-sizing: border-box;
     border-radius: 4px;
-    transition: background-color 400ms ease 0s, box-shadow 400ms ease 0s, margin-bottom 400ms ease 0s;
+    transition: background-color 400ms ease 0s, box-shadow 1000ms ease 0ms, margin-bottom 400ms ease 0s;
     margin: 0 -24px 12px -24px;
 }
 
@@ -538,7 +538,7 @@
 
 .rounded-button.cash-option-submit {
     height: 36px;
-    min-width: 117px;
+    min-width: 121px;
     padding: 0 27px;
     font-weight: 600;
     font-size: 15px;
@@ -560,7 +560,7 @@
     color: $red;
     padding-bottom: 2px;
     span {
-        margin-left: 138px;
+        margin-left: 177px;
     }
     a {
         text-decoration: underline;
