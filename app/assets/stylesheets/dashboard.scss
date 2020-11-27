@@ -443,13 +443,14 @@
     visibility: hidden;
     opacity: 0;
     transition: 0.4s ease;
-    padding: 24px 0;
+    padding-top: 24px;
     border-top: 1px solid $darkishish-gray;
 }
 
 .cash-form-options-wrapper {
     display: flex;
     justify-content: space-between;
+    padding-bottom: 6px;
     input {
         margin-left: 9px;
     }
@@ -458,10 +459,6 @@
 .cash-form-options-div-expanded {
     visibility: visible;
     opacity: 1;
-}
-
-.cash-form-options-div {
-    
 }
 
 .dollar-input {
@@ -559,12 +556,13 @@
     border: 2px solid black;
 }
 
-.cash-submit-error-wrapper {
-    position: absolute;
-}
-
-.cash-submit-error {
-    position: relative;
-    top: 40px;
-    left: 240px;
+.cash-form-options-bottom-text {
+    color: $red;
+    padding-bottom: 2px;
+    span {
+        margin-left: 138px;
+    }
+    a {
+        text-decoration: underline;
+    }
 }

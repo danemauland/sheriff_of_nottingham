@@ -45,6 +45,7 @@ class Cash extends React.Component {
         this.handleTimeChange = this.handleTimeChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
+        this.handleCashReset = this.handleCashReset.bind(this);
     }
 
     componentDidUpdate() {
@@ -174,6 +175,10 @@ class Cash extends React.Component {
         this.setState({numDecimals: 2})
     }
 
+    handleCashReset(e) {
+        e.preventDefault();
+    }
+
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
@@ -209,12 +214,15 @@ class Cash extends React.Component {
                 </div>
                 <div className="cash-form-options-div no-height">
                     <div className="cash-form-options-wrapper">
-                        <label>Amount<input type="text" placeholder="$0.00" className={"dollar-input " + (this.state.deposit ? "dark-green-border-focus" : "red-border-focus")} onChange={this.handleChange} onBlur={this.handleBlur} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
-                        <label>Date<input type="date" id="cash-option-date" cursor="pointer" className={"cash-form-date " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleDateChange}/></label>
+                        <label>Amount<input type="text" placeholder="$0.00" required className={"dollar-input " + (this.state.deposit ? "dark-green-border-focus" : "red-border-focus")} onChange={this.handleChange} onBlur={this.handleBlur} value={this.state.transaction.amount === "" ? "" : formatToDollar(this.state.transaction.amount, this.state.numDecimals)}/></label>
+                        <label>Date<input type="date" id="cash-option-date" cursor="pointer" required className={"cash-form-date " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleDateChange}/></label>
                         <label>Time<input type="time" id="cash-option-time" cursor="pointer" className={"cash-form-time " + (this.state.datetimeError ? "red-border ": (this.state.deposit ? "dark-green-border-focus-within" : "red-border-focus-within"))} onChange={this.handleTimeChange} step="60"/></label>
                         <button className={"rounded-button cash-option-submit " + (this.state.deposit ? "dark-green-background" : "red-background")}>{this.state.deposit ? "Deposit" : "Withdraw"}</button>
                     </div>
-                    {this.state.datetimeError ? <div className="cash-submit-error-wrapper"><div className="cash-submit-error red">You can only travel backwards in time, not forwards</div></div> : <></>}
+                    <div className = "cash-form-options-bottom-text">
+                        <a onClick={this.handleCashReset}>Clear cash history</a>
+                        <span className="cash-submit-error red">{this.state.datetimeError ? "You can only travel backwards in time, not forwards" : ""}</span>
+                    </div>
                 </div>
             </form>
         )
