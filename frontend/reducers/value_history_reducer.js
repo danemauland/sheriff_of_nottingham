@@ -73,12 +73,15 @@ export default (state = defaultState, action) => {
     let newState = merge({}, defaultState);
     switch (action.type) {
         case UPDATE_SUMMARY_VALUE_HISTORY:
-            let breakLoop = false;
             Object.values(action.state.entities.displayedAssets).forEach(asset => {
-                if (breakLoop) {}
-                else if (asset.times && Object.values(asset.times).length === 3) {
-                    breakLoop = true;
-                    newState.times = merge({},asset.times);
+                if (asset.times && Object.values(asset.times).length === 3) {
+                    if ( newState.times.oneDay.length === 0 || 
+                        newState.times.oneDay.length > asset.times.oneDay.length ||
+                        newState.times.oneWeek.length > asset.times.oneWeek.length ||
+                        newState.times.oneYear.length > asset.times.oneYear.length
+                    ) {
+                        newState.times = merge({},asset.times)
+                    }
                 }
             })
             let aggPositionValues = calcAggPositionValues(action.state.entities.displayedAssets, newState.times);
