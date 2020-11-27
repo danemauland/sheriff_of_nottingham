@@ -7,8 +7,9 @@ const mergeHistories = (cashHistory, values, times) => {
     let valuesPointer = 0;
     const totals = [];
     while (valuesPointer < values.length) {
-        if (cashHistory.times[cashPointer] < times[valuesPointer]) {
-            if (cashHistory.times[cashPointer + 1] !== undefined && cashHistory.times[cashPointer + 1] < times[valuesPointer]) {
+        if (times[valuesPointer] === 1606230000) debugger;
+        if (cashHistory.times[cashPointer] <= times[valuesPointer]) {
+            if (cashHistory.times[cashPointer + 1] !== undefined && cashHistory.times[cashPointer + 1] <= times[valuesPointer]) {
                 cashPointer++;
             } else {
                 totals.push(cashHistory.balances[cashPointer] + values[valuesPointer]);

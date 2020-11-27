@@ -156,7 +156,7 @@ class Cash extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        const datetime = this.state.date + this.state.time;
+        const datetime = this.state.date + this.state.time + (new Date().getTimezoneOffset()) * 60 * 1000;
         if (datetime > new Date().getTime()) {
             this.setState({datetimeError: true})
         } else {
@@ -189,7 +189,7 @@ class Cash extends React.Component {
                         <button onClick={this.setWithdraw} className={this.state.deposit ? "red-hover black" : ""}>Withdraw</button>
                     </div>
                     <div className="cash-options-toggle-container">
-                        <button className={!this.state.expandedOptions ? "dark-green-hover black" : "red-hover "} onClick={this.toggleExpandedOptions}>Expanded Options</button>
+                        <button className={!this.state.expandedOptions ? "red-hover black" : "dark-green-hover "} onClick={this.toggleExpandedOptions}>Expanded Options</button>
                         <span className="cash-deposit-toggle-wrapper" onMouseEnter={this.mouseEnterSiblings} onMouseLeave={this.mouseLeaveSiblings}>
                             <label className="switch" id="cash-deposit-toggle">
                                 <input type="checkbox" checked={this.state.expandedOptions} onChange={this.toggleExpandedOptions}/>
