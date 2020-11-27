@@ -86,6 +86,10 @@ export default (state = defaultState, action) => {
             newState.values.oneDay = mergeHistories(action.state.entities.summary.cashHistory, aggPositionValues.oneDay, newState.times.oneDay);
             newState.values.oneWeek = mergeHistories(action.state.entities.summary.cashHistory, aggPositionValues.oneWeek, newState.times.oneWeek);
             newState.values.oneYear = mergeHistories(action.state.entities.summary.cashHistory, aggPositionValues.oneYear, newState.times.oneYear);
+            newState.times.oneWeek.push(newState.times.oneDay.last());
+            newState.times.oneYear.push(newState.times.oneDay.last());
+            newState.values.oneWeek.push(newState.values.oneDay.last());
+            newState.values.oneYear.push(newState.values.oneDay.last());
             return newState
         case LOGOUT_CURRENT_USER:
             return defaultState;

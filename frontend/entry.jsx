@@ -32,6 +32,10 @@ Date.prototype.isDSTObserved = function () {
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
 }
 
+Array.prototype.last = function() {
+    return this[this.length - 1];
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById("root");
     let store;

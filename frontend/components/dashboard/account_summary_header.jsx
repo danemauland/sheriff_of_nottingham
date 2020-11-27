@@ -72,7 +72,7 @@ class AccountSummaryHeader extends React.Component {
         let percentage;
         switch (this.props.chartSelected) {
             case ONE_DAY:
-                pastVal = this.props.valueHistory.values.oneYear[this.props.valueHistory.values.oneYear.length - 2];
+                pastVal = this.props.valueHistory.values.oneYear[this.props.valueHistory.values.oneYear.length - 3];
                 break;
             case ONE_WEEK:
                 pastVal = this.props.valueHistory.values.oneYear[this.props.valueHistory.values.oneYear.length - 9];
