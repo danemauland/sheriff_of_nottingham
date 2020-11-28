@@ -108,9 +108,9 @@ class SearchDropdown extends React.Component {
             if (results.length > 0) {
                 return (
                     <div className="seach-dropdown-container">
-                        <p>Stocks</p>
+                        <div className="dropdown-header"><p>Stocks</p></div>
                         <div className="results-container">
-                            {results.map((result, i) => <SearchResultItem key={i} result={result}/>)}
+                            {results.map((result, i) => <SearchResultItem key={i} result={result} input={this.props.input}/>)}
                         </div>
                     </div>
                 )
