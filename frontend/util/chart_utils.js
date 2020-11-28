@@ -10,8 +10,8 @@ import {
 const PREMARKET_TIMESLOTS = 6;
 const MARKET_HOURS_TIMESLOTS = 79;
 const TOTAL_ONE_DAY_TIMESLOTS = 109;
-const ONE_MONTH_OFFSET = 32;
-const THREE_MONTH_OFFSET = 92;
+const ONE_MONTH_OFFSET = 31;
+const THREE_MONTH_OFFSET = 91;
 
 Chart.Tooltip.positioners.custom = (elements, position) => {
     if (elements.length === 0) return false;
@@ -24,13 +24,13 @@ Chart.Tooltip.positioners.custom = (elements, position) => {
 export const getPreviousEndingValue = function(oneYearValues, type) {
     switch (type) {
         case ONE_DAY:
-            return oneYearValues[oneYearValues.length - 3];
+            return oneYearValues[oneYearValues.length - 2];
         case ONE_WEEK:
-            return oneYearValues[oneYearValues.length - 9];
+            return oneYearValues[oneYearValues.length - 8];
         case ONE_MONTH:
-            return oneYearValues[oneYearValues.length - 32];
+            return oneYearValues[oneYearValues.length - ONE_MONTH_OFFSET];
         case THREE_MONTH:
-            return oneYearValues[oneYearValues.length - 92];
+            return oneYearValues[oneYearValues.length - THREE_MONTH_OFFSET];
         case ONE_YEAR:
             return oneYearValues[0];
         default:

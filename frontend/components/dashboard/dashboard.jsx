@@ -7,8 +7,8 @@ RECEIVE_ANNUAL_CANDLES,
 } from "../../actions/external_api_actions";
 import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
-import DashboardContent from "./dashboard_content";
-import Sidebar from "./sidebar";
+import { Route } from "react-router-dom";
+import Summary from "./summary"
 
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
@@ -64,8 +64,7 @@ class Dashboard extends React.Component {
                 <div className="scroll-bar-correction">
                     <div className="dashboard-centering-div">
                         <div className="dashboard-main-div">
-                            <DashboardContent />
-                            <Sidebar />
+                            <Route exact path="/dashboard" component={Summary}/>
                         </div>
                     </div>
                 </div>

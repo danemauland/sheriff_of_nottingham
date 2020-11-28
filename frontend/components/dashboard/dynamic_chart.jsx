@@ -7,9 +7,6 @@ import {
     THREE_MONTH,
     ONE_YEAR,
 } from "../../util/dashboard_calcs";
-import { updateValueIncreased } from "../../actions/value_increased_actions";
-import {updateChart, chartUpdated} from "../../actions/chart_selected_actions";
-import { connect } from "react-redux";
 import { 
     getPreviousEndingValue,
     getStrChange,
@@ -56,17 +53,22 @@ class DynamicChart extends React.Component {
         $(".graph-view").removeClass("hidden");
         $("#chartjs-tooltip").remove();
 
-        let startVal = getPreviousEndingValue(
-            this.props.valueHistoryValues.oneYear, 
-            this.props.chartSelected,
-        )
-        startVal ||= this.props.startingCashBal;
-        let strChange = getStrChange(startVal, this.getCurrentVal())
-        
+        const boundUpdateStrChange = this.updateStrChange.bind(this);
+
         this.setState({
-            display: this.props.currentPortfolioVal,
-            strChange,
-        })
+            dataPointIndex: -1,
+            display: this.props.currentPortfolioVal
+        }, boundUpdateStrChange((strChange) => {
+            return () => {
+                if ((strChange[0] === "+") !== this.props.valueIncreased) {
+                    this.props.updateValueIncreased(!this.props.valueIncreased)
+                    this.lineChart.data.datasets[0].borderColor = (!this.props.valueIncreased ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)");
+                    this.lineChart.data.datasets[1].borderColor = (!this.props.valueIncreased ? "rgba(0,200,5,0.5)" : "rgba(255,80,0,0.5)");
+                    this.lineChart.update();
+                }
+            }
+        }))
+        
     }
 
     componentDidMount() {
@@ -79,7 +81,7 @@ class DynamicChart extends React.Component {
         this.handleChartChange();
     }
     
-    updateStrChange() {
+    updateStrChange(callback = () => {}) {
         let strChange;
         let startVal = getPreviousEndingValue(
             this.props.valueHistoryValues.oneYear,
@@ -89,7 +91,7 @@ class DynamicChart extends React.Component {
             strChange = getStrChange(startVal, this.getCurrentVal())
         } else {
             startVal = this.props.startingCashBal;
-            if (this.props.startingCashTime < this.state.times[this.state.dataPointIndex]) {
+            if (this.state.dataPointIndex < 0 || this.props.startingCashTime < this.state.times[this.state.dataPointIndex]) {
                 strChange = getStrChange(startVal, this.getCurrentVal());
             } else {
                 strChange = getStrChange(0, 0)
@@ -98,7 +100,7 @@ class DynamicChart extends React.Component {
         if (this.state.strChange !== strChange) {
             this.setState({
                 strChange,
-            })
+            }, callback(strChange))
         }
     }
 
@@ -137,8 +139,7 @@ class DynamicChart extends React.Component {
         this.lineChart.chart.options.scales.yAxes[0].ticks.max = Math.max(...flat) + 1;
         this.lineChart.chart.options.scales.yAxes[0].ticks.min = Math.min(...flat) - 1;
 
-        this.lineChart.data.datasets[0].borderColor = (this.props.valueIncreased ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)");
-        this.lineChart.data.datasets[1].borderColor = (this.props.valueIncreased ? "rgba(0,200,5,0.5)" : "rgba(255,80,0,0.5)");
+        this.resetHeader();
 
         this.lineChart.update();
         
@@ -149,14 +150,16 @@ class DynamicChart extends React.Component {
             view: this.props.chartSelected,
         });
 
+
         this.props.chartUpdated();
+
     }
 
     componentDidUpdate() {
         
-        this.updateStrChange()
-        
         if (this.props.update) this.handleChartChange();
+        
+        this.updateStrChange()
         
     }
 
