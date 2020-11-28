@@ -6,6 +6,9 @@ import {withRouter} from "react-router-dom";
 
 const mapStateToProps = (state, ownProps) => {
     const ticker = ownProps.match.params.ticker;
+    if (state.entities.displayedAssets[ticker] === undefined) {
+        return({ loading: true})
+    }
     return ({
         startingCashBal: state.entities.summary.cashHistory.balances[0],
         startingCashTime: state.entities.summary.cashHistory.times[0],

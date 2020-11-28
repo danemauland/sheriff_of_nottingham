@@ -71,6 +71,7 @@ class DynamicChart extends React.Component {
     }
 
     componentDidMount() {
+        if (this.props.loading) return;
         const ctx = document.getElementById("myChart");
         this.lineChart = new Chart(ctx, chartOptions(
             this.props.valueIncreased,
@@ -155,6 +156,7 @@ class DynamicChart extends React.Component {
     }
 
     componentDidUpdate() {
+        if (this.props.loading) return;
         
         if (this.props.update) this.handleChartChange();
         
@@ -179,6 +181,7 @@ class DynamicChart extends React.Component {
     }
 
     render() {
+        if (this.props.loading) return <></>;
         return (
             <div className="chart-wrapper">
                 <header className="chart-header">

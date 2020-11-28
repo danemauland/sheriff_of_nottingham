@@ -109,6 +109,7 @@ export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) 
         end: Date.parse(endTime) / 1000,
         dispatch,
     }
+    console.log(action);
     q.push(action)
 }
 
