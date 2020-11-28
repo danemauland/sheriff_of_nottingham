@@ -1,14 +1,29 @@
 import React from "react";
 import {CgSearch} from "react-icons/cg";
+import SearchDropdown from "./search_dropdown.jsx";
+
 class SearchBar extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {search: ""}
+        this.state = {
+            input: "",
+            focused: false,
+        }
         this.handleChange = this.handleChange.bind(this);
+        this.handleFocus = this.handleFocus.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
     }
 
     handleChange(e) {
-        this.setState({search: e.target.value})
+        this.setState({input: e.target.value})
+    }
+
+    handleFocus(e) {
+        this.setState({focused: true})
+    }
+
+    handleBlur(e) {
+        this.setState({ focused: false })
     }
 
     render() {
@@ -19,14 +34,17 @@ class SearchBar extends React.Component {
                         <div className="search-icon-container">
                             <CgSearch className="search-icon"/>
                         </div>
-                        <input type="search"
+                        <input type="text"
                             className="search"
                             autoComplete="off"
                             placeholder="Search"
-                            value={this.state.search}
+                            value={this.state.input}
                             onChange={this.handleChange}
+                            onFocus={this.handleFocus}
+                            onBlur={this.handleBlur}
                         />
                     </div>
+                    <SearchDropdown input={this.state.input} focused={this.state.focused}/>
                 </div>
             </div>    
         )

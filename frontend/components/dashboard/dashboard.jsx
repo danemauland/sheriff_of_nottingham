@@ -49,10 +49,8 @@ class Dashboard extends React.Component {
             })
         } else {
             if (this.props.state.ui.updatesNeeded.cashHistory) {
-                // debugger
                 this.props.updateCashHistory(this.props.state);
             } else if (this.props.state.ui.updatesNeeded.valueHistory) {
-                // debugger
                 this.props.updateSummaryValueHistory(this.props.state);
             }
         }
