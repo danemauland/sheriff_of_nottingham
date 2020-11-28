@@ -588,6 +588,13 @@
     display: inline-block;
     padding: 5px 20px 5px 0;
     min-width: 80px;
+    max-width: 350px;
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 100%;
+    }
 }
 
 .search-result-item {
@@ -595,8 +602,13 @@
     padding-left: 24px;
     width: 100%;
     height: 100%;
+    white-space: pre;
 }
 
 .search-result-item:hover {
+    background-color: rgba(48,54,58, 0.75);
+}
+
+.search-result-item.selected {
     background-color: rgba(48,54,58, 0.75);
 }

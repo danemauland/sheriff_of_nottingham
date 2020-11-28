@@ -89,9 +89,9 @@ class SearchDropdown extends React.Component {
             const results = this.getSearchResults();
             return (
                 <div className="seach-dropdown-container">
-                    <div className="dropdown-header"><p>{results.length > 1 ? "Stocks" : "We were unable to find any results for your search."}</p></div>
+                    <div className="dropdown-header"><p>{results.length > 0 ? "Stocks" : "We were unable to find any results for your search."}</p></div>
                     <div className="results-container">
-                        {results.map((result, i) => <SearchResultItem key={i} result={result} input={this.props.input}/>)}
+                        {results.map((result, i) => <SearchResultItem key={i} result={result} input={this.props.input} selected={this.props.selected === i}/>)}
                     </div>
                 </div>
             )

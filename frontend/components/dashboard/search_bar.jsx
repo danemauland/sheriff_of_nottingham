@@ -8,9 +8,50 @@ class SearchBar extends React.Component {
         this.state = {
             input: "",
             focused: false,
+            selected: -1
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
+        this.handleKeyStroke = this.handleKeyStroke.bind(this);
+        this.clickOffHandler = this.clickOffHandler.bind(this);
+    }
+
+    handleKeyStroke(e) {
+        const results = $(".seach-result-item-wrapper a")
+        if (e.keyCode === 13) {
+            let selected = Math.max(this.state.selected, 0);
+            let result = results[selected]
+            if (result) {
+                result.click();
+                this.setState({ 
+                    focused: false,
+                    input: "",
+                    selected: -1
+             });
+                document.removeEventListener("click", this.clickOffHandler)
+                document.activeElement.blur();
+            }
+        } else if (e.keyCode === 38) {
+            let selected = this.state.selected - 1;
+            if (selected < 0) {selected = results.length - 1}
+            else if (selected === results.length) { selected = 0 }
+            this.setState({selected})
+        }
+        else if (e.keyCode === 40) {
+            let selected = this.state.selected + 1;
+            if (selected < 0) { selected = results.length - 1 }
+            else if (selected >= results.length) { selected = 0 }
+            this.setState({ selected })
+        }
+    }
+
+    clickOffHandler() {
+        this.setState({ 
+            focused: false,
+            selected: -1,
+            input: ""
+        });
+        document.removeEventListener("click", this.clickOffHandler)
     }
 
     handleChange(e) {
@@ -19,11 +60,7 @@ class SearchBar extends React.Component {
 
     handleFocus(e) {
         this.setState({focused: true})
-        const clickHandler = e => {
-            this.setState({ focused: false });
-            document.removeEventListener("click", clickHandler)    
-        }
-        document.addEventListener("click", clickHandler)
+        document.addEventListener("click", this.clickOffHandler)
     }
 
     render() {
@@ -34,17 +71,16 @@ class SearchBar extends React.Component {
                         <div className="search-icon-container">
                             <CgSearch className="search-icon"/>
                         </div>
-                        <input type="text"
-                            className="search"
-                            autoComplete="off"
-                            placeholder="Search"
-                            value={this.state.input}
-                            onChange={this.handleChange}
-                            
-                            
-                        />
+                            <input type="text"
+                                className="search"
+                                autoComplete="off"
+                                placeholder="Search"
+                                value={this.state.input}
+                                onChange={this.handleChange}
+                                onKeyDown={this.handleKeyStroke}
+                            />
                     </div>
-                    <SearchDropdown input={this.state.input} focused={this.state.focused}/>
+                    <SearchDropdown input={this.state.input} focused={this.state.focused} selected={this.state.selected}/>
                 </div>
             </div>    
         )

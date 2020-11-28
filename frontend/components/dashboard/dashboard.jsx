@@ -8,7 +8,8 @@ RECEIVE_ANNUAL_CANDLES,
 import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
 import { Route } from "react-router-dom";
-import Summary from "./summary"
+import Summary from "./summary";
+import Stock from "./stock";
 
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
@@ -65,6 +66,7 @@ class Dashboard extends React.Component {
                     <div className="dashboard-centering-div">
                         <div className="dashboard-main-div">
                             <Route exact path="/dashboard" component={Summary}/>
+                            <Route path="/dashboard/stocks/:ticker" component={Stock} />
                         </div>
                     </div>
                 </div>

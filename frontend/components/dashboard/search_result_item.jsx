@@ -7,6 +7,14 @@ const mapStateToProps = state => ({
 })
 
 class SearchResultItem extends React.Component {
+    constructor(props) {
+        super(props)
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
+        $("body").click();
+    }
 
     mapToSlices(str, substr) {
         let upCasedStr = str.toUpperCase();
@@ -29,8 +37,8 @@ class SearchResultItem extends React.Component {
 
     render() {
         return (
-            <div>
-                <Link to={`stocks/${this.props.result[0]}`} className="search-result-item">
+            <div className="seach-result-item-wrapper">
+                <Link to={`/dashboard/stocks/${this.props.result[0]}`} className={"search-result-item " + (this.props.selected ? "selected" : "")} onClick={this.handleClick}>
                     <span>
                         {this.mapToSlices(this.props.result[0], this.props.input)}
                     </span>
