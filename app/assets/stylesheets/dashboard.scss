@@ -570,8 +570,12 @@
     }
 }
 
-.seach-dropdown-container {
+.seach-dropdown-container > div:last-child {
     padding-bottom: 24px;
+}
+
+.seach-dropdown-container > div:last-child:empty {
+    padding-bottom: 0px;
 }
 
 .dropdown-header { 

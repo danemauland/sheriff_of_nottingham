@@ -37,24 +37,6 @@ let strBSearch = (arr, str) => {
     return result;
 }
 
-// strBSearch(["A", "B", "C", "D"], "B") // 1
-// strBSearch(["A", "B", "C", "D"], "A") // 0
-// strBSearch(["A", "B", "C", "D"], "D") // 3
-// strBSearch(["B", "C", "D"], "A") // -1
-// strBSearch(["A", "B", "C", "D"], "E") // -1
-// strBSearch(["A", "B", "D"], "C") // -1
-// strBSearch(["A", "B", "C", "D"], "AA") // -1
-// strBSearch(["A", "BA", "C", "D"], "B") // 1
-// strBSearch(["A", "BA", "BB", "D"], "B") // 1
-// strBSearch(["A", "BA", "BB", "BBC"], "BB") // 2
-// strBSearch(["A", "BA", "BB", "D", "E"], "B") // 1
-// strBSearch(["A", "BA", "BB", "BC", "E"], "B") // 1
-// strBSearch(["BA", "BB", "BC", "E"], "A") // -1
-// strBSearch(["BA", "BB", "BC", "E"], "EE") // -1
-// strBSearch(["A", "BB", "BC", "E"], "AA") // -1
-
-
-
 class SearchDropdown extends React.Component {
     constructor(props) {
         super(props)
@@ -105,16 +87,14 @@ class SearchDropdown extends React.Component {
     render() {
         if (this.props.focused && this.props.input) {
             const results = this.getSearchResults();
-            if (results.length > 0) {
-                return (
-                    <div className="seach-dropdown-container">
-                        <div className="dropdown-header"><p>Stocks</p></div>
-                        <div className="results-container">
-                            {results.map((result, i) => <SearchResultItem key={i} result={result} input={this.props.input}/>)}
-                        </div>
+            return (
+                <div className="seach-dropdown-container">
+                    <div className="dropdown-header"><p>{results.length > 1 ? "Stocks" : "We were unable to find any results for your search."}</p></div>
+                    <div className="results-container">
+                        {results.map((result, i) => <SearchResultItem key={i} result={result} input={this.props.input}/>)}
                     </div>
-                )
-            }
+                </div>
+            )
         }
         return <></>
     }  

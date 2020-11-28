@@ -14,7 +14,6 @@ class SearchResultItem extends React.Component {
         let i = upCasedStr.indexOf(upCasedSubstr);
         const spans = [];
         let key = 0;
-        debugger
         while (i > -1) {
             spans.push(<span key={key++}>{str.slice(0,i)}</span>)
             str = str.slice(i);
