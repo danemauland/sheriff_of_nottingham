@@ -22,7 +22,7 @@ class SearchBar extends React.Component {
                         <input type="search"
                             className="search"
                             autoComplete="off"
-                            placeholder="SEE COMMENT IN external_api_actions.js"
+                            placeholder="Search"
                             value={this.state.search}
                             onChange={this.handleChange}
                         />

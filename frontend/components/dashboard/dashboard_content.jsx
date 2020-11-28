@@ -1,5 +1,5 @@
 import React from "react";
-import DynamicChart from "./dynamic_chart";
+import AccountSummaryChartContainer from "./account_summay_chart_container";
 import Cash from "./cash";
 
 class DashboardContent extends React.Component {
@@ -10,7 +10,7 @@ class DashboardContent extends React.Component {
     render() {
         return (
             <div className="dashboard-main-content">
-                <DynamicChart />
+                <AccountSummaryChartContainer />
                 <Cash />
             </div>
         )

@@ -13,6 +13,14 @@ const TOTAL_ONE_DAY_TIMESLOTS = 109;
 const ONE_MONTH_OFFSET = 32;
 const THREE_MONTH_OFFSET = 92;
 
+Chart.Tooltip.positioners.custom = (elements, position) => {
+    if (elements.length === 0) return false;
+    return {
+        x: position.x,
+        y: 9,
+    }
+}
+
 export const getPreviousEndingValue = function(oneYearValues, type) {
     switch (type) {
         case ONE_DAY:
@@ -231,4 +239,158 @@ export const getDatasets = function(values, type) {
             break;
     }
     return newValues;
+}
+
+const generateCustomTooltip = function(boundSetState) {
+    return function (tooltipModel) {
+        if (tooltipModel.dataPoints === undefined) return;
+        if (tooltipModel.dataPoints[0] === undefined) return;
+        let tooltipEl = document.getElementById("chartjs-tooltip");
+        let tooltipTitle = document.getElementById("chartjs-tooltip-title");
+        let tooltipLine = document.getElementById("chartjs-tooltip-line");
+        let tooltipCircle = document.getElementById("chartjs-tooltip-circle");
+        if (!tooltipEl) {
+            tooltipEl = document.createElement("div");
+            tooltipEl.id = "chartjs-tooltip";
+            tooltipTitle = document.createElement("div");
+            tooltipTitle.id = "chartjs-tooltip-title";
+            tooltipLine = document.createElement("div");
+            tooltipLine.id = "chartjs-tooltip-line";
+            tooltipCircle = document.createElement("div");
+            tooltipCircle.id = "chartjs-tooltip-circle";
+            tooltipEl.appendChild(tooltipTitle);
+            tooltipEl.appendChild(tooltipLine);
+            tooltipEl.appendChild(tooltipCircle);
+            document.body.appendChild(tooltipEl);
+        }
+
+        if (tooltipModel.opacity === 0) {
+            tooltipEl.style.opacity = 0;
+            return;
+        }
+        if (tooltipModel.dataPoints[0]) {
+            boundSetState({
+                display: Math.floor(tooltipModel.dataPoints[0].yLabel * 100),
+                dataPointIndex: tooltipModel.dataPoints[0].index,
+            })
+        }
+        const position = this._chart.canvas.getBoundingClientRect();
+        tooltipTitle.innerHTML = tooltipModel.title;
+        tooltipEl.style.opacity = 1;
+        tooltipEl.style.position = 'absolute';
+        tooltipLine.style.height = position.bottom - position.top + "px";
+        tooltipLine.style.width = 0 + "px";
+        tooltipLine.style.borderRight = "1px solid rgba(121,133,139,1)";
+        tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - (tooltipTitle.offsetWidth / 2) + 'px';
+        tooltipEl.style.top = position.top - 20 + 'px';
+        tooltipLine.style.position = "absolute";
+        tooltipLine.style.top = "20px"
+        tooltipCircle.style.position = "absolute";
+        tooltipCircle.style.top = tooltipModel.dataPoints[0].y + 14 + 'px';
+        tooltipCircle.style.backgroundColor = this._data.datasets[0].borderColor;
+        tooltipCircle.style.width = "8px";
+        tooltipCircle.style.height = "8px";
+        tooltipCircle.style.borderRadius = "8px";
+        tooltipCircle.style.border = "2px solid black";
+        tooltipEl.style.pointerEvents = 'none';
+    }
+}
+
+export const chartOptions = function(valueIncreased, boundSetState) {
+    return {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    data: [],
+                    borderColor: (valueIncreased ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)"),
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                },
+                {
+                    data: [],
+                    borderColor: (valueIncreased ? "rgba(0,200,5,0.5)" : "rgba(255,80,0,0.5)"),
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                },
+                {
+                    data: [],
+                    borderColor: "transparent",
+                    backgroundColor: "transparent",
+                    pointStyle: "line",
+                    pointRotation: 90,
+                    pointRadius: 2,
+                    pointHoverRadius: 2,
+                    pointBorderColor: "rgba(121,133,139,1)",
+                },
+                {
+                    data: [],
+                    borderColor: "transparent",
+                    backgroundColor: "transparent",
+                    pointStyle: "line",
+                    pointRotation: 90,
+                    pointRadius: 2,
+                    pointHoverRadius: 2,
+                    pointBorderColor: "rgba(121,133,139,0.5)",
+                },
+            ],
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            elements: {
+                point: {
+                    mode: "index",
+                    intersect: false,
+                    radius: 0,
+                    hoverRadius: 0,
+                },
+                line: {
+                    tension: 0,
+                },
+            },
+            legend: { display: false },
+            title: { display: false },
+            scales: {
+                yAxes: [{
+                    display: false,
+                }],
+                xAxes: [{
+                    display: false,
+                }]
+            },
+            tooltips: {
+                enabled: false,
+                custom: generateCustomTooltip(boundSetState),
+                mode: "index",
+                intersect: false,
+                titleFontColor: "rgba(121,133,139,1)",
+                filter: function (tooltipItem) {
+                    return tooltipItem.datasetIndex < 2;
+                }
+            },
+            hover: {
+                mode: "index",
+                intersect: false,
+            }
+        }
+    }
+}
+
+export const graphView = function(type) {
+    switch (type) {
+        case ONE_DAY:
+            return "Today";
+        case ONE_WEEK:
+            return "Past Week";
+        case ONE_MONTH:
+            return "Past Month";
+        case THREE_MONTH:
+            return "Past 3 Months";
+        case ONE_YEAR:
+            return "Past Year";
+        default:
+            break;
+    }
 }
