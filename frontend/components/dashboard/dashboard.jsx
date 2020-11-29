@@ -2,8 +2,9 @@ import React from "react";
 import Header from "./header";
 import {fetchCandles,
     initializeAssets,
-RECEIVE_WEEKLY_CANDLES,
-RECEIVE_ANNUAL_CANDLES,
+    RECEIVE_WEEKLY_CANDLES,
+    RECEIVE_ANNUAL_CANDLES,
+    fetchCompanyOverview,
 } from "../../actions/external_api_actions";
 import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
@@ -22,74 +23,121 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
         initializeAssets: trades => dispatch(initializeAssets(trades)),
         fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
+        fetchCompanyOverview: ticker => fetchCompanyOverview(ticker, dispatch),
         updateSummaryValueHistory: state => dispatch(updateSummaryValueHistory(state)),
         updateCashHistory: state => dispatch(updateCashHistory(state)),
         setAsLoading: () => dispatch(setAsLoading()),
         finishedLoading: () => dispatch(finishedLoading()),
 });
 
+
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.timesComponentUpdated = 0;
     }
+
+    fetchInitialCandles() {
+        Object.values(this.props.displayedAssets).forEach(asset => {
+                if (asset.prices === undefined) {
+                    this.props.fetchCandles(asset.ticker)
+                }
+            })
+        Object.values(this.props.displayedAssets).forEach(asset => {
+            if (typeof(asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]) === "number") {
+                if (asset.valueHistory === undefined) {
+                this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
+                this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
+                }
+            }
+        })
+    }
+
+    isStockIndexPage() {
+        return (this.props.location.pathname.slice(0,18) === "/dashboard/stocks/")
+    }
+
+    isDashboardPage() {
+        return this.props.location.pathname === "/dashboard";
+    }
+
+    checkForNeedToInitializeAStock() {
+        if (this.isStockIndexPage()) {
+            let ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
+            let needToLoad;
+            if (
+                this.props.displayedAssets[ticker] === undefined ||
+                this.props.displayedAssets[ticker].prices === undefined ||
+                this.props.displayedAssets[ticker].prices.oneDay === undefined ||
+                this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
+                this.props.displayedAssets[ticker].prices.oneYear === undefined ||
+                this.props.displayedAssets[ticker].companyOverview === undefined
+            ) {
+                this.props.setAsLoading();
+                this.props.fetchCandles(ticker);
+                this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
+                this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
+                this.props.fetchCompanyOverview(ticker);
+            }
+        }
+        return true;
+    }
+
+    pageIsLoading() {
+        return this.props.state.ui.loading
+    }
+
     componentDidMount() {
         this.props.initializeAssets(this.props.state);
         this.timesComponentUpdated++;
     }
 
+    assetWasOwned(asset) {
+        if (typeof(asset.ownershipHistory.numShares.last()) === "number") {
+            return true;
+        }
+        return false
+    }
+
+    assetIsStillUpdating(asset) {
+        if (asset.valueHistory === undefined ||
+            asset.valueHistory.oneDay === undefined ||
+            asset.valueHistory.oneWeek === undefined ||
+            asset.valueHistory.oneYear === undefined
+        ) { return true; }
+        return false;
+    }
+
+    assetsAreStillLoading() {
+        Object.values(this.props.displayedAssets).forEach(asset => {
+            if (this.assetWasOwned(asset)) {
+                if (this.assetIsStillUpdating(asset)) {
+                    return true;
+                }
+            }
+        })
+        return false
+    }
+
     componentDidUpdate() {
         let ticker;
         if (this.timesComponentUpdated === 1) {
-            Object.values(this.props.displayedAssets).forEach(asset => {
-                if (asset.prices === undefined) {
-                    this.props.fetchCandles(asset.ticker)
-                }
-            })
-            Object.values(this.props.displayedAssets).forEach(asset => {
-                if (typeof(asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]) === "number") {
-                    if (asset.valueHistory === undefined) {
-                    this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
-                    this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
-                    }
-                }
-            })
-            if (this.props.location.pathname.slice(0,18) === "/dashboard/stocks/") {
-                ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
-                let needToLoad;
-                if (
-                    this.props.displayedAssets[ticker] === undefined ||
-                    this.props.displayedAssets[ticker].prices === undefined ||
-                    this.props.displayedAssets[ticker].prices.oneDay === undefined ||
-                    this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
-                    this.props.displayedAssets[ticker].prices.oneYear === undefined
-                ) {
-                    this.props.fetchCandles(ticker);
-                    this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
-                    this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
-                    this.props.setAsLoading();
-                }
-            }
+
+            this.fetchInitialCandles();
+            
+            this.checkForNeedToInitializeAStock();
+            
         } else {
             if (this.props.state.ui.updatesNeeded.cashHistory) {
                 this.props.updateCashHistory(this.props.state);
             } else if (this.props.state.ui.updatesNeeded.valueHistory) {
                 this.props.updateSummaryValueHistory(this.props.state);
-            } else if (this.props.state.ui.loading) {
+            } else if (this.pageIsLoading()) {
                 let stillLoading = false;
-                if (this.props.location.pathname === "/dashboard") {
-                    Object.values(this.props.displayedAssets).forEach(asset => {
-                        if (typeof(asset.ownershipHistory.numShares.last()) === "number") {
-                            if (asset.valueHistory === undefined ||
-                                asset.valueHistory.oneDay === undefined ||
-                                asset.valueHistory.oneWeek === undefined ||
-                                asset.valueHistory.oneYear === undefined
-                            ) {
-                                stillLoading = true;
-                            }
-                        }
-                    })
-                } else if (this.props.location.pathname.slice(0,18) === "/dashboard/stocks/") {
+                if (this.isDashboardPage()) {
+                    stillLoading = this.assetsAreStillLoading();
+                } else if (this.isStockIndexPage()) {
                     ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
                     if (
                         this.props.displayedAssets[ticker] === undefined ||
@@ -105,21 +153,8 @@ class Dashboard extends React.Component {
                     this.props.finishedLoading();
                 }
             } else {
-                if (this.props.location.pathname.slice(0,18) === "/dashboard/stocks/") {
-                    ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
-                    let needToLoad;
-                    if (
-                        this.props.displayedAssets[ticker] === undefined ||
-                        this.props.displayedAssets[ticker].prices === undefined ||
-                        this.props.displayedAssets[ticker].prices.oneDay === undefined ||
-                        this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
-                        this.props.displayedAssets[ticker].prices.oneYear === undefined
-                    ) {
-                        this.props.fetchCandles(ticker);
-                        this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
-                        this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
-                        this.props.setAsLoading();
-                    }
+                if (this.isStockIndexPage()) {
+                    this.checkForNeedToInitializeAStock()
                 }
             }
         }
@@ -127,7 +162,7 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        if (this.props.state.ui.loading) {
+        if (this.pageIsLoading()) {
             return <Loading increase={this.props.state.ui.valueIncreased}/>
         }
         return (

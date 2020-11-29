@@ -13,7 +13,6 @@ const mapStateToProps = (state, ownProps) => {
         state.entities.displayedAssets[ticker].ownershipHistory.numShares.length > 0 &&
         state.entities.displayedAssets[ticker].ownershipHistory.numShares.last() !== 0
         ) {owned = true}
-    debugger
     return ({
     ticker,
     owned: owned,

@@ -8,6 +8,7 @@ import {RECEIVE_DAILY_CANDLES,
     RECEIVE_QUOTE,
     INITIALIZE_ASSETS,
     dstAdjustment,
+    RECEIVE_COMPANY_OVERVIEW,
 } from "../actions/external_api_actions";
 import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 var merge = require('lodash.merge');
@@ -244,8 +245,16 @@ export default (state = defaultState, action) => {
             }
             return merge({},newState);
         case RECEIVE_QUOTE:
-            return (merge({}, state, {[action.ticker]:
+            newState = {...state};
+            newState[action.ticker] ||= merge({}, defaultAssetState);
+            return (merge({}, newState, {[action.ticker]:
                 Object.assign({}, state[action.ticker], {currentPrice: Math.floor(100*action.quote.c)})})
+            );
+        case RECEIVE_COMPANY_OVERVIEW:
+            newState = {...state};
+            newState[action.ticker] ||= merge({}, defaultAssetState);
+            return merge({}, newState, {[action.ticker]:
+                Object.assign({}, state[action.ticker], {companyOverview: action.companyOverview})}
             )
         default:
             return state;

@@ -1,3 +1,4 @@
+import * as externalAPIUtil from "../util/external_api_util"
 const queue = require("async/queue");
 const finnhub = require('finnhub');
 
@@ -7,6 +8,8 @@ const finnhubClient = new finnhub.DefaultApi()
 
 export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
+export const FETCH_COMPANY_OVERVIEW = "FETCH_COMPANY_OVERVIEW";
+export const RECEIVE_COMPANY_OVERVIEW = "RECEIVE_COMPANY_OVERVIEW";
 export const RECEIVE_DAILY_CANDLES = "RECEIVE_DAILY_CANDLES";
 export const RECEIVE_WEEKLY_CANDLES = "RECEIVE_WEEKLY_CANDLES";
 export const RECEIVE_ANNUAL_CANDLES = "RECEIVE_ANNUAL_CANDLES";
@@ -25,10 +28,19 @@ const receiveQuote = (ticker, quote) => ({
     quote
 })
 
-const q = queue(action => {
+const receiveCompanyOverview = (ticker, companyOverview) => ({
+    type: RECEIVE_COMPANY_OVERVIEW,
+    ticker,
+    companyOverview,
+})
+
+const q = action => {
+    console.log(action);
+    if (action === null) debugger;
     switch (action.type) {
         case FETCH_CANDLES:
             finnhubClient.stockCandles(action.ticker, action.resolution, action.start, action.end, {}, (error, data, response) => {
+                console.log(error);
                 action.dispatch(receiveCandles(action.ticker, data, action.subtype))
             })
             break;
@@ -37,10 +49,14 @@ const q = queue(action => {
                 action.dispatch(receiveQuote(action.ticker, data))
             })
             break;
+        case FETCH_COMPANY_OVERVIEW:
+            externalAPIUtil.fetchCompanyOverview(action.ticker).then(
+                companyOverview => dispatch(receiveCompanyOverview(action.ticker, companyOverview))
+            )
         default:
             break;
     }
-}, 15)
+}
 
 //Date prototype functions added in entry file
 export const dstAdjustment = time => {
@@ -110,7 +126,7 @@ export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) 
         dispatch,
     }
     console.log(action);
-    q.push(action)
+    q({...action})
 }
 
 export const fetchQuote = ticker => dispatch => {
@@ -119,7 +135,7 @@ export const fetchQuote = ticker => dispatch => {
         ticker,
         dispatch,
     }
-    q.push(action);
+    q({...action});
 }
 
 export const initializeAssets = state => ({
@@ -127,3 +143,12 @@ export const initializeAssets = state => ({
     trades: state.entities.trades,
     cashTransactions: state.entities.cashTransactions,
 })
+
+export const fetchCompanyOverview = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_COMPANY_OVERVIEW,
+        ticker,
+        dispatch,
+    }
+    q({...action});
+}
