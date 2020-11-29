@@ -1,14 +1,20 @@
 // TODO
+// PRIORITY
+// Position summary details on stock page
+// other summary info for stock, e.g. about. optional show more/less for now
+// stock trade menu
+// autofill stock trade menu from clicking graph
+// stock positions on dashboard
+// newsfeed on dashboard
+// Change free stocks to random stocks
+
+
 // remove event handlers when component unmounts
 // ADD SEPARATE SIGNUP PAGE
-// Change free stocks to random stocks
-// Clicking cash expands buying power to show cash bal options
-// loading screen
 // Add in messages/trade confirms
 // history
-// search dropdown
 // reflect changes in cash balance outside market hours for the day
-// reflect changes in value for current day for longerr history graphs
+
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";
