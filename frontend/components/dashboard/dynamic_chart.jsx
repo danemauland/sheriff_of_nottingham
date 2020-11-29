@@ -17,6 +17,8 @@ import {
     graphView,
 } from "../../util/chart_utils";
 
+Chart.defaults.global.animation.duration = 0;
+
 class DynamicChart extends React.Component {
     constructor(props) {
 
