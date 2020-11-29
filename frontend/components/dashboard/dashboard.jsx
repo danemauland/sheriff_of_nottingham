@@ -160,7 +160,12 @@ class Dashboard extends React.Component {
 
     render() {
         if (this.pageIsLoading()) {
-            return <Loading increase={this.props.state.ui.valueIncreased}/>
+            return (
+                <>
+                    <Loading increase={this.props.state.ui.valueIncreased}/>
+                    <Header />
+                </>
+            )
         }
         return (
             <>
