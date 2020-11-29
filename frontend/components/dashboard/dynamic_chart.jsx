@@ -72,13 +72,12 @@ class DynamicChart extends React.Component {
 
     componentDidMount() {
         if (this.props.loading) return;
-        const ctx = document.getElementById("myChart");
-        this.lineChart = new Chart(ctx, chartOptions(
-            this.props.valueIncreased,
-            this.setState.bind(this),
-        ));
-
-        this.handleChartChange();
+            const ctx = document.getElementById("myChart");
+            this.lineChart = new Chart(ctx, chartOptions(
+                this.props.valueIncreased,
+                this.setState.bind(this),
+            ));
+        this.handleChartChange(); //HERE
     }
     
     updateStrChange(callback = () => {}) {
@@ -151,14 +150,17 @@ class DynamicChart extends React.Component {
         });
 
 
-        this.props.chartUpdated();
+        this.props.chartUpdated(); ///HERE
 
     }
 
     componentDidUpdate() {
         if (this.props.loading) return;
         
-        if (this.props.update) this.handleChartChange();
+        if (this.props.update) {
+            this.handleChartChange()
+        }
+            
         
         this.updateStrChange()
         

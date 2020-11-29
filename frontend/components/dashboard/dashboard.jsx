@@ -62,23 +62,26 @@ class Dashboard extends React.Component {
         return this.props.location.pathname === "/dashboard";
     }
 
+    isStockLoaded(ticker) {
+        if (this.props.displayedAssets[ticker] === undefined ||
+        this.props.displayedAssets[ticker].prices === undefined ||
+        this.props.displayedAssets[ticker].prices.oneDay === undefined ||
+        this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
+        this.props.displayedAssets[ticker].prices.oneYear === undefined ||
+        this.props.displayedAssets[ticker].companyOverview === undefined
+        ){ return false }
+        return true;
+    }
+
     checkForNeedToInitializeAStock() {
         if (this.isStockIndexPage()) {
             let ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
-            let needToLoad;
-            if (
-                this.props.displayedAssets[ticker] === undefined ||
-                this.props.displayedAssets[ticker].prices === undefined ||
-                this.props.displayedAssets[ticker].prices.oneDay === undefined ||
-                this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
-                this.props.displayedAssets[ticker].prices.oneYear === undefined ||
-                this.props.displayedAssets[ticker].companyOverview === undefined
-            ) {
-                this.props.setAsLoading();
+            if ( !this.isStockLoaded(ticker)) {
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
                 this.props.fetchCompanyOverview(ticker);
+                this.props.setAsLoading();
             }
         }
         return true;
@@ -139,13 +142,7 @@ class Dashboard extends React.Component {
                     stillLoading = this.assetsAreStillLoading();
                 } else if (this.isStockIndexPage()) {
                     ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
-                    if (
-                        this.props.displayedAssets[ticker] === undefined ||
-                        this.props.displayedAssets[ticker].prices === undefined ||
-                        this.props.displayedAssets[ticker].prices.oneDay === undefined ||
-                        this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
-                        this.props.displayedAssets[ticker].prices.oneYear === undefined
-                    ) {
+                    if (!this.isStockLoaded(ticker)) {
                         stillLoading = true;
                     }
                 }

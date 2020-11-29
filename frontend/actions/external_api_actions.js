@@ -1,5 +1,4 @@
 import * as externalAPIUtil from "../util/external_api_util"
-const queue = require("async/queue");
 const finnhub = require('finnhub');
 
 const api_key = finnhub.ApiClient.instance.authentications['api_key'];
@@ -35,12 +34,10 @@ const receiveCompanyOverview = (ticker, companyOverview) => ({
 })
 
 const q = action => {
-    console.log(action);
     if (action === null) debugger;
     switch (action.type) {
         case FETCH_CANDLES:
             finnhubClient.stockCandles(action.ticker, action.resolution, action.start, action.end, {}, (error, data, response) => {
-                console.log(error);
                 action.dispatch(receiveCandles(action.ticker, data, action.subtype))
             })
             break;
@@ -125,7 +122,6 @@ export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) 
         end: Date.parse(endTime) / 1000,
         dispatch,
     }
-    console.log(action);
     q({...action})
 }
 
