@@ -1,9 +1,4 @@
 import * as externalAPIUtil from "../util/external_api_util"
-const finnhub = require('finnhub');
-
-const api_key = finnhub.ApiClient.instance.authentications['api_key'];
-api_key.apiKey = window.finnhubAPIKey;
-const finnhubClient = new finnhub.DefaultApi()
 
 export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
@@ -34,21 +29,23 @@ const receiveCompanyOverview = (ticker, companyOverview) => ({
 })
 
 const q = action => {
-    if (action === null) debugger;
+    console.log(action)
     switch (action.type) {
         case FETCH_CANDLES:
-            finnhubClient.stockCandles(action.ticker, action.resolution, action.start, action.end, {}, (error, data, response) => {
-                action.dispatch(receiveCandles(action.ticker, data, action.subtype))
-            })
+            externalAPIUtil.fetchCandles(action.ticker, action.resolution, action.start, action.end).then(
+                candles => action.dispatch(receiveCandles(action.ticker, candles, action.subtype)),
+                error => console.log(error),
+            );
             break;
         case FETCH_QUOTE:
-            finnhubClient.quote(action.ticker, (error, data, response) => {
-                action.dispatch(receiveQuote(action.ticker, data))
-            })
+            // finnhubClient.quote(action.ticker, (error, data, response) => {
+            //     console.log(error);
+            //     action.dispatch(receiveQuote(action.ticker, data))
+            // })
             break;
         case FETCH_COMPANY_OVERVIEW:
             externalAPIUtil.fetchCompanyOverview(action.ticker).then(
-                companyOverview => dispatch(receiveCompanyOverview(action.ticker, companyOverview))
+                companyOverview => action.dispatch(receiveCompanyOverview(action.ticker, companyOverview))
             )
         default:
             break;

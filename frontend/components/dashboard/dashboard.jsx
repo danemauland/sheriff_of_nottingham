@@ -75,7 +75,7 @@ class Dashboard extends React.Component {
 
     checkForNeedToInitializeAStock() {
         if (this.isStockIndexPage()) {
-            let ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
+            let ticker = this.getTickerFromPath();
             if ( !this.isStockLoaded(ticker)) {
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
@@ -113,18 +113,22 @@ class Dashboard extends React.Component {
     }
 
     assetsAreStillLoading() {
+        let stillLoading = false;
         Object.values(this.props.displayedAssets).forEach(asset => {
             if (this.assetWasOwned(asset)) {
                 if (this.assetIsStillUpdating(asset)) {
-                    return true;
+                    stillLoading = true;
                 }
             }
         })
-        return false
+        return stillLoading
+    }
+
+    getTickerFromPath() {
+        return this.props.location.pathname.slice(18,this.props.location.pathname.length);
     }
 
     componentDidUpdate() {
-        let ticker;
         if (this.timesComponentUpdated === 1) {
 
             this.fetchInitialCandles();
@@ -141,7 +145,7 @@ class Dashboard extends React.Component {
                 if (this.isDashboardPage()) {
                     stillLoading = this.assetsAreStillLoading();
                 } else if (this.isStockIndexPage()) {
-                    ticker = this.props.location.pathname.slice(18,this.props.location.pathname.length);
+                    let ticker = this.getTickerFromPath();
                     if (!this.isStockLoaded(ticker)) {
                         stillLoading = true;
                     }
@@ -174,7 +178,7 @@ class Dashboard extends React.Component {
                     <div className="dashboard-centering-div">
                         <div className="dashboard-main-div">
                             <Route exact path="/dashboard" component={Summary}/>
-                            <Route path="/dashboard/stocks/:ticker" component={Stock} />
+                            <Route path="/dashboard/stocks/:ticker" render={props => <Stock ticker={this.getTickerFromPath()}/>} />
                         </div>
                     </div>
                 </div>

@@ -25,3 +25,66 @@ export const ONE_WEEK = "ONE_WEEK";
 export const ONE_MONTH = "ONE_MONTH";
 export const THREE_MONTH = "THREE_MONTH";
 export const ONE_YEAR = "ONE_YEAR";
+
+export const tickerIsOwned = (ticker, state) => {
+    if (state.entities.displayedAssets[ticker] &&
+        state.entities.displayedAssets[ticker].ownershipHistory &&
+        state.entities.displayedAssets[ticker].ownershipHistory.numShares && 
+        state.entities.displayedAssets[ticker].ownershipHistory.numShares.length > 0 &&
+        state.entities.displayedAssets[ticker].ownershipHistory.numShares.last() !== 0
+        ) {
+            return true;
+    }
+    return false;
+}
+
+export const positionValue = (ticker, state) => {
+    return state.entities.displayedAssets[ticker].valueHistory.oneDay.last();
+}
+
+export const numSharesOwned = (ticker, state) => {
+    return state.entities.displayedAssets[ticker].ownershipHistory.numShares.last();
+}
+
+export const positionCost = (ticker, state) => {
+    let sharesRemaining = numSharesOwned(ticker, state);
+    let short = false;
+    if (sharesRemaining < 0) {
+        short = true;
+        sharesRemaining *= -1;
+    }
+    let cost = 0;
+    let i = state.entities.trades.length - 1;
+    while (sharesRemaining > 0) {
+        let trade = state.entities.trades[i]
+        if (trade.ticker === ticker) {
+            if (short) {
+                if (trade.numShares < 0) {
+                    if (-trade.numShares < sharesRemaining) {
+                        cost += trade.tradePrice * trade.numShares;
+                        sharesRemaining += trade.numShares;
+                    } else {
+                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
+                        sharesRemaining = 0;
+                    }
+                }
+            } else {
+                if (trade.numShares > 0) {
+                    if (trade.numShares < sharesRemaining) {
+                        cost += trade.tradePrice * trade.numShares;
+                        sharesRemaining -= trade.numShares;
+                    } else {
+                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
+                        sharesRemaining = 0;
+                    }
+                }
+            }
+        }
+        i--
+    }
+    return cost;
+}
+
+export const portfolioValue = state => {
+    return state.entities.summary.valueHistory.values.oneDay.last();
+}

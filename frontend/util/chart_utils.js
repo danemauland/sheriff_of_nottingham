@@ -39,11 +39,10 @@ export const getPreviousEndingValue = function(oneYearValues, type) {
 }
 
 export const getStrChange = function(startVal, currentVal) {
-    let sign;
     let strChange = "";
     let percentage;
     let delta = currentVal - startVal;
-    sign = (delta < 0 ? "-" : "+");
+    let sign = (delta < 0 ? "-" : "+");
     delta = Math.abs(delta);
     percentage = (startVal === 0 ? 0 : delta / startVal);
     percentage = (percentage * 100).toFixed(2);

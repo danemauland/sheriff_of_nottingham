@@ -1,60 +1,55 @@
 import React from "react";
-import {formatToDollar} from "../../util/dashboard_calcs";
 import {connect} from "react-redux";
+import {
+    positionValue,
+    numSharesOwned,
+    positionCost,
+    formatToDollar,
+    ONE_DAY,
+    portfolioValue,
+} from "../../util/dashboard_calcs";
+import {
+    getPreviousEndingValue,
+    getStrChange,
+} from "../../util/chart_utils";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, {ticker}) => {
+    const marketValue = positionValue(ticker, state);
+    const numShares = numSharesOwned(ticker, state);
+    const totalPositionCost = positionCost(ticker, state);
+    const prevDayCloseValue = getPreviousEndingValue(
+        state.entities.displayedAssets[ticker].valueHistory.oneYear,
+        ONE_DAY
+    );
+    console.log(prevDayCloseValue)
+    console.log(marketValue)
     return ({
-        cashBal: state.entities.summary.cashHistory.balances[state.entities.summary.cashHistory.balances.length - 1],
-    })
+        marketValue: formatToDollar(marketValue),
+        numShares,
+        positionCost: formatToDollar(totalPositionCost),
+        oneDayReturn: getStrChange(prevDayCloseValue, marketValue),
+        totalReturn: getStrChange(totalPositionCost, marketValue),
+        averageCost: formatToDollar(totalPositionCost / numShares),
+        portfolioDiversity: (marketValue / portfolioValue(state) * 100).toFixed(2) + "%",
+})
 }
 
 class OwnershipInfo extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            expanded: false,
-        }
-        this.handleClick = this.handleClick.bind(this);
-        this.handleMouseDown = this.handleMouseDown.bind(this)
     }
     
-    handleClick(e) {
-        e.preventDefault();
-        $(".cash-form-div").toggleClass("no-height");
-        $(".cash-form-div").toggleClass("cash-form-div-expanded");
-        $(".cash-container").toggleClass("cash-container-expanded");
-        $(".cash-expander-button").toggleClass("cash-button-expanded");
-        this.setState({
-            expanded: !this.state.expanded
-        })
-    }
-
-    handleMouseDown(e) {
-        e.preventDefault();
-        const tar = $(e.currentTarget)
-        if (!this.state.expanded) {
-            tar.addClass("cash-button-clicked")
-            const handleMouseUp = event => {
-                tar.removeClass("cash-button-clicked");
-                document.removeEventListener("mouseup", handleMouseUp);
-            }
-            document.addEventListener("mouseup", handleMouseUp)
-        }
-    }
 
     render() {
         return (
-            <div className="cash-spacer">
-                <div className="cash-container">
-                    <button className="cash-expander-button" onClick={this.handleClick} onMouseDown={this.handleMouseDown}>
-                        <div className="cash-button-text-container">
-                            <span>Buying Power</span>
-                            <span>{formatToDollar(this.props.cashBal)}</span>
-                        </div>
-                    </button>
-                    <div className="cash-form-div no-height" >
-                    </div>
-                </div>
+            <div>
+                <div>{this.props.marketValue}</div>
+                <div>{this.props.numShares}</div>
+                <div>{this.props.positionCost}</div>
+                <div>{this.props.oneDayReturn}</div>
+                <div>{this.props.totalReturn}</div>
+                <div>{this.props.averageCost}</div>
+                <div>{this.props.portfolioDiversity}</div>
             </div>
         )
     }

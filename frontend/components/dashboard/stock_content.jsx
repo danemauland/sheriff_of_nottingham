@@ -3,21 +3,12 @@ import StockSummaryChartContainer from "./stock_summary_chart_container";
 import OwnershipInfo from "./ownership_info";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {tickerIsOwned} from "../../util/dashboard_calcs";
 
-const mapStateToProps = (state, ownProps) => {
-    const ticker = ownProps.match.params.ticker;
-    let owned = false;
-    if (state.entities.displayedAssets[ticker] &&
-        state.entities.displayedAssets[ticker].ownershipHistory &&
-        state.entities.displayedAssets[ticker].ownershipHistory.numShares && 
-        state.entities.displayedAssets[ticker].ownershipHistory.numShares.length > 0 &&
-        state.entities.displayedAssets[ticker].ownershipHistory.numShares.last() !== 0
-        ) {owned = true}
-    return ({
+const mapStateToProps = (state, {ticker}) => ({
     ticker,
-    owned: owned,
-    })
-}
+    owned: tickerIsOwned(ticker, state)
+})
 
 
 
@@ -29,8 +20,8 @@ class StockContent extends React.Component {
     render() {
         return (
             <div className="dashboard-main-content">
-                <StockSummaryChartContainer />
-                {this.props.owned ? <OwnershipInfo /> : <></>}
+                <StockSummaryChartContainer ticker={this.props.ticker}/>
+                {this.props.owned ? <OwnershipInfo ticker={this.props.ticker} /> : <></>}
             </div>
         )
     }

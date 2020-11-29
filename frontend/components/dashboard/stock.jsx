@@ -11,8 +11,8 @@ class Stock extends React.Component {
     render() {
         return (
             <>
-                <StockContent />
-                <StockSidebar />
+                <StockContent ticker={this.props.ticker}/>
+                <StockSidebar ticker={this.props.ticker}/>
             </>
         )
     }
