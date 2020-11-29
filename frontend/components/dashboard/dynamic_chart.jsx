@@ -135,11 +135,16 @@ class DynamicChart extends React.Component {
         }
 
         const flat = datasets.flat().filter(ele => ele !== undefined);
-        this.lineChart.chart.options.scales.yAxes[0].ticks.max = Math.max(...flat) + 1;
-        this.lineChart.chart.options.scales.yAxes[0].ticks.min = Math.min(...flat) - 1;
-
+        let max = Math.max(...flat);
+        let min = Math.min(...flat);
+        const delta = max - min;
+        max = max + delta * 0.01;
+        min = min - delta * 0.01;
+        this.lineChart.chart.options.scales.yAxes[0].ticks.max = max;
+        this.lineChart.chart.options.scales.yAxes[0].ticks.min = min;
+        
         this.resetHeader();
-
+        
         this.lineChart.update();
         
         this.setState({
@@ -187,7 +192,7 @@ class DynamicChart extends React.Component {
         return (
             <div className="chart-wrapper">
                 <header className="chart-header">
-                    <h1>{formatToDollar(this.state.display === undefined ?
+                    <h1 className="dashboard-title">{formatToDollar(this.state.display === undefined ?
                         this.props.currentPortfolioVal :
                         this.state.display)}</h1>
                     <div className="chart-header-subinfo">

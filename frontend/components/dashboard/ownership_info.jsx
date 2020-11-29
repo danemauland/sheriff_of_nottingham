@@ -21,8 +21,6 @@ const mapStateToProps = (state, {ticker}) => {
         state.entities.displayedAssets[ticker].valueHistory.oneYear,
         ONE_DAY
     );
-    console.log(prevDayCloseValue)
-    console.log(marketValue)
     return ({
         marketValue: formatToDollar(marketValue),
         numShares,
@@ -42,14 +40,39 @@ class OwnershipInfo extends React.Component {
 
     render() {
         return (
-            <div>
-                <div>{this.props.marketValue}</div>
-                <div>{this.props.numShares}</div>
-                <div>{this.props.positionCost}</div>
-                <div>{this.props.oneDayReturn}</div>
-                <div>{this.props.totalReturn}</div>
-                <div>{this.props.averageCost}</div>
-                <div>{this.props.portfolioDiversity}</div>
+            <div className="stock-ownership-positioner">
+                <div className="stock-ownership-market-val-info-container">
+                    <div className="stock-ownership-market-val-info-wrapper">
+                        <div>Your Market Value</div>
+                        <h3>{this.props.marketValue}</h3>
+                        <div className="stock-ownership-market-val-breakdown">
+                            <div>
+                                <span>Cost</span>
+                                <span>{this.props.positionCost}</span>
+                            </div>
+                            <div>
+                                <span>Today's Return</span>
+                                <span>{this.props.oneDayReturn}</span>
+                            </div>
+                            <div>
+                                <span>Total Return</span>
+                                <span>{this.props.totalReturn}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="stock-ownership-portfolio-impact-container">
+                    <div>Your Average Cost</div>
+                    <h3>{this.props.averageCost}</h3>
+                    <div>
+                        <span>Shares</span>
+                        <span>{this.props.numShares}</span>
+                    </div>
+                    <div>
+                        <span>Portfolio Diversity</span>
+                        <span>{this.props.portfolioDiversity}</span>
+                    </div>
+                </div>
             </div>
         )
     }

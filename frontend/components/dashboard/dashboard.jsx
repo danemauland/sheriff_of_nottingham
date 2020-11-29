@@ -40,16 +40,24 @@ class Dashboard extends React.Component {
 
     fetchInitialCandles() {
         Object.values(this.props.displayedAssets).forEach(asset => {
-                if (asset.prices === undefined) {
-                    this.props.fetchCandles(asset.ticker)
-                }
-            })
+            if (asset.prices === undefined) {
+                this.props.fetchCandles(asset.ticker)
+            }
+        })
         Object.values(this.props.displayedAssets).forEach(asset => {
-            if (typeof(asset.ownershipHistory.numShares[asset.ownershipHistory.numShares.length - 1]) === "number") {
+            if (typeof(asset.ownershipHistory.numShares.last()) === "number") {
                 if (asset.valueHistory === undefined) {
                 this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
                 }
+            }
+        })
+    }
+
+    fetchInitialCompanyOverviews() {
+        Object.values(this.props.displayedAssets).forEach(asset => {
+            if (asset.companyOverview === undefined) {
+                this.props.fetchCompanyOverview(asset.ticker)
             }
         })
     }
@@ -132,6 +140,7 @@ class Dashboard extends React.Component {
         if (this.timesComponentUpdated === 1) {
 
             this.fetchInitialCandles();
+            this.fetchInitialCompanyOverviews();
             
             this.checkForNeedToInitializeAStock();
             
@@ -178,7 +187,7 @@ class Dashboard extends React.Component {
                     <div className="dashboard-centering-div">
                         <div className="dashboard-main-div">
                             <Route exact path="/dashboard" component={Summary}/>
-                            <Route path="/dashboard/stocks/:ticker" render={props => <Stock ticker={this.getTickerFromPath()}/>} />
+                            <Route path="/dashboard/stocks/:ticker" render={() => <Stock ticker={this.getTickerFromPath()}/>} />
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,8 @@ import {tickerIsOwned} from "../../util/dashboard_calcs";
 
 const mapStateToProps = (state, {ticker}) => ({
     ticker,
-    owned: tickerIsOwned(ticker, state)
+    owned: tickerIsOwned(ticker, state),
+    companyName: state.entities.displayedAssets[ticker].companyOverview.Name,
 })
 
 
@@ -20,6 +21,7 @@ class StockContent extends React.Component {
     render() {
         return (
             <div className="dashboard-main-content">
+                <h1 className="dashboard-title">{this.props.companyName}</h1>
                 <StockSummaryChartContainer ticker={this.props.ticker}/>
                 {this.props.owned ? <OwnershipInfo ticker={this.props.ticker} /> : <></>}
             </div>

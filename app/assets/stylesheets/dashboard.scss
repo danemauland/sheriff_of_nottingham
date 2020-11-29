@@ -265,14 +265,14 @@
 .chart-header {
     margin-bottom: 12px;
     height: 95px;
+}
 
-    h1 {
-        transition: color 0.3s;
-        font-size: 32px;
-        font-weight: 500;
-        line-height: 40px;
-        letter-spacing: 0.1px;
-    }
+.dashboard-title {
+    transition: color 0.3s;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
+    letter-spacing: 0.1px;
 }
 
 .chart-header-subinfo {
