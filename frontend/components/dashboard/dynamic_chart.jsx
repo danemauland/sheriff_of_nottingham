@@ -17,8 +17,14 @@ import {
     graphView,
 } from "../../util/chart_utils";
 import { withRouter } from "react-router-dom";
+import {connect} from "react-redux";
+import {updateChartSelection} from "../../actions/chart_selection_actions";
 
 Chart.defaults.global.animation.duration = 0;
+
+const mapDispatchToProps = dispatch => ({
+    updateChartSelection: (price, createdAt) => dispatch(updateChartSelection(price, createdAt)),
+})
 
 class DynamicChart extends React.Component {
     constructor(props) {
@@ -75,11 +81,13 @@ class DynamicChart extends React.Component {
 
     componentDidMount() {
         if (this.props.loading) return;
-            const ctx = document.getElementById("myChart");
-            this.lineChart = new Chart(ctx, chartOptions(
-                this.props.valueIncreased,
-                this.setState.bind(this),
-            ));
+        const ctx = $(document.getElementById("myChart"));
+        const lineChart = new Chart(ctx, chartOptions(
+            this.props.valueIncreased,
+            this.setState.bind(this),
+        ));
+        this.lineChart = lineChart;
+        ctx.data("myChart", lineChart);
         this.handleChartChange();
     }
     
@@ -135,6 +143,11 @@ class DynamicChart extends React.Component {
             for (let j = 0; j < datasets[i].length; j++) {
                 this.lineChart.data.datasets[i].data.push(datasets[i][j])
             }
+        }
+
+        //push hidden times array in
+        for (let i = 0; i < times.length; i++) {
+            this.lineChart.data.datasets[4].data.push(times[i])
         }
 
         const flat = datasets.flat().filter(ele => ele !== undefined);
@@ -216,4 +229,4 @@ class DynamicChart extends React.Component {
     }
 }
 
-export default withRouter(DynamicChart);
+export default withRouter(connect(null, mapDispatchToProps)(DynamicChart));

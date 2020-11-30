@@ -3,8 +3,6 @@ const finnAPIKey = window.finnhubAPIKey;
 const polygonAPIKey = window.polygonAPIKey;
 
 export const fetchCompanyOverview = ticker => {
-    console.log(alphaAPIKey)
-    console.log("HERE")
     return (
     $.ajax({
         url: `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${alphaAPIKey}`,

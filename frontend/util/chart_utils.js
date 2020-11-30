@@ -39,10 +39,11 @@ export const getPreviousEndingValue = function(oneYearValues, type) {
 }
 
 export const getStrChange = function(startVal, currentVal) {
+    let sign;
     let strChange = "";
     let percentage;
     let delta = currentVal - startVal;
-    let sign = (delta < 0 ? "-" : "+");
+    sign = (delta < 0 ? "-" : "+");
     delta = Math.abs(delta);
     percentage = (startVal === 0 ? 0 : delta / startVal);
     percentage = (percentage * 100).toFixed(2);
@@ -281,7 +282,7 @@ const generateCustomTooltip = function(boundSetState) {
         tooltipLine.style.width = 0 + "px";
         tooltipLine.style.borderRight = "1px solid rgba(121,133,139,1)";
         tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - (tooltipTitle.offsetWidth / 2) + 'px';
-        tooltipEl.style.top = position.top - 20 + window.pageYOffset + 'px';
+        tooltipEl.style.top = position.top - 20 + 'px';
         tooltipLine.style.position = "absolute";
         tooltipLine.style.top = "20px"
         tooltipCircle.style.position = "absolute";
@@ -333,6 +334,14 @@ export const chartOptions = function(valueIncreased, boundSetState) {
                     pointHoverRadius: 2,
                     pointBorderColor: "rgba(121,133,139,0.5)",
                 },
+                {
+                    data: [],
+                    borderColor: "transparent",
+                    backgroundColor: "transparent",
+                    pointStyle: "line",
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                }
             ],
         },
         options: {

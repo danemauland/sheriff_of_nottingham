@@ -1,10 +1,8 @@
 // TODO
 // PRIORITY
-// other summary info for stock, e.g. about. optional show more/less for now
 // stock trade menu
 // autofill stock trade menu from clicking graph
 // stock positions on dashboard
-// newsfeed on dashboard
 // Change free stocks to random stocks
 
 

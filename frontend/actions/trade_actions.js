@@ -1,0 +1,1 @@
+export const RECEIVE_TRADE = "RECEIVE_TRADE";

@@ -122,7 +122,7 @@ const formatLargeNumber = (num, numDecimals = 2) => {
 }
 
 const formatDividendYield = dYield => {
-    return (dYield === "0" ? "–" : parseFloat(Yield).toFixed(2))
+    return (dYield === "0" ? "–" : parseFloat(dYield).toFixed(2))
 }
 
 export const extractAboutItems = (ticker, state) => {
