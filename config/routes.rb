@@ -6,6 +6,8 @@ Rails.application.routes.draw do
     resources :cash_transactions, only: [:create]
     resource :session, only: [:create, :destroy]
     resources :demos, only: [:create]
+    resources :trades, only: [:create]
   end
   delete "/api/cash_transactions", to: "api/cash_transactions#demolish", default: {format: :json}
+  delete "/api/trades", to: "api/trades#demolish", default: {format: :json}
 end

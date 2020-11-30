@@ -80,14 +80,17 @@ const qFunc = action => {
             externalAPIUtil.fetchCompanyOverview(action.ticker).then(
                 companyOverview => action.dispatch(receiveCompanyOverview(action.ticker, companyOverview))
             );
+            break;
         case FETCH_COMPANY_NEWS:
             externalAPIUtil.fetchCompanyNews(action.ticker, action.start, action.end).then(
                 companyNews => action.dispatch(receiveCompanyNews(action.ticker, companyNews))
             );
+            break;
         case FETCH_MARKET_NEWS:
             externalAPIUtil.fetchMarketNews(action.start, action.end).then(
                 marketNews => action.dispatch(receiveMarketNews(marketNews))
             );
+            break;
         default:
             break;
     }

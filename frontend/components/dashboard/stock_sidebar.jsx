@@ -1,10 +1,15 @@
 import React from "react";
 import {formatToDollar} from "../../util/dashboard_calcs";
 import {connect} from "react-redux";
+import {createTrade} from "../../actions/trade_actions";
 
 const mapStateToProps = (state, {ticker}) => ({
     valueIncreased: state.ui.valueIncreased,
     price: state.entities.displayedAssets[ticker].prices.oneDay.last(),
+})
+
+const mapDispatchToProps = dispatch => ({
+    createTrade: trade => dispatch(createTrade(trade))
 })
 
 class Sidebar extends React.Component {
@@ -19,7 +24,7 @@ class Sidebar extends React.Component {
             price: this.props.price,
             createdAt: 0,
         };
-        // this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSell = this.handleSell.bind(this);
         this.handleBuy = this.handleBuy.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
@@ -69,7 +74,8 @@ class Sidebar extends React.Component {
             } else {
                 className += "red ";
             }
-        } if (this.props.valueIncread) {
+        } 
+        if (this.props.valueIncreased) {
             className += "dark-green-hover "
         } else {
             className += "red-hover "
@@ -127,11 +133,12 @@ class Sidebar extends React.Component {
         } else {
             allowableChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
             for(let i = 0; i < val.length; i++) {
-                if (allowableChars.includes(val[i])) {
+                if (allowableChars.includes(val[i]) || (i === 0 && val[i] === "-")) {
                     numStr += val[i]
                 }
             }
             if (numStr === "") {this.setState({numShares: ""}); return;}
+            if (numStr === "-") {this.setState({numShares: "-"}); return;}
             const numShares = parseInt(numStr);
             this.setState({numShares})
         }
@@ -151,38 +158,64 @@ class Sidebar extends React.Component {
         })
     }
 
+    handleSubmit(e) {
+        e.preventDefault();
+        let trade = {};
+        trade.ticker = this.props.ticker;
+        trade.created_at = this.state.createdAt || new Date();
+        if (this.state.investIn === "Dollars") {
+            trade.num_shares = Math.floor(this.state.amount / this.state.price)
+        } else {
+            debugger
+            trade.num_shares = this.state.numShares;
+        }
+        if (this.state.order === "Sell") {
+            trade.num_shares *= -1;
+        }
+        trade.trade_price = this.state.price;
+        this.props.createTrade(trade);
+    }
+
     render() {
         return (
             <div className="dashboard-sidebar-spacer">
                 <div className="dashboard-sidebar-wrapper">
-                    <form onSubmit={this.handleSubmit}>
-                        <div>
-                            <button className={this.generateClassName("Buy")} onClick={this.handleBuy}>Buy {this.props.ticker}</button>
-                            <button className={this.generateClassName("Sell")} onClick={this.handleSell}>Sell {this.props.ticker}</button>
+                    <form className="order-form" onSubmit={this.handleSubmit}>
+                        <div className="buy-sell-sizer">
+                            <div className="buy-sell-container">
+                                <div className="buy-sell-wrapper">
+                                    <div className={"buy-sell-button-positioner " + this.generateClassName("Buy")}>
+                                        <button onClick={this.handleBuy}>Buy {this.props.ticker}</button>
+                                    </div>
+                                    <div className={"buy-sell-button-positioner " + this.generateClassName("Sell")}>
+                                        <button onClick={this.handleSell}>Sell {this.props.ticker}</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
+                        <div className="order-info-positioner">
                             <div>
                                 <span>Invest In</span>
-                                <select onChange={this.handleSelect}>
-                                    <option value="Dollars">Dollars</option>
-                                    <option value="Shares">Shares</option>
+                                <select className="invest-in-select" onChange={this.handleSelect}>
+                                    <option value="Dollars" className={(this.props.investIn === "Dollars" ? "selected " : "") + (this.props.valueIncreased ? "green-background-selected" : "red-background-selected")}>Dollars</option>
+                                    <option value="Shares" className={(this.props.investIn === "Dollars" ? "selected " : "") + (this.props.valueIncreased ? "green-background-selected" : "red-background-selected")}>Shares</option>
                                 </select>
                             </div>
                             <div>
                                 <span>{this.state.investIn === "Dollars" ? "Amount" : "Shares"}</span>
-                                <input onChange={this.handleChange} className={"dollar-input " + (this.props.valueIncreased ? "dark-green-border-focus" : "red-border-focus")} value={((this.state.investIn === "Dollars") ? (this.state.amount === "" ? "" : formatToDollar(this.state.amount, this.state.numDecimals)) : this.state.numShares)} onBlur={this.handleBlur} placeholder={(this.state.investIn === "Dollars" ? "$0.00" : "0")} type="text"/>
+                                <input onChange={this.handleChange} className={(this.state.investIn === "Dollars" ? "dollar-input " : "share-input ") + (this.props.valueIncreased ? "dark-green-border-focus" : "red-border-focus")} value={((this.state.investIn === "Dollars") ? (this.state.amount === "" ? "" : formatToDollar(this.state.amount, this.state.numDecimals)) : this.state.numShares)} onBlur={this.handleBlur} placeholder={(this.state.investIn === "Dollars" ? "$0.00" : "0")} type="text"/>
                             </div>
                             <div>
                                 <span>Market Price (<button onClick={this.handleReset} className={this.props.valueIncreased ? "dark-green" : "red"}>reset</button>)</span>
-                                <span>{formatToDollar(this.state.price)}</span>
+                                <span className="order-form-dollar">{formatToDollar(this.state.price)}</span>
+                            </div>
+                            <div>
+                                <span>{this.state.investIn === "Dollars" ? "Est. Quantity" : "Est. Proceeds"}</span>
+                                <span>{this.state.investIn === "Dollars" ? Math.floor(this.state.amount / this.state.price) : (this.state.numShares === "-" ? formatToDollar(0) : formatToDollar(this.state.numShares * this.state.price))}</span>
                             </div>
                         </div>
-                        <div>
-                            <div>
-                                <span>{this.state.investIn === "Dollars" ? "Est. Quantity" : "Estimated Cost"}</span>
-                                <span>{this.state.investIn === "Dollars" ? Math.floor(this.state.amount / this.state.price) : formatToDollar(this.state.numShares * this.state.price)}</span>
-                            </div>
-                            <button>Place Order</button>
+                        <div className="order-button-wrapper">
+                            <button className={"order-button " + (this.props.valueIncreased ? "green-background light-green-background-hover" : "red-background light-red-background-hover")}>Place Order</button>
                         </div>
                     </form>
                 </div>
@@ -191,4 +224,4 @@ class Sidebar extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(Sidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

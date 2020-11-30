@@ -70,6 +70,26 @@
   color: rgb(255,106,38);
 }
 
+.light-red-background-hover:hover{
+  background-color: rgb(255,106,38);
+}
+
+.light-green-background-hover:hover{
+  background-color: rgb(38,208,43);
+}
+
+.green-background {
+  background-color: rgb(0,200,5);
+}
+
+.green-background-selected.selected {
+  background-color: rgb(0,200,5);
+}
+
+.red-background-selected.selected {
+  color: rgb(255,80,0);
+}
+
 .red-hover.hovered{
   color: rgb(255,80,0);
 }

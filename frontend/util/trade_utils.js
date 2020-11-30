@@ -4,4 +4,11 @@ export const createTrade = trade => (
         method: "POST",
         data: {trade},
     })
-)
+);
+
+export const demolishTrades = () => (
+    $.ajax({
+        url: `/api/trades`,
+        method: "DELETE",
+    })
+);

@@ -11,6 +11,7 @@ import {
     UPDATE_SUMMARY_VALUE_HISTORY,
     UPDATE_CASH_HISTORY,
 } from "../actions/summary_actions";
+import {RECEIVE_TRADE} from "../actions/trade_actions"
 import { UPDATE_CHART, CHART_UPDATED } from "../actions/chart_selected_actions";
 
 const defaultState = {
@@ -22,6 +23,7 @@ const defaultState = {
 export default (state = defaultState, action) => {
     switch (action.type) {
         case REMOVE_CASH_TRANSACTIONS:
+        case RECEIVE_TRADE:
         case RECEIVE_CASH_TRANSACTION:
             return Object.assign({}, state, {
                 cashHistory: true,

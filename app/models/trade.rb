@@ -10,6 +10,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+require "date"
 class Trade < ApplicationRecord
     validates :trader_id, :num_shares, :trade_price, :ticker, presence: true
 
