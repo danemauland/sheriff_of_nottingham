@@ -3,12 +3,6 @@ import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import NewsItem from "./news_item";
 
-const mapStateToProps = (state, {ticker}) => ({
-    ticker,
-    News: state.entities.displayedAssets[ticker].companyNews,
-})
-
-
 class News extends React.Component {
     constructor(props) {
         super(props)
@@ -60,4 +54,4 @@ class News extends React.Component {
     }
 }
 
-export default withRouter(connect(mapStateToProps, null)(News));
+export default withRouter((News));
