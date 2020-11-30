@@ -95,7 +95,7 @@ const formatTime = function(date) {
     return `${hours}:${minutes} ${ampm}`
 }
 
-const parseMonth = function(date) {
+export const parseMonth = function(date) {
     switch (date.getMonth()) {
         case 0:
             return "JAN";
@@ -281,7 +281,7 @@ const generateCustomTooltip = function(boundSetState) {
         tooltipLine.style.width = 0 + "px";
         tooltipLine.style.borderRight = "1px solid rgba(121,133,139,1)";
         tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - (tooltipTitle.offsetWidth / 2) + 'px';
-        tooltipEl.style.top = position.top - 20 + 'px';
+        tooltipEl.style.top = position.top - 20 + window.pageYOffset + 'px';
         tooltipLine.style.position = "absolute";
         tooltipLine.style.top = "20px"
         tooltipCircle.style.position = "absolute";

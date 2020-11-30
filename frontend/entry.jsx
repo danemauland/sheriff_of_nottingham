@@ -1,6 +1,5 @@
 // TODO
 // PRIORITY
-// Position summary details on stock page
 // other summary info for stock, e.g. about. optional show more/less for now
 // stock trade menu
 // autofill stock trade menu from clicking graph
@@ -15,11 +14,13 @@
 // history
 // reflect changes in cash balance outside market hours for the day
 //toggle to sandbox api key
+// error handler for APIs
 
 import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";
 import Root from "./components/root";
+import { finnhubQ, alphaQ, polygonQ} from "./actions/external_api_actions";
 
 // TESTING
 import * as sessionAPIUtil from "./util/session_api_util";
@@ -60,6 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
         delete window.currentUser;
     } else { store = configureStore() }
     
+    finnhubQ.setDispatch(store.dispatch);
+    alphaQ.setDispatch(store.dispatch);
+    polygonQ.setDispatch(store.dispatch);
     ReactDOM.render(<Root store={store} />, root);
 
     //TESTING

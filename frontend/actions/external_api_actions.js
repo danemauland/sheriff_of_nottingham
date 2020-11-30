@@ -1,8 +1,18 @@
 import * as externalAPIUtil from "../util/external_api_util"
+import {
+    setAPIDebounceStartTime,
+    removeAPIDebounceStartTime,
+} from "./api_debounce_start_time_actions";
 
 export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
 export const FETCH_COMPANY_OVERVIEW = "FETCH_COMPANY_OVERVIEW";
+export const FETCH_TICKER_DATA = "FETCH_TICKER_DATA";
+export const RECEIVE_TICKER_DATA = "RECEIVE_TICKER_DATA";
+export const FETCH_COMPANY_NEWS = "FETCH_COMPANY_NEWS";
+export const RECEIVE_COMPANY_NEWS = "RECEIVE_COMPANY_NEWS";
+export const FETCH_MARKET_NEWS = "FETCH_MARKET_NEWS";
+export const RECEIVE_MARKET_NEWS = "RECEIVE_MARKET_NEWS";
 export const RECEIVE_COMPANY_OVERVIEW = "RECEIVE_COMPANY_OVERVIEW";
 export const RECEIVE_DAILY_CANDLES = "RECEIVE_DAILY_CANDLES";
 export const RECEIVE_WEEKLY_CANDLES = "RECEIVE_WEEKLY_CANDLES";
@@ -28,8 +38,25 @@ const receiveCompanyOverview = (ticker, companyOverview) => ({
     companyOverview,
 })
 
-const q = action => {
-    console.log(action)
+const receiveTickerData = (ticker, tickerData) => ({
+    type: RECEIVE_TICKER_DATA,
+    ticker,
+    tickerData,
+})
+
+const receiveCompanyNews = (ticker, companyNews) => ({
+    type: RECEIVE_COMPANY_NEWS,
+    ticker,
+    companyNews,
+})
+
+const receiveMarketNews = marketNews => ({
+    type: RECEIVE_MARKET_NEWS,
+    marketNews,
+})
+
+
+const qFunc = action => {
     switch (action.type) {
         case FETCH_CANDLES:
             externalAPIUtil.fetchCandles(action.ticker, action.resolution, action.start, action.end).then(
@@ -43,14 +70,86 @@ const q = action => {
             //     action.dispatch(receiveQuote(action.ticker, data))
             // })
             break;
+        case FETCH_TICKER_DATA:
+            externalAPIUtil.fetchTickerData(action.ticker).then(
+                tickerData => action.dispatch(receiveTickerData(action.ticker, tickerData)),
+                error => console.log(error),
+            );
+            break;
         case FETCH_COMPANY_OVERVIEW:
             externalAPIUtil.fetchCompanyOverview(action.ticker).then(
                 companyOverview => action.dispatch(receiveCompanyOverview(action.ticker, companyOverview))
-            )
+            );
+        case FETCH_COMPANY_NEWS:
+            externalAPIUtil.fetchCompanyNews(action.ticker, action.start, action.end).then(
+                companyNews => action.dispatch(receiveCompanyNews(action.ticker, companyNews))
+            );
+        case FETCH_MARKET_NEWS:
+            externalAPIUtil.fetchMarketNews(action.start, action.end).then(
+                marketNews => action.dispatch(receiveMarketNews(marketNews))
+            );
         default:
             break;
     }
 }
+
+function Queue(func, time, maxPerMin, provider) {
+    this.func = func;
+    this.time = time;
+    this.queue = [];
+    this.running = false;
+    this.maxPerMin = maxPerMin;
+    this.outStandingRequests = 0;
+    this.waiting = false;
+    this.timesQueue = [];
+    this.provider = provider;
+}
+Queue.prototype.setDispatch = function(dispatch) {
+    this.dispatch = dispatch
+}
+
+Queue.prototype.push = function (arg) {
+    this.queue.push(arg);
+    if (this.shouldStart()) this.run();
+}
+
+Queue.prototype.shouldStart = function () {
+    return !this.running && !this.waiting
+}
+
+Queue.prototype.shift = function () {
+    this.queue.shift();
+}
+
+Queue.prototype.run = function () {
+    this.running = this.queue.length > 0;
+    this.waiting = (this.outStandingRequests === this.maxPerMin && this.running);
+    if (this.waiting) {
+        const apiPullsLeft = this.queue.length;
+        this.dispatch(setAPIDebounceStartTime(this.timesQueue[apiPullsLeft - 1]));
+    }
+    if (this.running && !this.waiting) {
+        this.outStandingRequests++;
+        const arg = this.queue.shift();
+        const func = this.func;
+        setTimeout(() => {
+            func(arg)
+            this.run()
+            this.timesQueue.push(new Date());
+        }, this.time)
+        setTimeout(() => {
+            this.outStandingRequests--;
+            if (this.waiting) {this.dispatch(removeAPIDebounceStartTime())}
+            this.waiting = false;
+            this.timesQueue.shift();
+            this.run();
+        }, 61000)
+    }  
+}
+
+export const finnhubQ = new Queue(qFunc, 50, 25, "finn")
+export const alphaQ = new Queue(qFunc, 50, 25, "alpha")
+export const polygonQ = new Queue(qFunc, 50, 5, "polygon")
 
 //Date prototype functions added in entry file
 export const dstAdjustment = time => {
@@ -119,7 +218,7 @@ export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) 
         end: Date.parse(endTime) / 1000,
         dispatch,
     }
-    q({...action})
+    finnhubQ.push({...action})
 }
 
 export const fetchQuote = ticker => dispatch => {
@@ -128,7 +227,7 @@ export const fetchQuote = ticker => dispatch => {
         ticker,
         dispatch,
     }
-    q({...action});
+    finnhubQ.push({...action});
 }
 
 export const initializeAssets = state => ({
@@ -143,5 +242,40 @@ export const fetchCompanyOverview = (ticker, dispatch) => {
         ticker,
         dispatch,
     }
-    q({...action});
+    alphaQ.push({...action});
+}
+
+export const fetchTickerData = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_TICKER_DATA,
+        ticker,
+        dispatch,
+    }
+    polygonQ.push({ ...action });
+}
+
+function formatDate(date) {
+    return "" + date.getUTCFullYear() + "-" + (1 + date.getUTCMonth()) + "-" + date.getUTCDate()
+}
+
+export const fetchCompanyNews = (ticker, dispatch) => {
+    let startTime = new Date()
+    startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
+    let endTime = new Date();
+    const action = {
+        type: FETCH_COMPANY_NEWS,
+        ticker,
+        dispatch,
+        start: formatDate(startTime),
+        end: formatDate(endTime),
+    }
+    finnhubQ.push(action)
+}
+
+export const fetchMarketNews = dispatch => {
+    const action = {
+        type: FETCH_MARKET_NEWS,
+        dispatch,
+    }
+    finnhubQ.push(action)
 }

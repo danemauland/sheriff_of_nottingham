@@ -5,6 +5,9 @@ import {fetchCandles,
     RECEIVE_WEEKLY_CANDLES,
     RECEIVE_ANNUAL_CANDLES,
     fetchCompanyOverview,
+    fetchTickerData,
+    fetchCompanyNews,
+    fetchMarketNews,
 } from "../../actions/external_api_actions";
 import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
@@ -14,6 +17,8 @@ import Stock from "./stock";
 import Loading from "./loading";
 import {setAsLoading, finishedLoading} from "../../actions/loading_actions";
 import {withRouter} from "react-router-dom";
+import { isStockLoaded, ONE_DAY} from "../../util/dashboard_calcs";
+import { updateChart } from "../../actions/chart_selected_actions";
 
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
@@ -28,6 +33,10 @@ const mapDispatchToProps = dispatch => ({
         updateCashHistory: state => dispatch(updateCashHistory(state)),
         setAsLoading: () => dispatch(setAsLoading()),
         finishedLoading: () => dispatch(finishedLoading()),
+        updateChart: chartType => dispatch(updateChart(chartType)),
+        fetchTickerData: ticker => fetchTickerData(ticker, dispatch),
+        fetchCompanyNews: ticker => fetchCompanyNews(ticker, dispatch),
+        fetchMarketNews: () => fetchMarketNews(dispatch),
 });
 
 
@@ -47,8 +56,8 @@ class Dashboard extends React.Component {
         Object.values(this.props.displayedAssets).forEach(asset => {
             if (typeof(asset.ownershipHistory.numShares.last()) === "number") {
                 if (asset.valueHistory === undefined) {
-                this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
-                this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
+                    this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
+                    this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
                 }
             }
         })
@@ -58,6 +67,8 @@ class Dashboard extends React.Component {
         Object.values(this.props.displayedAssets).forEach(asset => {
             if (asset.companyOverview === undefined) {
                 this.props.fetchCompanyOverview(asset.ticker)
+                this.props.fetchTickerData(asset.ticker)
+                this.props.fetchCompanyNews(asset.ticker)
             }
         })
     }
@@ -70,25 +81,16 @@ class Dashboard extends React.Component {
         return this.props.location.pathname === "/dashboard";
     }
 
-    isStockLoaded(ticker) {
-        if (this.props.displayedAssets[ticker] === undefined ||
-        this.props.displayedAssets[ticker].prices === undefined ||
-        this.props.displayedAssets[ticker].prices.oneDay === undefined ||
-        this.props.displayedAssets[ticker].prices.oneWeek === undefined ||
-        this.props.displayedAssets[ticker].prices.oneYear === undefined ||
-        this.props.displayedAssets[ticker].companyOverview === undefined
-        ){ return false }
-        return true;
-    }
-
     checkForNeedToInitializeAStock() {
         if (this.isStockIndexPage()) {
             let ticker = this.getTickerFromPath();
-            if ( !this.isStockLoaded(ticker)) {
+            if ( !isStockLoaded(ticker, this.props.state)) {
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
                 this.props.fetchCompanyOverview(ticker);
+                this.props.fetchTickerData(ticker);
+                this.props.fetchCompanyNews(ticker)
                 this.props.setAsLoading();
             }
         }
@@ -102,6 +104,7 @@ class Dashboard extends React.Component {
     componentDidMount() {
         this.props.initializeAssets(this.props.state);
         this.timesComponentUpdated++;
+        this.props.fetchMarketNews();
     }
 
     assetWasOwned(asset) {
@@ -136,7 +139,11 @@ class Dashboard extends React.Component {
         return this.props.location.pathname.slice(18,this.props.location.pathname.length);
     }
 
-    componentDidUpdate() {
+    receivedMarketNews() {
+        return this.props.state.entities.marketNews.length > 0;
+    }
+
+    componentDidUpdate(prevProps) {
         if (this.timesComponentUpdated === 1) {
 
             this.fetchInitialCandles();
@@ -145,7 +152,9 @@ class Dashboard extends React.Component {
             this.checkForNeedToInitializeAStock();
             
         } else {
-            if (this.props.state.ui.updatesNeeded.cashHistory) {
+            if (prevProps.location !== this.props.location) {
+                this.props.updateChart(ONE_DAY);
+            } else if (this.props.state.ui.updatesNeeded.cashHistory) {
                 this.props.updateCashHistory(this.props.state);
             } else if (this.props.state.ui.updatesNeeded.valueHistory) {
                 this.props.updateSummaryValueHistory(this.props.state);
@@ -153,11 +162,10 @@ class Dashboard extends React.Component {
                 let stillLoading = false;
                 if (this.isDashboardPage()) {
                     stillLoading = this.assetsAreStillLoading();
+                    stillLoading ||= !this.receivedMarketNews();
                 } else if (this.isStockIndexPage()) {
                     let ticker = this.getTickerFromPath();
-                    if (!this.isStockLoaded(ticker)) {
-                        stillLoading = true;
-                    }
+                    stillLoading ||= !isStockLoaded(ticker, this.props.state);
                 }
                 if (!stillLoading) {
                     this.props.finishedLoading();
@@ -175,7 +183,7 @@ class Dashboard extends React.Component {
         if (this.pageIsLoading()) {
             return (
                 <>
-                    <Loading increase={this.props.state.ui.valueIncreased}/>
+                    <Loading />
                     <Header />
                 </>
             )
@@ -187,7 +195,7 @@ class Dashboard extends React.Component {
                     <div className="dashboard-centering-div">
                         <div className="dashboard-main-div">
                             <Route exact path="/dashboard" component={Summary}/>
-                            <Route path="/dashboard/stocks/:ticker" render={() => <Stock ticker={this.getTickerFromPath()}/>} />
+                            <Route path="/dashboard/stocks/:ticker" render={() => <Stock />} />
                         </div>
                     </div>
                 </div>

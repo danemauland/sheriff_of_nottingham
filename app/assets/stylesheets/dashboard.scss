@@ -11,6 +11,7 @@
     top: 0px;
     width: 100%;
     z-index: 1;
+    background-color: black;
 }
 
 .dashboard-header-centering-div {
@@ -284,6 +285,10 @@
     }
 }
 
+.chart-wrapper {
+    margin-bottom: 44px;
+}
+
 .graph-view {
     color: $lightish-gray;
     font-weight: 400;
@@ -298,7 +303,6 @@
 .chart-selector-spacer {
     border-bottom: 1px solid $darkishish-gray;
     margin-top: 24px;
-    margin-bottom: 12px;
     box-sizing: border-box;
     display: relative;
     height: 31px
@@ -312,7 +316,6 @@
 .chart-selector-link {
     padding-right: 12px;
     padding-left: 12px;
-    padding-bottom: 10px;
     box-sizing: border-box;
 }
 
@@ -338,7 +341,7 @@
 
 .cash-spacer {
     margin-bottom: 60px;
-    margin-top: -4px;
+    margin-top: -36px;
 }
 
 .cash-container {
@@ -611,4 +614,148 @@
 
 .search-result-item.selected {
     background-color: rgba(48,54,58, 0.75);
+}
+
+.stock-ownership-positioner {
+    letter-spacing: 0.25px;
+    margin-bottom: 60px;
+    margin-top: 12px;
+    display: flex;
+    > div {
+        padding: 24px;
+        flex: 1 1 0;
+        border-radius: 4px;
+        box-sizing: border-box;
+        border: 1px solid $darkish-gray;
+        margin-bottom: 12px;
+    }
+    > div:first-child {
+        margin-right: 6px;
+    }
+    > div:last-child {
+        margin-left: 6px;
+    }
+    h3 {
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 28px;
+    }
+}
+
+.stock-ownership-sub-container > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid $darkish-gray;
+    :last-child {
+        border-bottom: 0px;
+    }
+}
+
+.stock-ownership-sub-container > div:last-child {
+    border-bottom: 0px;
+}
+
+.stock-about-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid $darkish-gray;
+    h2 {
+        display: inline-block;
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 32px;
+    }
+}
+
+.stock-about-positioner {
+    margin-bottom: 60px;
+}
+
+.stock-description-positioner {
+    max-width: 570px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    line-height: 24px;
+}
+
+.stock-items {
+    padding-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stock-item {
+    flex-basis: calc(25% - 12px);
+    margin: 0 6px 12px;
+    letter-spacing: 0.25px;
+}
+
+.stock-item > * {
+    margin: 0;
+}
+
+.stock-items > :nth-child(4n+1) {
+    margin-left: 0px;
+}
+
+.news-title {
+    border-bottom: 1px solid $darkish-gray;
+    padding-bottom: 16px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+}
+
+.news-container {
+    margin-bottom: 60px;
+}
+
+.news-item {
+    padding: 30px;
+    margin: 0 -30px;
+    display: flex;
+    justify-content: space-between;
+    min-height: 134px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    img {
+        width: 196px;
+        height: 134px;
+        object-fit: cover;
+    }
+}
+
+.news-item-body {
+    margin: 4px 0;
+    max-height: 10.5ex;
+    max-width: 420px;
+    overflow: hidden;
+    letter-spacing: 0.15px;
+    h3 {
+        margin-bottom: 2px;
+        font-size: 15px;
+        font-weight: 100;
+        max-height: 40px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    div {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        color: $lightish-gray;
+    }
+}
+
+.news-item:hover {
+    background-color: $darker-gray;
+    transition: background-color 0.15s;
+}
+
+.news-item-header > span:last-child {
+    margin-left: 6px;
+    color: $lightish-gray;
 }

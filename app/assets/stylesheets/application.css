@@ -46,8 +46,16 @@
   font-size: 20px;
 }
 
+.green {
+  color: rgb(0,200,5)
+}
+
 .dark-green-hover:hover{
   color: rgb(0,180,5);
+}
+
+.light-green-hover:hover {
+  color: rgb(38,208,43);
 }
 
 .dark-green-hover.hovered{
@@ -56,6 +64,10 @@
 
 .red-hover:hover{
   color: rgb(255,80,0);
+}
+
+.light-red-hover:hover{
+  color: rgb(255,106,38);
 }
 
 .red-hover.hovered{

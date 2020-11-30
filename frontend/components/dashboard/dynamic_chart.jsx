@@ -16,6 +16,7 @@ import {
     chartOptions,
     graphView,
 } from "../../util/chart_utils";
+import { withRouter } from "react-router-dom";
 
 Chart.defaults.global.animation.duration = 0;
 
@@ -145,7 +146,6 @@ class DynamicChart extends React.Component {
         this.lineChart.chart.options.scales.yAxes[0].ticks.max = max;
         this.lineChart.chart.options.scales.yAxes[0].ticks.min = min;
         
-        this.resetHeader();
         
         this.lineChart.update();
         
@@ -154,7 +154,7 @@ class DynamicChart extends React.Component {
             labels,
             datasets,
             view: this.props.chartSelected,
-        });
+        }, this.resetHeader);
 
 
         this.props.chartUpdated();
@@ -216,4 +216,4 @@ class DynamicChart extends React.Component {
     }
 }
 
-export default DynamicChart;
+export default withRouter(DynamicChart);

@@ -4,6 +4,7 @@ import tradesReducer from "./trades_reducer";
 import displayedAssetsReducer from "./displayed_assets_reducer";
 import entitiesSummaryReducer from "./entities_summary_reducer";
 import allTickersReducer from "./all_tickers_reducer";
+import marketNewsReducer from "./market_news_reducer";
 
 export default combineReducers({
     trades: tradesReducer,
@@ -11,4 +12,5 @@ export default combineReducers({
     displayedAssets: displayedAssetsReducer,
     summary: entitiesSummaryReducer,
     allTickers: allTickersReducer,
+    marketNews: marketNewsReducer,
 })

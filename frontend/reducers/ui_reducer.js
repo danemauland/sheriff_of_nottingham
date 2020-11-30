@@ -4,6 +4,7 @@ import valueIncreasedReducer from "./value_increased_reducer";
 import chartSelectedReducer from "./chart_selected_reducer";
 import updatesReducer from "./updates_reducer";
 import loadingReducer from "./loading_reducer";
+import apiDebounceStartTimeReducer from "./api_debounce_start_time_reducer.js";
 
 export default combineReducers({
     modal: modalReducer,
@@ -11,4 +12,5 @@ export default combineReducers({
     chartSelected: chartSelectedReducer,
     updatesNeeded: updatesReducer,
     loading: loadingReducer,
+    apiDebounceStartTime: apiDebounceStartTimeReducer,
 })

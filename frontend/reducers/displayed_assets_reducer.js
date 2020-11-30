@@ -9,6 +9,8 @@ import {RECEIVE_DAILY_CANDLES,
     INITIALIZE_ASSETS,
     dstAdjustment,
     RECEIVE_COMPANY_OVERVIEW,
+    RECEIVE_TICKER_DATA,
+    RECEIVE_COMPANY_NEWS
 } from "../actions/external_api_actions";
 import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 var merge = require('lodash.merge');
@@ -208,6 +210,9 @@ export default (state = defaultState, action) => {
                     newState[action.ticker].ownershipHistory
                 );
             }
+            newState[action.ticker].prices.oneDayHigh = Math.round(Math.max(...action.candles.h)*100);
+            newState[action.ticker].prices.oneDayLow = Math.round(Math.min(...action.candles.l)*100);
+            newState[action.ticker].prices.open = Math.round(action.candles.o[0]*100);
             return merge({},newState);
         case RECEIVE_WEEKLY_CANDLES:
             newState = {...state};
@@ -243,6 +248,10 @@ export default (state = defaultState, action) => {
                     newState[action.ticker].ownershipHistory
                 );
             }
+            newState[action.ticker].prevVolume = action.candles.v[action.candles.v.length - 2];
+            newState[action.ticker].curVolume = action.candles.v.last();
+            newState[action.ticker].prices.oneYearHigh = Math.round(Math.max(...action.candles.h) * 100);
+            newState[action.ticker].prices.oneYearLow = Math.round(Math.min(...action.candles.l) * 100);
             return merge({},newState);
         case RECEIVE_QUOTE:
             newState = {...state};
@@ -255,7 +264,27 @@ export default (state = defaultState, action) => {
             newState[action.ticker] ||= merge({}, defaultAssetState);
             return merge({}, newState, {[action.ticker]:
                 Object.assign({}, state[action.ticker], {companyOverview: action.companyOverview})}
-            )
+            );
+        case RECEIVE_COMPANY_OVERVIEW:
+            newState = {...state};
+            newState[action.ticker] ||= merge({}, defaultAssetState);
+            return merge({}, newState, {[action.ticker]:
+                Object.assign({}, state[action.ticker], {companyOverview: action.companyOverview})}
+            );
+        case RECEIVE_TICKER_DATA:
+            newState = { ...state };
+            newState[action.ticker] ||= merge({}, defaultAssetState);
+            return merge({}, newState, {
+                [action.ticker]:
+                Object.assign({}, state[action.ticker], { tickerData: action.tickerData })
+            });
+        case RECEIVE_COMPANY_NEWS:
+            newState = { ...state };
+            newState[action.ticker] ||= merge({}, defaultAssetState);
+            return merge({}, newState, {
+                [action.ticker]:
+                    Object.assign({}, state[action.ticker], { companyNews: action.companyNews })
+            });
         default:
             return state;
     }

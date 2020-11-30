@@ -23,7 +23,10 @@ export default (state = defaultState, action) => {
     switch (action.type) {
         case REMOVE_CASH_TRANSACTIONS:
         case RECEIVE_CASH_TRANSACTION:
-            return Object.assign({}, state, {cashHistory: true});
+            return Object.assign({}, state, {
+                cashHistory: true,
+                chart: true,
+            });
         case UPDATE_CASH_HISTORY:
             return Object.assign({}, state, {
                 cashHistory: false,

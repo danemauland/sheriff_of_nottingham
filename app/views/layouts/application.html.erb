@@ -20,6 +20,7 @@
       window.headerOverlay = "<%= image_url("header_overlay.png") %>"
       window.finnhubAPIKey = "<%= Rails.application.credentials.finnhub[:normal_api_key] %>"
       window.alphavantageAPIKey = "<%= Rails.application.credentials.alphavantage[:api_key] %>"
+      window.polygonAPIKey = "<%= Rails.application.credentials.polygon[:api_key] %>"
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <%= stylesheet_link_tag    'application', media: 'all' %>
