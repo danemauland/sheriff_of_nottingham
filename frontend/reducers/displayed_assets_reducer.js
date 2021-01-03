@@ -17,6 +17,26 @@ import {RECEIVE_DAILY_CANDLES,
 import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 var merge = require('lodash.merge');
 
+const initializeState = initialTrades => {
+    const trades = [...initialTrades].sort((a, b) => a.createdAt - b.createdAt);
+    const newState = {};
+    trades.forEach(trade => {
+        if (newState[trade.ticker]) {
+            newState[trade.ticker].ownershipHistory.times.push(trade.createdAt / 1000);
+            const lastIndex = newState[trade.ticker].ownershipHistory.numShares.length - 1;
+            newState[trade.ticker].ownershipHistory.numShares.push(
+                trade.numShares + 
+                newState[trade.ticker].ownershipHistory.numShares[lastIndex]);
+        } else {
+            newState[trade.ticker] = {}; 
+            newState[trade.ticker].ownershipHistory = {};
+            newState[trade.ticker].ownershipHistory.times = [trade.createdAt / 1000];
+            newState[trade.ticker].ownershipHistory.numShares = [trade.numShares];
+            newState[trade.ticker].ticker = trade.ticker;
+    }});
+    return newState;
+}
+
 const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {
     if (j - i === 0) {
         if (type === 1) {
@@ -171,6 +191,7 @@ export default (state = defaultState, action) => {
     let timesAndPrices;
     switch (action.type) {
         case INITIALIZE_ASSETS:
+            return merge({},initializeState(action.trades));
         case INITIALIZE_ASSET:
             return merge({}, {[action.ticker]: {ticker: action.ticker}})
         case FLUSH_ASSET:
@@ -188,12 +209,12 @@ export default (state = defaultState, action) => {
             timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_DAILY_CANDLES);
             newState[action.ticker].times.oneDay = timesAndPrices[0];
             newState[action.ticker].prices.oneDay = timesAndPrices[1];
-            if (action.ownershipHistories[1].length > 0) {
+            if (action.ownershipHistory[1].length > 0) {
                 newState[action.ticker].valueHistory ||= {};
                 newState[action.ticker].valueHistory.oneDay = calcValues(
                     newState[action.ticker].times.oneDay,
                     newState[action.ticker].prices.oneDay,
-                    action.ownershipHistories
+                    action.ownershipHistory
                 );
             }
             newState[action.ticker].prices.oneDayHigh = Math.round(Math.max(...action.candles.h)*100);
@@ -209,11 +230,11 @@ export default (state = defaultState, action) => {
             newState[action.ticker].times.oneWeek = timesAndPrices[0];
             newState[action.ticker].prices.oneWeek = timesAndPrices[1];
             newState[action.ticker].valueHistory ||= {};
-            if (action.ownershipHistories[1].length > 0) {
+            if (action.ownershipHistory[1].length > 0) {
                 newState[action.ticker].valueHistory.oneWeek = calcValues(
                     newState[action.ticker].times.oneWeek,
                     newState[action.ticker].prices.oneWeek,
-                    action.ownershipHistories
+                    action.ownershipHistory
                 );
             }
             return merge({},newState);
@@ -227,11 +248,11 @@ export default (state = defaultState, action) => {
                 Math.floor(price * 100)
             ));
             newState[action.ticker].valueHistory ||= {};
-            if (action.ownershipHistories[1].length > 0) {
+            if (action.ownershipHistory[1].length > 0) {
                 newState[action.ticker].valueHistory.oneYear = calcValues(
                     newState[action.ticker].times.oneYear,
                     newState[action.ticker].prices.oneYear,
-                    action.ownershipHistories
+                    action.ownershipHistory
                 );
             }
             newState[action.ticker].prevVolume = action.candles.v[action.candles.v.length - 2];
