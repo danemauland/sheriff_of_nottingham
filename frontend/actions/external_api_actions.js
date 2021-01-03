@@ -27,11 +27,14 @@ export const initializeAsset = ticker => ({
     ticker,
 })
 
-const receiveCandles = (ticker, candles, type) => ({
+const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
+    dispatch({
     type,
     ticker,
     candles,
-})
+    ownershipHistory: getState().entities.assetInformation.ownershipHistories[ticker],
+    });
+}
 
 const receiveQuote = (ticker, quote) => ({
     type: RECEIVE_QUOTE,
@@ -69,44 +72,47 @@ const flushAsset = ticker => ({
 
 
 const qFunc = action => {
+    const ticker = action.ticker;
+    const start = action.start;
+    const end = action.end;
     switch (action.type) {
         case FETCH_CANDLES:
-            externalAPIUtil.fetchCandles(action.ticker, action.resolution, action.start, action.end).then(
+            externalAPIUtil.fetchCandles(ticker, action.resolution, start, end).then(
                 candles => {
                     if (candles.s === "no_data") {
-                        action.dispatch(flushAsset(action.ticker));
+                        action.dispatch(flushAsset(ticker));
                     } else {
-                        action.dispatch(receiveCandles(action.ticker, candles, action.subtype))
+                        action.dispatch(receiveCandles(ticker, candles, action.subtype))
                     }
                 },
                 error => console.log(error),
             );
             break;
         case FETCH_QUOTE:
-            // finnhubClient.quote(action.ticker, (error, data, response) => {
+            // finnhubClient.quote(ticker, (error, data, response) => {
             //     console.log(error);
-            //     action.dispatch(receiveQuote(action.ticker, data))
+            //     action.dispatch(receiveQuote(ticker, data))
             // })
             break;
         case FETCH_TICKER_DATA:
-            externalAPIUtil.fetchTickerData(action.ticker).then(
-                tickerData => action.dispatch(receiveTickerData(action.ticker, tickerData)),
-                () => action.dispatch(receiveTickerData(action.ticker, []))
+            externalAPIUtil.fetchTickerData(ticker).then(
+                tickerData => action.dispatch(receiveTickerData(ticker, tickerData)),
+                () => action.dispatch(receiveTickerData(ticker, []))
             );
             break;
         case FETCH_COMPANY_OVERVIEW:
-            externalAPIUtil.fetchCompanyOverview(action.ticker).then(
-                companyOverview => action.dispatch(receiveCompanyOverview(action.ticker, companyOverview))
+            externalAPIUtil.fetchCompanyOverview(ticker).then(
+                companyOverview => action.dispatch(receiveCompanyOverview(ticker, companyOverview))
             );
             break;
         case FETCH_COMPANY_NEWS:
-            externalAPIUtil.fetchCompanyNews(action.ticker, action.start, action.end).then(
-                companyNews => action.dispatch(receiveCompanyNews(action.ticker, companyNews)),
-                () => action.dispatch(receiveCompanyNews(action.ticker, []))
+            externalAPIUtil.fetchCompanyNews(ticker, start, end).then(
+                companyNews => action.dispatch(receiveCompanyNews(ticker, companyNews)),
+                () => action.dispatch(receiveCompanyNews(ticker, []))
             );
             break;
         case FETCH_MARKET_NEWS:
-            externalAPIUtil.fetchMarketNews(action.start, action.end).then(
+            externalAPIUtil.fetchMarketNews(start, end).then(
                 marketNews => action.dispatch(receiveMarketNews(marketNews))
             );
             break;
