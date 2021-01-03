@@ -168,7 +168,7 @@ export const getLabelsArray = function(times, type) {
     return labels;
 }
 
-export const getDatasets = function(values, type) {
+export const getDatasets = function(values, type, times) {
     const newValues = [ [], [], [], [], ];
 
     let [
@@ -198,6 +198,7 @@ export const getDatasets = function(values, type) {
                     i < TOTAL_ONE_DAY_TIMESLOTS; 
                     i++
                 ){
+                    debugger;
                     if (times[i] < new Date().getTime() / 1000) {
                         outMarketHoursVals.push(inMarketHoursVals.last)
                     }

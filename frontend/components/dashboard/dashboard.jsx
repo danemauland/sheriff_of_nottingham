@@ -8,6 +8,7 @@ import {fetchCandles,
     fetchTickerData,
     fetchCompanyNews,
     fetchMarketNews,
+    initializeAsset,
 } from "../../actions/external_api_actions";
 import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
@@ -37,6 +38,7 @@ const mapDispatchToProps = dispatch => ({
         fetchTickerData: ticker => fetchTickerData(ticker, dispatch),
         fetchCompanyNews: ticker => fetchCompanyNews(ticker, dispatch),
         fetchMarketNews: () => fetchMarketNews(dispatch),
+        initializeAsset: ticker => dispatch(initializeAsset(ticker))
 });
 
 
@@ -81,10 +83,26 @@ class Dashboard extends React.Component {
         return this.props.location.pathname === "/dashboard";
     }
 
-    checkForNeedToInitializeAStock() {
-        if (this.isStockIndexPage()) {
-            let ticker = this.getTickerFromPath();
+    checkForNeedToInitializeAStock(asset) {
+        let ticker;
+        if (asset) {
+            ticker = asset.ticker;
             if ( !isStockLoaded(ticker, this.props.state)) {
+                this.props.initializeAsset(ticker);
+                this.props.initializeAssets(this.props.state);
+                this.props.fetchCandles(ticker);
+                this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
+                this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
+                this.props.fetchCompanyOverview(ticker);
+                this.props.fetchTickerData(ticker);
+                this.props.fetchCompanyNews(ticker);
+                this.props.setAsLoading();
+            }
+        } else if (this.isStockIndexPage()) {
+            ticker = this.getTickerFromPath();
+            if ( !isStockLoaded(ticker, this.props.state)) {
+                this.props.initializeAsset(ticker);
+                this.props.initializeAssets(this.props.state);
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
@@ -154,6 +172,9 @@ class Dashboard extends React.Component {
         } else {
             if (prevProps.location !== this.props.location) {
                 this.props.updateChart(ONE_DAY);
+                Object.values(this.props.displayedAssets).forEach(asset =>
+                    this.checkForNeedToInitializeAStock(asset)
+                );
             } else if (this.props.state.ui.updatesNeeded.cashHistory) {
                 this.props.updateCashHistory(this.props.state);
             } else if (this.props.state.ui.updatesNeeded.valueHistory) {

@@ -6,6 +6,7 @@ const getOwnedStocks = (state) => {
     const arr = [];
     Object.values(state.entities.displayedAssets).forEach(asset => {
         if (asset.ownershipHistory && asset.ownershipHistory.numShares &&
+            asset.ownershipHistory.numShares.length > 0 &&
             asset.ownershipHistory.numShares.last() !== 0
         ) {
             arr.push(asset);

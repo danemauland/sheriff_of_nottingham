@@ -130,10 +130,16 @@ export const extractAboutItems = (ticker, state) => {
     const desc = asset.companyOverview;
     const data = asset.tickerData;
     const items = [];
-    items.push(["CEO",data.ceo]);
-    items.push(["Employees", parseInt(data.employees).toLocaleString()]);
+    if (data.length < 1) {
+        items.push(["CEO","Not Found"]);
+        items.push(["Employees", "Not Found"]);
+        items.push(["Listed", "Not Found"]);
+    } else {
+        items.push(["CEO",data.ceo]);
+        items.push(["Employees", parseInt(data.employees).toLocaleString()]);
+        items.push(["Listed", data.listdate.slice(0,4)]);items.push(["Market Cap", formatLargeNumber(desc.MarketCapitalization, 3)]);
+    }
     items.push(["Headquarters", getCityAndState(desc.Address)]);
-    items.push(["Listed", data.listdate.slice(0,4)]);items.push(["Market Cap", formatLargeNumber(desc.MarketCapitalization, 3)]);
     items.push(["Price-Earnings Ratio", parseFloat(desc.PERatio).toFixed(2)]);
     items.push(["Dividend Yield", formatDividendYield(desc.DividendYield)]);
     items.push(["Prev. Day Volume", formatLargeNumber(asset.prevVolume)]);

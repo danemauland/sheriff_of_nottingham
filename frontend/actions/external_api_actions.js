@@ -19,6 +19,13 @@ export const RECEIVE_WEEKLY_CANDLES = "RECEIVE_WEEKLY_CANDLES";
 export const RECEIVE_ANNUAL_CANDLES = "RECEIVE_ANNUAL_CANDLES";
 export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
 export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
+export const INITIALIZE_ASSET = "INITIALIZE_ASSET";
+export const FLUSH_ASSET = "FLUSH_ASSET";
+
+export const initializeAsset = ticker => ({
+    type: INITIALIZE_ASSET,
+    ticker,
+})
 
 const receiveCandles = (ticker, candles, type) => ({
     type,
@@ -55,12 +62,23 @@ const receiveMarketNews = marketNews => ({
     marketNews,
 })
 
+const flushAsset = ticker => ({
+    type: FLUSH_ASSET,
+    ticker,
+})
+
 
 const qFunc = action => {
     switch (action.type) {
         case FETCH_CANDLES:
             externalAPIUtil.fetchCandles(action.ticker, action.resolution, action.start, action.end).then(
-                candles => action.dispatch(receiveCandles(action.ticker, candles, action.subtype)),
+                candles => {
+                    if (candles.s === "no_data") {
+                        action.dispatch(flushAsset(action.ticker));
+                    } else {
+                        action.dispatch(receiveCandles(action.ticker, candles, action.subtype))
+                    }
+                },
                 error => console.log(error),
             );
             break;
@@ -73,7 +91,7 @@ const qFunc = action => {
         case FETCH_TICKER_DATA:
             externalAPIUtil.fetchTickerData(action.ticker).then(
                 tickerData => action.dispatch(receiveTickerData(action.ticker, tickerData)),
-                error => console.log(error),
+                () => action.dispatch(receiveTickerData(action.ticker, []))
             );
             break;
         case FETCH_COMPANY_OVERVIEW:
@@ -83,7 +101,8 @@ const qFunc = action => {
             break;
         case FETCH_COMPANY_NEWS:
             externalAPIUtil.fetchCompanyNews(action.ticker, action.start, action.end).then(
-                companyNews => action.dispatch(receiveCompanyNews(action.ticker, companyNews))
+                companyNews => action.dispatch(receiveCompanyNews(action.ticker, companyNews)),
+                () => action.dispatch(receiveCompanyNews(action.ticker, []))
             );
             break;
         case FETCH_MARKET_NEWS:

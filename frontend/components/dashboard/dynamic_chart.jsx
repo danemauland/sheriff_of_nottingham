@@ -124,7 +124,8 @@ class DynamicChart extends React.Component {
 
         const datasets = getDatasets(
             this.props.valueHistoryValues,
-            this.props.chartSelected
+            this.props.chartSelected,
+            times
         );
 
         // Update chart data, have to mutate, cannot reassign

@@ -166,7 +166,6 @@ class Sidebar extends React.Component {
         if (this.state.investIn === "Dollars") {
             trade.num_shares = Math.floor(this.state.amount / this.state.price)
         } else {
-            debugger
             trade.num_shares = this.state.numShares;
         }
         if (this.state.order === "Sell") {

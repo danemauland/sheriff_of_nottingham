@@ -7,16 +7,18 @@ import {RECEIVE_DAILY_CANDLES,
     RECEIVE_ANNUAL_CANDLES,
     RECEIVE_QUOTE,
     INITIALIZE_ASSETS,
+    INITIALIZE_ASSET,
     dstAdjustment,
     RECEIVE_COMPANY_OVERVIEW,
     RECEIVE_TICKER_DATA,
-    RECEIVE_COMPANY_NEWS
+    RECEIVE_COMPANY_NEWS,
+    FLUSH_ASSET,
 } from "../actions/external_api_actions";
 import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 var merge = require('lodash.merge');
 
 const initializeState = initialTrades => {
-    const trades = [...initialTrades];
+    const trades = [...initialTrades].sort((a, b) => a.createdAt - b.createdAt);
     const newState = {};
     trades.forEach(trade => {
         if (newState[trade.ticker]) {
@@ -192,11 +194,18 @@ export default (state = defaultState, action) => {
     switch (action.type) {
         case INITIALIZE_ASSETS:
             return merge({},initializeState(action.trades));
+        case INITIALIZE_ASSET:
+            return merge({}, {[action.ticker]: {ticker: action.ticker}})
+        case FLUSH_ASSET:
+            newState = merge({}, state);
+            delete newState[action.ticker];
+            return newState;
         case LOGOUT_CURRENT_USER:
             return defaultState;
         case RECEIVE_DAILY_CANDLES:
             newState = {...state};
             newState[action.ticker] ||= merge({}, defaultAssetState);
+            newState[action.ticker].ticker ||= action.ticker;
             newState[action.ticker].times ||= {};
             newState[action.ticker].prices ||= {};
             timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_DAILY_CANDLES);
