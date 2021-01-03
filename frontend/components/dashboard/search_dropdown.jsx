@@ -1,10 +1,8 @@
 import React from "react";
-import { connect } from "react-redux";
 import SearchResultItem from "./search_result_item";
+import tickers from "../../util/all_tickers";
 
-const mapStateToProps = state => ({
-    tickers: state.entities.allTickers,
-})
+// TODO: rework to use a trie
 
 let strBSearch = (arr, str) => {
     let startIndex = 0;
@@ -38,21 +36,17 @@ let strBSearch = (arr, str) => {
 }
 
 class SearchDropdown extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
     searchItems() {
         let startIndex = 0;
-        let endIndex = this.props.tickers.length;
+        let endIndex = tickers.length;
         let midIndex = Math.floor(startIndex + endIndex);
         let found = false;
         upCased = this.props.input.toUpperCase();
         while (!found) {
             for(let i = 0; i < upCased.length; i++) {
-                if (this.props.tickers[midIndex][i] < upCased[i]) {
+                if (tickers[midIndex][i] < upCased[i]) {
                     endIndex = midIndex;
-                } else if (this.props.tickers[midIndex][0] > upCased[i]) {
+                } else if (tickers[midIndex][0] > upCased[i]) {
                     startIndex = midIndex;
                 } else if ( i === upCased.length - 1) {
                     found = true;
@@ -62,13 +56,13 @@ class SearchDropdown extends React.Component {
     }
 
     getSearchResults() {
-        const startIndex = strBSearch(this.props.tickers, this.props.input);
+        const startIndex = strBSearch(tickers, this.props.input);
         if (startIndex < 0) return [];
         let breakLoop = false;
         let numTo = 0;
         for (let i = 5; i > 0; i--) {
             if (!breakLoop) {
-                if (this.props.tickers[startIndex + i][0].slice(
+                if (tickers[startIndex + i][0].slice(
                         0, this.props.input.length
                     ) === this.props.input.toUpperCase()
                 ) {
@@ -79,7 +73,7 @@ class SearchDropdown extends React.Component {
         }
         const results = [];
         for (let i = 0; i < numTo + 1; i++) {
-            results.push(this.props.tickers[startIndex + i])
+            results.push(tickers[startIndex + i])
         }
         return results;
     }
@@ -100,4 +94,4 @@ class SearchDropdown extends React.Component {
     }  
 }
 
-export default connect(mapStateToProps, null)(SearchDropdown)
+export default SearchDropdown

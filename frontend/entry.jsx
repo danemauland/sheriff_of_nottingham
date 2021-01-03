@@ -18,7 +18,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import configureStore from "./store/store";
 import Root from "./components/root";
+import setArrayAndDateMethods from "./util/array_and_date_utils"; //don't delete, import needed to set up methods
 import { finnhubQ, alphaQ, polygonQ} from "./actions/external_api_actions";
+
 
 // TESTING
 import * as sessionAPIUtil from "./util/session_api_util";
@@ -28,36 +30,10 @@ const finnhub = require('finnhub');
 import {postCashTransaction} from "./util/cash_transactions_api_util";
 // END TESTING
 
-Date.prototype.stdTimezoneOffset = function () {
-    const jan = new Date(this.getFullYear(), 0, 1);
-    const jul = new Date(this.getFullYear(), 6, 1);
-    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-}
-
-Date.prototype.isDSTObserved = function () {
-    return this.getTimezoneOffset() < this.stdTimezoneOffset();
-}
-
-Array.prototype.last = function() {
-    return this[this.length - 1];
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById("root");
-    let store;
-    if (window.currentUser) {
-        const preloadedState = {
-            session: {
-                username: window.currentUser.username,
-            },
-            entities: {
-                cashTransactions: [...window.currentUser.cashTransactions],
-                trades: [...window.currentUser.trades],
-            }
-        }
-        store = configureStore(preloadedState);
-        delete window.currentUser;
-    } else { store = configureStore() }
+    const store = configureStore(window.currentUser);
+    if (window.currentUser) delete window.currentUser;
     
     finnhubQ.setDispatch(store.dispatch);
     alphaQ.setDispatch(store.dispatch);
