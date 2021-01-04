@@ -287,7 +287,7 @@ export default (state = defaultState, action) => {
             newState[ticker] ||= merge({}, defaultAssetState);
             return merge({}, newState, {
                 [ticker]:
-                Object.assign({}, state[ticker], { tickerData: tickerData })
+                Object.assign({}, state[ticker], { tickerData: action.tickerData })
             });
         case RECEIVE_COMPANY_NEWS:
             newState = { ...state };
