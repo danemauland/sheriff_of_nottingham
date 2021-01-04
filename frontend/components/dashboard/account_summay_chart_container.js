@@ -4,9 +4,10 @@ import DynamicChart from "./dynamic_chart"
 import { connect } from "react-redux";
 
 const mapStateToProps = state => {
+    const portfolioHistory = state.newEntities.portfolioHistory;
     return ({
-        startingCashBal: state.entities.portfolioHistory.cashHistory[1][0],
-        startingCashTime: state.entities.portfolioHistory.cashHistory[0][0],
+        startingCashBal: portfolioHistory.cashHistory[1][0],
+        startingCashTime: portfolioHistory.cashHistory[0][0],
         currentPortfolioVal: state.entities.summary.valueHistory.values.oneDay.last(),
         valueHistoryTimes: state.entities.summary.valueHistory.times,
         valueHistoryValues: state.entities.summary.valueHistory.values,

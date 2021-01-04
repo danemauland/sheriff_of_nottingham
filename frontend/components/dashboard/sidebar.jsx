@@ -4,7 +4,7 @@ import StockItem from "./stock_item";
 
 const getOwnedTickers = state => {
     const arr = [];
-    const assetInformation = state.entities.assetInformation;
+    const assetInformation = state.newEntities.assetInformation;
     const numShares = assetInformation.ownershipHistories.numShares;
     Object.values(assetInformation.tickers).forEach(ticker => {
         if (numShares[ticker] && numShares[ticker].last() !== 0) arr.push(asset);

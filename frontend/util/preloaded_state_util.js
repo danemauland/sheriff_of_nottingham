@@ -9,7 +9,7 @@ export default (user) => {
         session: {
             username: user.username,
         },
-        entities: {
+        newEntities: {
             assetInformation: {
                 tickers,
                 ownershipHistories,

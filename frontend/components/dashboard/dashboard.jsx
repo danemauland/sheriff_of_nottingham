@@ -23,6 +23,9 @@ import { updateChart } from "../../actions/chart_selected_actions";
 
 const mapStateToProps = state => ({
     displayedAssets: state.entities.displayedAssets,
+    trades: state.newEntities.portfolioHistory.trades,
+    cashTransactions: state.newEntities.portfolioHistory.cashTransactions,
+    ownershipHistories: state.newEntities.assetInformation.ownershipHistories,
     state: state,
 });
 
@@ -56,7 +59,7 @@ class Dashboard extends React.Component {
             }
         })
         Object.values(this.props.displayedAssets).forEach(asset => {
-            if (typeof(this.props.state.entities.assetInformation.ownershipHistories.numShares[asset.ticker].last()) === "number") {
+            if (typeof(this.props.ownershipHistories.numShares[asset.ticker].last()) === "number") {
                 if (asset.valueHistory === undefined) {
                     this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
                     this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
@@ -85,11 +88,12 @@ class Dashboard extends React.Component {
 
     checkForNeedToInitializeAStock(asset) {
         let ticker;
+        const {trades, cashTransactions} = this.props;
         if (asset) {
             ticker = asset.ticker;
             if ( !isStockLoaded(ticker, this.props.state)) {
                 this.props.initializeAsset(ticker);
-                this.props.initializeAssets(this.props.state.entities.portfolioHistory.trades, this.props.state.entities.portfolioHistory.cashTransactions);
+                this.props.initializeAssets(trades, cashTransactions);
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
@@ -102,7 +106,7 @@ class Dashboard extends React.Component {
             ticker = this.getTickerFromPath();
             if ( !isStockLoaded(ticker, this.props.state)) {
                 this.props.initializeAsset(ticker);
-                this.props.initializeAssets(this.props.state.entities.portfolioHistory.trades, this.props.state.entities.portfolioHistory.cashTransactions);
+                this.props.initializeAssets(trades, cashTransactions);
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
@@ -120,13 +124,13 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.initializeAssets(this.props.state.entities.portfolioHistory.trades, this.props.state.entities.portfolioHistory.cashTransactions);
+        this.props.initializeAssets(this.props.trades, this.props.cashTransactions);
         this.timesComponentUpdated++;
         this.props.fetchMarketNews();
     }
 
     assetWasOwned(ticker) {
-        if (typeof(this.props.state.entities.assetInformation.ownershipHistories.numShares[ticker].last()) === "number") {
+        if (typeof(this.props.ownershipHistories.numShares[ticker].last()) === "number") {
             return true;
         }
         return false
