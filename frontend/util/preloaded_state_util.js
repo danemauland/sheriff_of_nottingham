@@ -13,6 +13,28 @@ export default (user) => {
             assetInformation: {
                 tickers,
                 ownershipHistories,
+                candlePrices: {
+                    oneDay: {},
+                    oneWeek: {},
+                    oneYear: {},
+                },
+                candleTimes: {
+                    oneDay: {},
+                    oneWeek: {},
+                    oneYear: {},
+                },
+                valuations: {
+                    oneDay: {},
+                    oneWeek: {},
+                    oneYear: {},
+                },
+                historicPrices: {
+                    oneDayHigh: {},
+                    oneDayLow: {},
+                    oneYearHigh: {},
+                    oneYearLow: {},
+                    open: {},
+                },
             },
             portfolioHistory: {
                 cashTransactions,

@@ -14,6 +14,7 @@ export const RECEIVE_COMPANY_NEWS = "RECEIVE_COMPANY_NEWS";
 export const FETCH_MARKET_NEWS = "FETCH_MARKET_NEWS";
 export const RECEIVE_MARKET_NEWS = "RECEIVE_MARKET_NEWS";
 export const RECEIVE_COMPANY_OVERVIEW = "RECEIVE_COMPANY_OVERVIEW";
+export const RECEIVE_CANDLES = "RECEIVE_CANDLES";
 export const RECEIVE_DAILY_CANDLES = "RECEIVE_DAILY_CANDLES";
 export const RECEIVE_WEEKLY_CANDLES = "RECEIVE_WEEKLY_CANDLES";
 export const RECEIVE_ANNUAL_CANDLES = "RECEIVE_ANNUAL_CANDLES";
@@ -33,6 +34,18 @@ const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
     const displayedAssets = getState().entities.displayedAssets;
     dispatch({
         type,
+        ticker,
+        tickers,
+        candles,
+        ownershipHistory: {
+            times: ownershipHistories.times[ticker],
+            numShares: ownershipHistories.numShares[ticker],
+        },
+        displayedAssets,
+    });
+    dispatch({
+        type: RECEIVE_CANDLES,
+        subtype: type,
         ticker,
         tickers,
         candles,

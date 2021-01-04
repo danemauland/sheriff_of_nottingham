@@ -118,7 +118,7 @@ const inMarketHours = time => {
     return true;
 }
 
-const isLastPeriod= (time, type) => {
+const isLastPeriod = (time, type) => {
     const date = new Date(time * 1000);
     const dst = date.isDSTObserved();
     const hours = date.getUTCHours();
