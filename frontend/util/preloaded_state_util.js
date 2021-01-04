@@ -1,9 +1,9 @@
 export default (user) => {
     if (!user) return undefined;
-    const tickers = getTickers(ownershipHistories);
     const trades = [...user.trades].sort((a, b) => a.createdAt - b.createdAt);
     const cashTransactions = [...user.cashTransactions].sort((a, b) => a.createdAt - b.createdAt);
     const ownershipHistories = getOwnershipHistories(trades);
+    const tickers = new Set(Object.keys(ownershipHistories.numShares));
     const cashHistory = getCashHistoy(cashTransactions, trades);
     return {
         session: {
@@ -54,14 +54,6 @@ const getOwnershipHistories = initialTrades => {
         numShares.push(trade.numShares + (numShares.last() || 0));
     }
     return ownershipHistories;
-}
-
-const getTickers = ownershipHistories => {
-    const tickers = new Set();
-    for (let ticker in ownershipHistories) {
-        tickers.add(ticker);
-    }
-    return tickers;
 }
 
 const mergeTransactions = (cash, trades) => {
