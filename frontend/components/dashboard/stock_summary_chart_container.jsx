@@ -9,9 +9,10 @@ const mapStateToProps = (state, ownProps) => {
     if (state.entities.displayedAssets[ticker] === undefined) {
         return({ loading: true})
     }
+    const cashHistory = state.newEntities.portfolioHistory.cashHistory;
     return ({
-        startingCashBal: state.entities.summary.cashHistory.balances[0],
-        startingCashTime: state.entities.summary.cashHistory.times[0],
+        startingCashBal: cashHistory.balances[0],
+        startingCashTime: cashHistory.times[0],
         currentPortfolioVal: state.entities.displayedAssets[ticker].prices.oneDay.last(),
         valueHistoryTimes: state.entities.displayedAssets[ticker].times,
         valueHistoryValues: state.entities.displayedAssets[ticker].prices,

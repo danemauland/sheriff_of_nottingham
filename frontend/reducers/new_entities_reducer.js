@@ -22,7 +22,10 @@ const defaultState = {
     },
     portfolioHistory: {
         cashTransactions: [],
-        cashHistory: [[],[]],
+        cashHistory: {
+            times: [],
+            balances: [],
+        },
         trades: [],
     }
 };

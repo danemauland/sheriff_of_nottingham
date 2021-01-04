@@ -26,7 +26,7 @@ export default (user) => {
 const getCashHistoy = (transactions, trades) => {
     const {times, amounts} = mergeTransactions(transactions, trades);
     const balances = [];
-    const cashHistory = [times, balances];
+    const cashHistory = {times, balances};
     amounts.forEach((amount, i) => {
         let oldBalance = balances[i - 1];
         if (i === 0) oldBalance = 0;

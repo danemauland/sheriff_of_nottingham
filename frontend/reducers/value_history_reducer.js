@@ -6,8 +6,8 @@ const mergeHistories = (cashHistory, values, times) => {
     let cashPointer = 0;
     let valuesPointer = 0;
     const totals = [];
-    const cashTimes = cashHistory[0];
-    const cashBalances = cashHistory[1];
+    const cashTimes = cashHistory.times;
+    const cashBalances = cashHistory.balances;
     while (valuesPointer < values.length) {
         if (cashTimes[cashPointer] <= times[valuesPointer]) {
             if (cashTimes[cashPointer + 1] !== undefined && cashTimes[cashPointer + 1] <= times[valuesPointer]) {
