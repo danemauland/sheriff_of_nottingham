@@ -2,7 +2,6 @@ import React from "react";
 import {connect} from "react-redux";
 import {
     positionValue,
-    numSharesOwned,
     positionCost,
     formatToDollar,
     ONE_DAY,
@@ -15,7 +14,7 @@ import {
 
 const mapStateToProps = (state, {ticker}) => {
     const marketValue = positionValue(ticker, state);
-    const numShares = numSharesOwned(ticker, state);
+    const numShares = state.entities.assetInformation.ownershipHistories.numShares.last();
     const totalPositionCost = positionCost(ticker, state);
     const prevDayCloseValue = getPreviousEndingValue(
         state.entities.displayedAssets[ticker].valueHistory.oneYear,

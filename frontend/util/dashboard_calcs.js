@@ -34,12 +34,8 @@ export const positionValue = (ticker, state) => {
     return state.entities.displayedAssets[ticker].valueHistory.oneDay.last();
 }
 
-export const numSharesOwned = (ticker, state) => {
-    return state.entities.displayedAssets[ticker].ownershipHistory.numShares.last();
-}
-
 export const positionCost = (ticker, state) => {
-    let sharesRemaining = numSharesOwned(ticker, state);
+    let sharesRemaining = state.entities.assetInformation.ownershipHistories.numShares.last();
     let short = false;
     if (sharesRemaining < 0) {
         short = true;
