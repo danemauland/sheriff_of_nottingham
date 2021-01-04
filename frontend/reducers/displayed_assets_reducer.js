@@ -64,8 +64,8 @@ const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {
 }
 
 const calcValues = (times, prices, ownershipHistory) => {
-    const ownershipTimes = ownershipHistory[0];
-    const ownershipShares = ownershipHistory[1];
+    const ownershipTimes = ownershipHistory.times;
+    const ownershipShares = ownershipHistory.numShares;
 
     if (ownershipShares.last() === 0 && ownershipTimes.last < times[0]) {
         const zeros = [];
@@ -189,110 +189,112 @@ export default (state = defaultState, action) => {
     Object.freeze(state)
     let newState;
     let timesAndPrices;
+    const ticker = action.ticker;
+    const ownershipHistory = action.ownershipHistory;
     switch (action.type) {
         case INITIALIZE_ASSETS:
             newState = merge({},initializeState(action.trades));
             return newState;
             break;
         case INITIALIZE_ASSET:
-            return merge({}, {[action.ticker]: {ticker: action.ticker}})
+            return merge({}, {[ticker]: {ticker: ticker}})
         case FLUSH_ASSET:
             newState = merge({}, state);
-            delete newState[action.ticker];
+            delete newState[ticker];
             return newState;
         case LOGOUT_CURRENT_USER:
             return defaultState;
         case RECEIVE_DAILY_CANDLES:
             newState = {...state};
-            newState[action.ticker] ||= merge({}, defaultAssetState);
-            newState[action.ticker].ticker ||= action.ticker;
-            newState[action.ticker].times ||= {};
-            newState[action.ticker].prices ||= {};
+            newState[ticker] ||= merge({}, defaultAssetState);
+            newState[ticker].ticker ||= ticker;
+            newState[ticker].times ||= {};
+            newState[ticker].prices ||= {};
             timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_DAILY_CANDLES);
-            newState[action.ticker].times.oneDay = timesAndPrices[0];
-            newState[action.ticker].prices.oneDay = timesAndPrices[1];
-            if (action.ownershipHistory[1].length > 0) {
-                newState[action.ticker].valueHistory ||= {};
-                newState[action.ticker].valueHistory.oneDay = calcValues(
-                    newState[action.ticker].times.oneDay,
-                    newState[action.ticker].prices.oneDay,
-                    action.ownershipHistory
+            newState[ticker].times.oneDay = timesAndPrices[0];
+            newState[ticker].prices.oneDay = timesAndPrices[1];
+            if (ownershipHistory.numShares.length > 0) {
+                newState[ticker].valueHistory ||= {};
+                newState[ticker].valueHistory.oneDay = calcValues(
+                    newState[ticker].times.oneDay,
+                    newState[ticker].prices.oneDay,
+                    ownershipHistory,
                 );
             }
-            newState[action.ticker].prices.oneDayHigh = Math.round(Math.max(...action.candles.h)*100);
-            newState[action.ticker].prices.oneDayLow = Math.round(Math.min(...action.candles.l)*100);
-            newState[action.ticker].prices.open = Math.round(action.candles.o[0]*100);
+            newState[ticker].prices.oneDayHigh = Math.round(Math.max(...action.candles.h)*100);
+            newState[ticker].prices.oneDayLow = Math.round(Math.min(...action.candles.l)*100);
+            newState[ticker].prices.open = Math.round(action.candles.o[0]*100);
             return merge({},newState);
         case RECEIVE_WEEKLY_CANDLES:
             newState = {...state};
-            newState[action.ticker] ||= merge({}, defaultAssetState);
-            newState[action.ticker].times ||= {};
-            newState[action.ticker].prices ||= {};
+            newState[ticker] ||= merge({}, defaultAssetState);
+            newState[ticker].times ||= {};
+            newState[ticker].prices ||= {};
             timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_WEEKLY_CANDLES);
-            newState[action.ticker].times.oneWeek = timesAndPrices[0];
-            newState[action.ticker].prices.oneWeek = timesAndPrices[1];
-            newState[action.ticker].valueHistory ||= {};
-            if (action.ownershipHistory[1].length > 0) {
-                newState[action.ticker].valueHistory.oneWeek = calcValues(
-                    newState[action.ticker].times.oneWeek,
-                    newState[action.ticker].prices.oneWeek,
-                    action.ownershipHistory
+            newState[ticker].times.oneWeek = timesAndPrices[0];
+            newState[ticker].prices.oneWeek = timesAndPrices[1];
+            newState[ticker].valueHistory ||= {};
+            if (ownershipHistory.numShares.length > 0) {
+                newState[ticker].valueHistory.oneWeek = calcValues(
+                    newState[ticker].times.oneWeek,
+                    newState[ticker].prices.oneWeek,
+                    ownershipHistory,
                 );
             }
             return merge({},newState);
         case RECEIVE_ANNUAL_CANDLES:
             newState = {...state};
-            newState[action.ticker] ||= merge({}, defaultAssetState);
-            newState[action.ticker].times ||= {};
-            newState[action.ticker].prices ||= {};
-            newState[action.ticker].times.oneYear = action.candles.t;
-            newState[action.ticker].prices.oneYear = action.candles.c.map(price => (
+            newState[ticker] ||= merge({}, defaultAssetState);
+            newState[ticker].times ||= {};
+            newState[ticker].prices ||= {};
+            newState[ticker].times.oneYear = action.candles.t;
+            newState[ticker].prices.oneYear = action.candles.c.map(price => (
                 Math.floor(price * 100)
             ));
-            newState[action.ticker].valueHistory ||= {};
-            if (action.ownershipHistory[1].length > 0) {
-                newState[action.ticker].valueHistory.oneYear = calcValues(
-                    newState[action.ticker].times.oneYear,
-                    newState[action.ticker].prices.oneYear,
-                    action.ownershipHistory
+            newState[ticker].valueHistory ||= {};
+            if (ownershipHistory.numShares.length > 0) {
+                newState[ticker].valueHistory.oneYear = calcValues(
+                    newState[ticker].times.oneYear,
+                    newState[ticker].prices.oneYear,
+                    ownershipHistory,
                 );
             }
-            newState[action.ticker].prevVolume = action.candles.v[action.candles.v.length - 2];
-            newState[action.ticker].curVolume = action.candles.v.last();
-            newState[action.ticker].prices.oneYearHigh = Math.round(Math.max(...action.candles.h) * 100);
-            newState[action.ticker].prices.oneYearLow = Math.round(Math.min(...action.candles.l) * 100);
+            newState[ticker].prevVolume = action.candles.v[action.candles.v.length - 2];
+            newState[ticker].curVolume = action.candles.v.last();
+            newState[ticker].prices.oneYearHigh = Math.round(Math.max(...action.candles.h) * 100);
+            newState[ticker].prices.oneYearLow = Math.round(Math.min(...action.candles.l) * 100);
             return merge({},newState);
         case RECEIVE_QUOTE:
             newState = {...state};
-            newState[action.ticker] ||= merge({}, defaultAssetState);
-            return (merge({}, newState, {[action.ticker]:
-                Object.assign({}, state[action.ticker], {currentPrice: Math.floor(100*action.quote.c)})})
+            newState[ticker] ||= merge({}, defaultAssetState);
+            return (merge({}, newState, {[ticker]:
+                Object.assign({}, state[ticker], {currentPrice: Math.floor(100*action.quote.c)})})
             );
         case RECEIVE_COMPANY_OVERVIEW:
             newState = {...state};
-            newState[action.ticker] ||= merge({}, defaultAssetState);
-            return merge({}, newState, {[action.ticker]:
-                Object.assign({}, state[action.ticker], {companyOverview: action.companyOverview})}
+            newState[ticker] ||= merge({}, defaultAssetState);
+            return merge({}, newState, {[ticker]:
+                Object.assign({}, state[ticker], {companyOverview: action.companyOverview})}
             );
         case RECEIVE_COMPANY_OVERVIEW:
             newState = {...state};
-            newState[action.ticker] ||= merge({}, defaultAssetState);
-            return merge({}, newState, {[action.ticker]:
-                Object.assign({}, state[action.ticker], {companyOverview: action.companyOverview})}
+            newState[ticker] ||= merge({}, defaultAssetState);
+            return merge({}, newState, {[ticker]:
+                Object.assign({}, state[ticker], {companyOverview: action.companyOverview})}
             );
         case RECEIVE_TICKER_DATA:
             newState = { ...state };
-            newState[action.ticker] ||= merge({}, defaultAssetState);
+            newState[ticker] ||= merge({}, defaultAssetState);
             return merge({}, newState, {
-                [action.ticker]:
-                Object.assign({}, state[action.ticker], { tickerData: action.tickerData })
+                [ticker]:
+                Object.assign({}, state[ticker], { tickerData: tickerData })
             });
         case RECEIVE_COMPANY_NEWS:
             newState = { ...state };
-            newState[action.ticker] ||= merge({}, defaultAssetState);
+            newState[ticker] ||= merge({}, defaultAssetState);
             return merge({}, newState, {
-                [action.ticker]:
-                    Object.assign({}, state[action.ticker], { companyNews: action.companyNews })
+                [ticker]:
+                    Object.assign({}, state[ticker], { companyNews: action.companyNews })
             });
         default:
             return state;
