@@ -311,3 +311,16 @@ export const fetchMarketNews = dispatch => {
     }
     finnhubQ.push(action)
 }
+
+export const fetchAllCandles = (tickers, dispatch) => {
+    if (!isIterable(tickers)) tickers = [tickers];
+    for(let ticker of tickers) {
+        fetchCandles(ticker, dispatch);
+        fetchCandles(ticker, dispatch, RECEIVE_WEEKLY_CANDLES);
+        fetchCandles(ticker, dispatch, RECEIVE_ANNUAL_CANDLES);
+    }
+}
+
+const isIterable = variable => (
+    typeof variable[Symbol.iterator] === "function"
+)

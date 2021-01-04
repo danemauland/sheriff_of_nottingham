@@ -72,11 +72,13 @@ const defaultState = {
 
 export default (state = defaultState, action) => {
     Object.freeze(state)
-    let newState = merge({}, defaultState);
+    let newState;
     switch (action.type) {
         case UPDATE_SUMMARY_VALUE_HISTORY:
+            newState = merge({}, defaultState);
             const displayedAssets = action.displayedAssets;
             const cashHistory = action.cashHistory;
+            debugger;
             Object.values(displayedAssets).forEach(asset => {
                 if (asset.times && Object.values(asset.times).length === 3) {
                     if ( newState.times.oneDay.length === 0 || 
