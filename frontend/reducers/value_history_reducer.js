@@ -6,12 +6,14 @@ const mergeHistories = (cashHistory, values, times) => {
     let cashPointer = 0;
     let valuesPointer = 0;
     const totals = [];
+    const cashTimes = cashHistory[0];
+    const cashBalances = cashHistory[1];
     while (valuesPointer < values.length) {
-        if (cashHistory.times[cashPointer] <= times[valuesPointer]) {
-            if (cashHistory.times[cashPointer + 1] !== undefined && cashHistory.times[cashPointer + 1] <= times[valuesPointer]) {
+        if (cashTimes[cashPointer] <= times[valuesPointer]) {
+            if (cashTimes[cashPointer + 1] !== undefined && cashTimes[cashPointer + 1] <= times[valuesPointer]) {
                 cashPointer++;
             } else {
-                totals.push(cashHistory.balances[cashPointer] + values[valuesPointer]);
+                totals.push(cashBalances[cashPointer] + values[valuesPointer]);
                 valuesPointer++
             }
         } else {
@@ -73,7 +75,9 @@ export default (state = defaultState, action) => {
     let newState = merge({}, defaultState);
     switch (action.type) {
         case UPDATE_SUMMARY_VALUE_HISTORY:
-            Object.values(action.state.entities.displayedAssets).forEach(asset => {
+            const displayedAssets = action.displayedAssets;
+            const cashHistory = action.cashHistory;
+            Object.values(displayedAssets).forEach(asset => {
                 if (asset.times && Object.values(asset.times).length === 3) {
                     if ( newState.times.oneDay.length === 0 || 
                         newState.times.oneDay.length > asset.times.oneDay.length ||
@@ -84,10 +88,10 @@ export default (state = defaultState, action) => {
                     }
                 }
             })
-            let aggPositionValues = calcAggPositionValues(action.state.entities.displayedAssets, newState.times);
-            newState.values.oneDay = mergeHistories(action.state.entities.summary.cashHistory, aggPositionValues.oneDay, newState.times.oneDay);
-            newState.values.oneWeek = mergeHistories(action.state.entities.summary.cashHistory, aggPositionValues.oneWeek, newState.times.oneWeek);
-            newState.values.oneYear = mergeHistories(action.state.entities.summary.cashHistory, aggPositionValues.oneYear, newState.times.oneYear);
+            let aggPositionValues = calcAggPositionValues(displayedAssets, newState.times);
+            newState.values.oneDay = mergeHistories(cashHistory, aggPositionValues.oneDay, newState.times.oneDay);
+            newState.values.oneWeek = mergeHistories(cashHistory, aggPositionValues.oneWeek, newState.times.oneWeek);
+            newState.values.oneYear = mergeHistories(cashHistory, aggPositionValues.oneYear, newState.times.oneYear);
             newState.times.oneWeek.push(newState.times.oneDay.last());
             newState.times.oneYear.push(newState.times.oneDay.last());
             newState.values.oneWeek.push(newState.values.oneDay.last());

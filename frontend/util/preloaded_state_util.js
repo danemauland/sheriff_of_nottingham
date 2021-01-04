@@ -37,17 +37,20 @@ const getCashHistoy = (transactions, trades) => {
 
 const getOwnershipHistories = initialTrades => {
     const trades = [...initialTrades].sort((a, b) => a.createdAt - b.createdAt);
-    const ownershipHistories = {};
+    const ownershipHistories = {times: {}, numShares: {}};
 
     for (let trade of trades) {
         const ticker = trade.ticker;
 
-        if (!ownershipHistories[ticker]) ownershipHistories[ticker] = [[],[]];
+        if (!ownershipHistories.times[ticker]) {
+            ownershipHistories.times[ticker] = [[],[]];
+            ownershipHistories.numShares[ticker] = [[],[]];
+        }
 
-        const times = ownershipHistories[trade.ticker][0];
+        const times = ownershipHistories.times[ticker];
         times.push(trade.createdAt / 1000);
 
-        const numShares = ownershipHistories[trade.ticker][1];
+        const numShares = ownershipHistories.numShares[ticker];
         numShares.push(trade.numShares + (numShares.last() || 0));
     }
     return ownershipHistories;

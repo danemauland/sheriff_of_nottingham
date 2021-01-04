@@ -56,7 +56,7 @@ class Dashboard extends React.Component {
             }
         })
         Object.values(this.props.displayedAssets).forEach(asset => {
-            if (typeof(this.props.state.entities.assetInformation.ownershipHistories[asset.ticker][1].last()) === "number") {
+            if (typeof(this.props.state.entities.assetInformation.ownershipHistories.numShares[asset.ticker].last()) === "number") {
                 if (asset.valueHistory === undefined) {
                     this.props.fetchCandles(asset.ticker, RECEIVE_WEEKLY_CANDLES);
                     this.props.fetchCandles(asset.ticker, RECEIVE_ANNUAL_CANDLES);
@@ -126,7 +126,7 @@ class Dashboard extends React.Component {
     }
 
     assetWasOwned(ticker) {
-        if (typeof(this.props.state.entities.assetInformation.ownershipHistories[ticker][1].last()) === "number") {
+        if (typeof(this.props.state.entities.assetInformation.ownershipHistories.numShares[ticker].last()) === "number") {
             return true;
         }
         return false

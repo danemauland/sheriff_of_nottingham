@@ -9,5 +9,7 @@ export const updateCashHistory = state => ({
 
 export const updateSummaryValueHistory = state => ({
     type: UPDATE_SUMMARY_VALUE_HISTORY,
-    state,
+    displayedAssets: state.entities.displayedAssets,
+    cashHistory: state.entities.portfolioHistory.cashHistory,
+
 })

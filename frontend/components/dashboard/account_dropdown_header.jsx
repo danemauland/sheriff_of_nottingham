@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 const mapStateToProps = state => {
     return ({
         username: state.session.username,
-        cashBal: state.entities.summary.cashHistory.balances[state.entities.summary.cashHistory.balances.length - 1],
+        cashBal: state.entities.portfolioHistory.cashHistory[1].last(),
         portfolioVal: state.entities.summary.valueHistory.values.oneDay[state.entities.summary.valueHistory.values.oneDay.length - 1],
         trades: state.entities.trades,
         displayedAssets: state.entities.displayedAssets,

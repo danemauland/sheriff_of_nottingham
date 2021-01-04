@@ -3,6 +3,6 @@ import cashHistoryReducer from "./cash_history_reducer";
 import valueHistoryReducer from "./value_history_reducer";
 
 export default combineReducers({
-    cashHistory: cashHistoryReducer,
+    // cashHistory: cashHistoryReducer,
     valueHistory: valueHistoryReducer,
 })

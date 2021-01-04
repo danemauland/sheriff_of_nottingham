@@ -2,23 +2,20 @@ import React from "react";
 import {connect} from "react-redux";
 import StockItem from "./stock_item";
 
-const getOwnedStocks = (state) => {
+const getOwnedTickers = state => {
     const arr = [];
-    Object.values(state.entities.displayedAssets).forEach(asset => {
-        if (asset.ownershipHistory && asset.ownershipHistory.numShares &&
-            asset.ownershipHistory.numShares.length > 0 &&
-            asset.ownershipHistory.numShares.last() !== 0
-        ) {
-            arr.push(asset);
-        }
+    const assetInformation = state.entities.assetInformation;
+    const numShares = assetInformation.ownershipHistories.numShares;
+    Object.values(assetInformation.tickers).forEach(ticker => {
+        if (numShares[ticker] && numShares[ticker].last() !== 0) arr.push(asset);
     })
     return arr;
 }
 
 const mapStateToProps = state => {
-    let stocks = getOwnedStocks(state);
+    let tickers = getOwnedTickers(state);
     return ({
-        stocks,
+        tickers,
     })
 }
 
@@ -36,7 +33,7 @@ class Sidebar extends React.Component {
                             <span>Stocks</span>
                         </div>
                         <div className="stocks-list">
-                            {this.props.stocks.map((stock, i) => <StockItem key={i} stock={stock}/>)}
+                            {this.props.tickers.map((ticker, i) => <StockItem key={i} ticker={ticker}/>)}
                         </div>
                     </div>
                 </div>

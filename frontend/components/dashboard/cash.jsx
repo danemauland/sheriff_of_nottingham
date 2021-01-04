@@ -5,7 +5,7 @@ import CashForm from "./cash_form.jsx"
 
 const mapStateToProps = state => {
     return ({
-        cashBal: state.entities.summary.cashHistory.balances[state.entities.summary.cashHistory.balances.length - 1],
+        cashBal: state.entities.portfolioHistory.cashHistory[1].last(),
     })
 }
 
