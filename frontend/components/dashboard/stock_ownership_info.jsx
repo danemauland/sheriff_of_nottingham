@@ -14,10 +14,10 @@ import {
 
 const mapStateToProps = (state, {ticker}) => {
     const marketValue = positionValue(ticker, state);
-    const numShares = state.entities.assetInformation.ownershipHistories.numShares.last();
+    const numShares = state.newEntities.assetInformation.ownershipHistories.numShares[ticker].last();
     const totalPositionCost = positionCost(ticker, state);
     const prevDayCloseValue = getPreviousEndingValue(
-        state.entities.displayedAssets[ticker].valueHistory.oneYear,
+        state.newEntities.assetInformation.valuations.oneYear[ticker],
         ONE_DAY
     );
     return ({

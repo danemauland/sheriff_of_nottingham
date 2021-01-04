@@ -35,16 +35,17 @@ export const positionValue = (ticker, state) => {
 }
 
 export const positionCost = (ticker, state) => {
-    let sharesRemaining = state.entities.assetInformation.ownershipHistories.numShares.last();
+    let sharesRemaining = state.newEntities.assetInformation.ownershipHistories.numShares[ticker].last();
+    const trades = state.newEntities.portfolioHistory.trades;
     let short = false;
     if (sharesRemaining < 0) {
         short = true;
         sharesRemaining *= -1;
     }
     let cost = 0;
-    let i = state.entities.trades.length - 1;
+    let i = trades.length - 1;
     while (sharesRemaining > 0) {
-        let trade = state.entities.trades[i]
+        let trade = trades[i]
         if (trade.ticker === ticker) {
             if (short) {
                 if (trade.numShares < 0) {
@@ -78,11 +79,9 @@ export const portfolioValue = state => {
 }
 
 export const isStockLoaded = (ticker, state) => {
+    const candlePrices = state.newEntities.assetInformation.candlePrices;
     if (state.entities.displayedAssets[ticker] === undefined ||
-        state.entities.displayedAssets[ticker].prices === undefined ||
-        state.entities.displayedAssets[ticker].prices.oneDay === undefined ||
-        state.entities.displayedAssets[ticker].prices.oneWeek === undefined ||
-        state.entities.displayedAssets[ticker].prices.oneYear === undefined ||
+        Object.values(candlePrices).some(prices => prices[ticker] === undefined) ||
         state.entities.displayedAssets[ticker].companyOverview === undefined ||
         state.entities.displayedAssets[ticker].tickerData === undefined ||
         state.entities.displayedAssets[ticker].companyNews === undefined
@@ -115,6 +114,7 @@ const formatDividendYield = dYield => {
 
 export const extractAboutItems = (ticker, state) => {
     const asset = state.entities.displayedAssets[ticker];
+    const historicPrices = state.newEntities.assetInformation.historicPrices;
     const desc = asset.companyOverview;
     const data = asset.tickerData;
     const items = [];
@@ -131,14 +131,14 @@ export const extractAboutItems = (ticker, state) => {
     items.push(["Price-Earnings Ratio", parseFloat(desc.PERatio).toFixed(2)]);
     items.push(["Dividend Yield", formatDividendYield(desc.DividendYield)]);
     items.push(["Prev. Day Volume", formatLargeNumber(asset.prevVolume)]);
-    items.push(["High Today", formatToDollar(asset.prices.oneDayHigh)]);
-    items.push(["Low Today", formatToDollar(asset.prices.oneDayLow)]);
-    items.push(["Open Price", formatToDollar(asset.prices.open)]);
+    items.push(["High Today", formatToDollar(historicPrices.oneDayHigh[ticker])]);
+    items.push(["Low Today", formatToDollar(historicPrices.oneDayLow[ticker])]);
+    items.push(["Open Price", formatToDollar(historicPrices.oneDayOpen[ticker])]);
     items.push(["Volume", formatLargeNumber(asset.curVolume)]);
-    items.push(["52 Week High", formatToDollar(asset.prices.oneYearHigh)]);
-    items.push(["52 Week Low", formatToDollar(asset.prices.oneYearLow)]);
+    items.push(["52 Week High", formatToDollar(historicPrices.oneYearHigh[ticker])]);
+    items.push(["52 Week Low", formatToDollar(historicPrices.oneYearLow[ticker])]);
 
-    return items
+    return items;
 }
 
 const states = {

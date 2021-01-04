@@ -60,7 +60,7 @@ export default (state = defaultState, action) => {
     switch (action.type) {
         case INITIALIZE_ASSET:
             newState = merge({}, state);
-            newState.tickers.add(action.ticker);
+            newState.assetInformation.tickers.add(action.ticker);
             return newState;
         case RECEIVE_MARKET_NEWS:
             newState = Object.assign({}, state, {marketNews: action.marketNews})

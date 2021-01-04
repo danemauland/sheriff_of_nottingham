@@ -15,11 +15,13 @@ import {
 
 const mapStateToProps = (state, ownProps) => {
     const ticker = ownProps.ticker;
-    const prevEndValue = getPreviousEndingValue(state.entities.displayedAssets[ticker].prices.oneYear, ONE_DAY);
-    const lastPrice = state.entities.displayedAssets[ticker].prices.oneDay.last();
+    const assetInformation = state.newEntities.assetInformation;
+    const candlePrices = assetInformation.candlePrices;
+    const prevEndValue = getPreviousEndingValue(candlePrices.oneYear[ticker], ONE_DAY);
+    const lastPrice = candlePrices.oneDay.last();
     return {
         strChange: getStrChange(prevEndValue, lastPrice),
-        numShares: state.entities.assetInformation.ownershipHistories.numShares[ticker].last(),
+        numShares: assetInformation.ownershipHistories.numShares[ticker].last(),
     }
 }
 

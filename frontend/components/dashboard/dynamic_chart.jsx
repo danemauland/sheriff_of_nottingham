@@ -93,7 +93,7 @@ class DynamicChart extends React.Component {
     updateStrChange(callback = () => {}) {
         let strChange;
         let startVal = getPreviousEndingValue(
-            this.props.valueHistoryValues.oneYear,
+            this.props.values.oneYear,
             this.props.chartSelected
         );
         if (startVal) {
@@ -115,14 +115,14 @@ class DynamicChart extends React.Component {
 
     handleChartChange() {
 
-        const times = getTimesArray(this.props.valueHistoryTimes,
+        const times = getTimesArray(this.props.times,
             this.props.chartSelected
         );
 
         const labels = getLabelsArray(times, this.props.chartSelected);
 
         const datasets = getDatasets(
-            this.props.valueHistoryValues,
+            this.props.values,
             this.props.chartSelected,
             times
         );
@@ -158,7 +158,6 @@ class DynamicChart extends React.Component {
         min = min - delta * 0.01;
         this.lineChart.chart.options.scales.yAxes[0].ticks.max = max;
         this.lineChart.chart.options.scales.yAxes[0].ticks.min = min;
-        
         
         this.lineChart.update();
         this.setState({

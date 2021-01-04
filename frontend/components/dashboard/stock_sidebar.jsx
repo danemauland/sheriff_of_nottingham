@@ -5,7 +5,7 @@ import {createTrade} from "../../actions/trade_actions";
 
 const mapStateToProps = (state, {ticker}) => ({
     valueIncreased: state.ui.valueIncreased,
-    price: state.entities.displayedAssets[ticker].prices.oneDay.last(),
+    price: state.newEntities.assetInformation.candlePrices.oneDay[ticker].last(),
 })
 
 const mapDispatchToProps = dispatch => ({

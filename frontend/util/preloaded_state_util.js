@@ -33,7 +33,7 @@ export default (user) => {
                     oneDayLow: {},
                     oneYearHigh: {},
                     oneYearLow: {},
-                    open: {},
+                    oneDayOpen: {},
                 },
             },
             portfolioHistory: {

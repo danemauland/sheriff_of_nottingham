@@ -199,7 +199,7 @@ export const getDatasets = function(values, type, times) {
                     i++
                 ){
                     if (times[i] < new Date().getTime() / 1000) {
-                        outMarketHoursVals.push(inMarketHoursVals.last)
+                        outMarketHoursVals.push(inMarketHoursVals.last());
                     }
                 }
             }
