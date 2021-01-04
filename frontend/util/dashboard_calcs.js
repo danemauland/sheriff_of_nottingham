@@ -26,17 +26,9 @@ export const ONE_MONTH = "ONE_MONTH";
 export const THREE_MONTH = "THREE_MONTH";
 export const ONE_YEAR = "ONE_YEAR";
 
-export const tickerIsOwned = (ticker, state) => {
-    if (state.entities.displayedAssets[ticker] &&
-        state.entities.displayedAssets[ticker].ownershipHistory &&
-        state.entities.displayedAssets[ticker].ownershipHistory.numShares && 
-        state.entities.displayedAssets[ticker].ownershipHistory.numShares.length > 0 &&
-        state.entities.displayedAssets[ticker].ownershipHistory.numShares.last() !== 0
-        ) {
-            return true;
-    }
-    return false;
-}
+export const tickerIsOwned = (ticker, ownershipHistoryShares) => (
+    ownershipHistoryShares && ownershipHistoryShares.last() !== 0
+)
 
 export const positionValue = (ticker, state) => {
     return state.entities.displayedAssets[ticker].valueHistory.oneDay.last();
