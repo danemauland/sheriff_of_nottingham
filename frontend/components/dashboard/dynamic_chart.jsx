@@ -62,12 +62,13 @@ class DynamicChart extends React.Component {
         $("#chartjs-tooltip").remove();
 
         const boundUpdateStrChange = this.updateStrChange.bind(this);
-
+        debugger;
         this.setState({
             dataPointIndex: -1,
             display: this.props.currentPortfolioVal
         }, boundUpdateStrChange((strChange) => {
             return () => {
+                debugger;
                 if ((strChange[0] === "+") !== this.props.valueIncreased) {
                     this.props.updateValueIncreased(!this.props.valueIncreased)
                     this.lineChart.data.datasets[0].borderColor = (!this.props.valueIncreased ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)");
@@ -107,6 +108,7 @@ class DynamicChart extends React.Component {
                 strChange = getStrChange(0, 0)
             }
         }
+        debugger;
         if (this.state.strChange !== strChange) {
             this.setState({
                 strChange,
@@ -162,7 +164,7 @@ class DynamicChart extends React.Component {
         
         
         this.lineChart.update();
-        
+        debugger;
         this.setState({
             times,
             labels,
@@ -180,11 +182,9 @@ class DynamicChart extends React.Component {
         
         if (this.props.update) {
             this.handleChartChange()
+        } else {
+            this.updateStrChange()
         }
-            
-        
-        this.updateStrChange()
-        
     }
 
     generateChartChanger(field) {
