@@ -22,16 +22,16 @@ const initializeState = initialTrades => {
     const newState = {};
     trades.forEach(trade => {
         if (newState[trade.ticker]) {
-            newState[trade.ticker].ownershipHistory.times.push(trade.createdAt / 1000);
-            const lastIndex = newState[trade.ticker].ownershipHistory.numShares.length - 1;
-            newState[trade.ticker].ownershipHistory.numShares.push(
-                trade.numShares + 
-                newState[trade.ticker].ownershipHistory.numShares[lastIndex]);
+            // newState[trade.ticker].ownershipHistory.times.push(trade.createdAt / 1000);
+            // const lastIndex = newState[trade.ticker].ownershipHistory.numShares.length - 1;
+            // newState[trade.ticker].ownershipHistory.numShares.push(
+            //     trade.numShares + 
+            //     newState[trade.ticker].ownershipHistory.numShares[lastIndex]);
         } else {
             newState[trade.ticker] = {}; 
-            newState[trade.ticker].ownershipHistory = {};
-            newState[trade.ticker].ownershipHistory.times = [trade.createdAt / 1000];
-            newState[trade.ticker].ownershipHistory.numShares = [trade.numShares];
+            // newState[trade.ticker].ownershipHistory = {};
+            // newState[trade.ticker].ownershipHistory.times = [trade.createdAt / 1000];
+            // newState[trade.ticker].ownershipHistory.numShares = [trade.numShares];
             newState[trade.ticker].ticker = trade.ticker;
     }});
     return newState;
@@ -191,7 +191,9 @@ export default (state = defaultState, action) => {
     let timesAndPrices;
     switch (action.type) {
         case INITIALIZE_ASSETS:
-            return merge({},initializeState(action.trades));
+            newState = merge({},initializeState(action.trades));
+            return newState;
+            break;
         case INITIALIZE_ASSET:
             return merge({}, {[action.ticker]: {ticker: action.ticker}})
         case FLUSH_ASSET:

@@ -259,10 +259,10 @@ export const fetchQuote = ticker => dispatch => {
     finnhubQ.push({...action});
 }
 
-export const initializeAssets = state => ({
+export const initializeAssets = (trades, cashTransactions) => ({
     type: INITIALIZE_ASSETS,
-    trades: state.entities.trades,
-    cashTransactions: state.entities.cashTransactions,
+    trades,
+    cashTransactions,
 })
 
 export const fetchCompanyOverview = (ticker, dispatch) => {

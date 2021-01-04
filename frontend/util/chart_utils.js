@@ -198,7 +198,6 @@ export const getDatasets = function(values, type, times) {
                     i < TOTAL_ONE_DAY_TIMESLOTS; 
                     i++
                 ){
-                    debugger;
                     if (times[i] < new Date().getTime() / 1000) {
                         outMarketHoursVals.push(inMarketHoursVals.last)
                     }

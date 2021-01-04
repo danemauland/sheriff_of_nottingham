@@ -27,7 +27,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-        initializeAssets: trades => dispatch(initializeAssets(trades)),
+        initializeAssets: (trades, cashTransactions) => dispatch(initializeAssets(trades, cashTransactions)),
         fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
         fetchCompanyOverview: ticker => fetchCompanyOverview(ticker, dispatch),
         updateSummaryValueHistory: state => dispatch(updateSummaryValueHistory(state)),
@@ -90,7 +90,7 @@ class Dashboard extends React.Component {
             ticker = asset.ticker;
             if ( !isStockLoaded(ticker, this.props.state)) {
                 this.props.initializeAsset(ticker);
-                this.props.initializeAssets(this.props.state);
+                this.props.initializeAssets(this.props.state.entities.portfolioHistory.trades, this.props.state.entities.portfolioHistory.cashTransactions);
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
@@ -103,7 +103,7 @@ class Dashboard extends React.Component {
             ticker = this.getTickerFromPath();
             if ( !isStockLoaded(ticker, this.props.state)) {
                 this.props.initializeAsset(ticker);
-                this.props.initializeAssets(this.props.state);
+                this.props.initializeAssets(this.props.state.entities.portfolioHistory.trades, this.props.state.entities.portfolioHistory.cashTransactions);
                 this.props.fetchCandles(ticker);
                 this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
@@ -121,7 +121,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.initializeAssets(this.props.state);
+        this.props.initializeAssets(this.props.state.entities.portfolioHistory.trades, this.props.state.entities.portfolioHistory.cashTransactions);
         this.timesComponentUpdated++;
         this.props.fetchMarketNews();
     }
