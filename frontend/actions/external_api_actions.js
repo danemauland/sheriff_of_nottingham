@@ -29,14 +29,18 @@ export const initializeAsset = ticker => ({
 
 const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
     const ownershipHistories = getState().newEntities.assetInformation.ownershipHistories;
+    const tickers = getState().newEntities.assetInformation.tickers;
+    const displayedAssets = getState().entities.displayedAssets;
     dispatch({
-    type,
-    ticker,
-    candles,
-    ownershipHistory: {
-        times: ownershipHistories.times[ticker],
-        numShares: ownershipHistories.numShares[ticker],
-    }
+        type,
+        ticker,
+        tickers,
+        candles,
+        ownershipHistory: {
+            times: ownershipHistories.times[ticker],
+            numShares: ownershipHistories.numShares[ticker],
+        },
+        displayedAssets,
     });
 }
 

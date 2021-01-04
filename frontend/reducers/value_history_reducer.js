@@ -78,7 +78,6 @@ export default (state = defaultState, action) => {
             newState = merge({}, defaultState);
             const displayedAssets = action.displayedAssets;
             const cashHistory = action.cashHistory;
-            debugger;
             Object.values(displayedAssets).forEach(asset => {
                 if (asset.times && Object.values(asset.times).length === 3) {
                     if ( newState.times.oneDay.length === 0 || 

@@ -29,7 +29,7 @@ const mapDispatchToProps = dispatch => ({
 class DynamicChart extends React.Component {
     constructor(props) {
 
-        super(props)
+        super(props);
         this.state = {
             view: "",
             display: this.props.currentPortfolioVal,

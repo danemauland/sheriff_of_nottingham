@@ -21,6 +21,7 @@ const defaultState = {
 };
 
 export default (state = defaultState, action) => {
+    let newState;
     switch (action.type) {
         case REMOVE_CASH_TRANSACTIONS:
         case RECEIVE_TRADE:
@@ -30,14 +31,18 @@ export default (state = defaultState, action) => {
                 chart: true,
             });
         case UPDATE_CASH_HISTORY:
-            return Object.assign({}, state, {
-                cashHistory: false,
-                valueHistory: true,
-            });
+            newState = Object.assign({}, state, {cashHistory: false});
         case RECEIVE_DAILY_CANDLES:
         case RECEIVE_WEEKLY_CANDLES:
         case RECEIVE_ANNUAL_CANDLES:
-            return Object.assign({}, state, {valueHistory: true});
+            let readyToUpdate = true;
+            for (let ticker of action.tickers) {
+                const prices = action.displayedAssets[ticker].prices;
+                if (!(prices.oneDay && prices.oneWeek && prices.oneYear)) readyToUpdate = false;
+            }
+            newState ||= Object.assign({}, state);
+            newState.valueHistory = readyToUpdate;
+            return newState;
         case UPDATE_SUMMARY_VALUE_HISTORY:
             return Object.assign({}, state, {
                 valueHistory: false,

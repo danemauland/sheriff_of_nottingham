@@ -43,8 +43,8 @@ const getOwnershipHistories = initialTrades => {
         const ticker = trade.ticker;
 
         if (!ownershipHistories.times[ticker]) {
-            ownershipHistories.times[ticker] = [[],[]];
-            ownershipHistories.numShares[ticker] = [[],[]];
+            ownershipHistories.times[ticker] = [];
+            ownershipHistories.numShares[ticker] = [];
         }
 
         const times = ownershipHistories.times[ticker];

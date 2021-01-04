@@ -33,6 +33,7 @@ const initializeState = initialTrades => {
             // newState[trade.ticker].ownershipHistory.times = [trade.createdAt / 1000];
             // newState[trade.ticker].ownershipHistory.numShares = [trade.numShares];
             newState[trade.ticker].ticker = trade.ticker;
+            newState[trade.ticker].prices = {};
     }});
     return newState;
 }
@@ -66,7 +67,6 @@ const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {
 const calcValues = (times, prices, ownershipHistory) => {
     const ownershipTimes = ownershipHistory.times;
     const ownershipShares = ownershipHistory.numShares;
-
     if (ownershipShares.last() === 0 && ownershipTimes.last < times[0]) {
         const zeros = [];
         for(let i = 0; i < times.length; i++) zeros.push(0);
@@ -197,7 +197,7 @@ export default (state = defaultState, action) => {
             return newState;
             break;
         case INITIALIZE_ASSET:
-            return merge({}, {[ticker]: {ticker: ticker}})
+            return merge({}, {[ticker]: {ticker: ticker, prices: {}}})
         case FLUSH_ASSET:
             newState = merge({}, state);
             delete newState[ticker];
