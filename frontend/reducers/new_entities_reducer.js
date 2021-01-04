@@ -9,6 +9,7 @@ import {RECEIVE_DAILY_CANDLES,
     RECEIVE_TICKER_DATA,
     RECEIVE_COMPANY_NEWS,
     FLUSH_ASSET,
+    RECEIVE_MARKET_NEWS,
 } from "../actions/external_api_actions";
 var merge = require('lodash.merge');
 
@@ -36,6 +37,9 @@ export default (state = defaultState, action) => {
         case INITIALIZE_ASSET:
             newState = merge({}, state);
             newState.tickers.add(action.ticker);
+        case RECEIVE_MARKET_NEWS:
+            newState = Object.assign({}, state, {marketNews: action.marketNews})
+            return newState;
         default:
             return state;
     }

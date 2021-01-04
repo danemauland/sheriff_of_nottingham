@@ -19,6 +19,7 @@ export default (user) => {
                 cashHistory,
                 trades,
             },
+            marketNews: [],
         }
     }
 }

@@ -3,7 +3,7 @@ import News from "./news"
 
 const mapStateToProps = (state, {ticker}) => ({
     ticker,
-    News: state.entities.marketNews,
+    news: state.newEntities.marketNews,
 })
 
 export default (connect(mapStateToProps, null)(News));

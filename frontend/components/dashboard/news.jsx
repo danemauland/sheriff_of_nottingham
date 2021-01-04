@@ -39,7 +39,7 @@ class News extends React.Component {
     }
 
     newsItemsToRender() {
-        return this.props.News.slice(0,this.state.itemsToShow)
+        return this.props.news.slice(0,this.state.itemsToShow)
     }
 
     render() {

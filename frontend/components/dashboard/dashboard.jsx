@@ -166,7 +166,7 @@ class Dashboard extends React.Component {
     }
 
     receivedMarketNews() {
-        return this.props.state.entities.marketNews.length > 0;
+        return this.props.state.newEntities.marketNews.length > 0;
     }
 
     componentDidUpdate(prevProps) {
