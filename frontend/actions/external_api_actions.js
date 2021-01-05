@@ -22,6 +22,9 @@ export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
 export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
 export const INITIALIZE_ASSET = "INITIALIZE_ASSET";
 export const FLUSH_ASSET = "FLUSH_ASSET";
+export const DAILY_RESOLUTION = 5;
+export const WEEKLY_RESOLUTION = 30;
+const ANNUAL_RESOLUTION = "D";
 
 export const initializeAsset = ticker => ({
     type: INITIALIZE_ASSET,
@@ -242,19 +245,20 @@ const getEndTime = () => {
 export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) => {
     let startTime = getStartTime();
     const endTime = getEndTime();
-    let resolution = 5;
+    let resolution;
     switch (subtype) {
         case RECEIVE_DAILY_CANDLES:
+            resolution = DAILY_RESOLUTION;
             break;
         case RECEIVE_WEEKLY_CANDLES:
             startTime.setUTCDate(startTime.getUTCDate() - 7);
-            resolution = 30;
+            resolution = WEEKLY_RESOLUTION;
             break;
         case RECEIVE_ANNUAL_CANDLES:
             startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
             startTime.setUTCHours(startTime.getUTCHours() + 1); // Needed because API provider will return prices for (only) some stocks for the previous day otherwise
             startTime.setMinutes(0);
-            resolution = "D";
+            resolution = ANNUAL_RESOLUTION;
             break;
         default:
             break;

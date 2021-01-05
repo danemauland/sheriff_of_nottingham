@@ -10,12 +10,15 @@ import {
     RECEIVE_COMPANY_NEWS,
     FLUSH_ASSET,
     RECEIVE_MARKET_NEWS,
+    DAILY_RESOLUTION,
+    WEEKLY_RESOLUTION,
 } from "../actions/external_api_actions";
 import {
     LOGOUT_CURRENT_USER
 } from "../actions/session_actions";
 import {
     defaultState,
+    pullTimesAndPrices,
 } from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
@@ -27,58 +30,51 @@ export default (state = defaultState, action) => {
             newState = merge({}, state);
             newState.assetInformation.tickers.add(action.ticker);
             return newState;
+
         case RECEIVE_MARKET_NEWS:
             newState = Object.assign({}, state, {marketNews: action.marketNews})
             return newState;
+
         case RECEIVE_CANDLES:
-            let key;
+            const key = getKey(action.subtype);
             const ticker = action.ticker;
             newState = merge({}, state);
             const assetInformation = newState.assetInformation;
-            const candleTimes = assetInformation.candleTimes;
-            switch (action.subtype) {
-                case RECEIVE_DAILY_CANDLES:
-                    key = "oneDay";
-                    break;
-                case RECEIVE_WEEKLY_CANDLES:
-                    key = "oneWeek";
-                    break;
-                case RECEIVE_ANNUAL_CANDLES:
-                    key = "oneYear";
-                    break;        
-            }
-            let times;
-            let prices;
-            if (key === "oneYear") {
-                times = action.candles.t;
-                prices = action.candles.c.map(price => Math.floor(price * 100));
-                assetInformation.prevVolume[ticker] = action.candles.v[action.candles.v.length - 2];
-                assetInformation.curVolume[ticker] = action.candles.v.last();
-            } else {
-                [times, prices] = pullTimesAndPrices(action.candles, action.subtype);
-            }
-            assetInformation.candlePrices[key][ticker] = prices;
-            candleTimes[key][ticker] = times;
-            const ownershipTimes = assetInformation.ownershipHistories.times[ticker];
-            const ownershipShares = assetInformation.ownershipHistories.numShares[ticker];
-            if (ownershipShares) {
-                assetInformation.valuations[key][ticker] = calcValuations(
-                    times,
-                    prices,
-                    ownershipTimes,
-                    ownershipShares,
-                );
-            }
+            const {
+                candleTimes,
+                candlePrices,
+                historicPrices
+            } = assetInformation;
+            
+            // const [times, prices] = setTimesAndPrices(action, assetInformation)
+            setTimesAndPrices(action, assetInformation)
+
+            // candlePrices[key][ticker] = prices;
+            // candleTimes[key][ticker] = times;
+            
+            updateStockValuations(action, assetInformation);
+            // const ownershipTimes = ownershipHistories.times[ticker];
+            // const ownershipShares = ownershipHistories.numShares[ticker];
+
+            // if (ownershipShares) {
+            //     assetInformation.valuations[key][ticker] = calcValuations(
+            //         times,
+            //         prices,
+            //         ownershipTimes,
+            //         ownershipShares,
+            //     );
+            // }
+
             if (key !== "oneWeek") {
-                assetInformation.historicPrices[key + "Low"][ticker] = Math.round(Math.min(...action.candles.l)*100);
-                assetInformation.historicPrices[key + "High"][ticker] = Math.round(Math.max(...action.candles.h)*100);
+                historicPrices[key + "Low"][ticker] = Math.round(Math.min(...action.candles.l)*100);
+                historicPrices[key + "High"][ticker] = Math.round(Math.max(...action.candles.h)*100);
                 if (key === "oneDay") {
-                    assetInformation.historicPrices.oneDayOpen[ticker] = Math.round(action.candles.o[0]*100);
+                    historicPrices.oneDayOpen[ticker] = Math.round(action.candles.o[0]*100);
                 }
             }
-            prices = Object.values(assetInformation.candlePrices);
-            const updateValuationHistory = prices.every(price => {
-                return Object.keys(price).length === action.tickers.size;
+            const allPrices = Object.values(candlePrices);
+            const updateValuationHistory = allPrices.every(prices => {
+                return Object.keys(prices).length === action.tickers.size;
             })
             if (updateValuationHistory) {
                 const cashHistory = newState.portfolioHistory.cashHistory;
@@ -128,6 +124,62 @@ export default (state = defaultState, action) => {
     }
 }
 
+const getKey = type => {
+    switch (type) {
+        case RECEIVE_DAILY_CANDLES:
+            return "oneDay";
+        case RECEIVE_WEEKLY_CANDLES:
+            return "oneWeek";
+        case RECEIVE_ANNUAL_CANDLES:
+            return "oneYear";
+    }
+}
+
+const setTimesAndPrices = (
+    {subtype, ticker, candles},
+    {candlePrices, candleTimes, prevVolume, curVolume}
+) => {
+
+    let times;
+    let prices;
+    const key = getKey(subtype);
+
+    if (key === "oneYear") {
+        times = candles.t;
+        prices = candles.c.map(price => Math.floor(price * 100));
+
+        prevVolume[ticker] = candles.v[candles.v.length - 2];
+        curVolume[ticker] = candles.v.last();
+    } else {
+        [times, prices] = pullTimesAndPrices(candles, subtype);
+    }
+
+    candlePrices[key][ticker] = prices;
+    candleTimes[key][ticker] = times;
+}
+
+const updateStockValuations = (action, assetInformation) => {
+    const ticker = action.ticker;
+    const key = getKey(action.subtype);
+    const ownershipHistories = assetInformation.ownershipHistories;
+    const ownershipTimes = ownershipHistories.times[ticker];
+    const ownershipShares = ownershipHistories.numShares[ticker];
+    const candlePrices = assetInformation.candlePrices;
+    const candleTimes = assetInformation.candleTimes;
+    const prices = candlePrices[key][ticker];
+    const times = candleTimes[key][ticker];
+
+    if (ownershipShares) {
+        assetInformation.valuations[key][ticker] = calcValuations(
+            times,
+            prices,
+            ownershipTimes,
+            ownershipShares,
+        );
+    }
+
+}
+
 const mergeHistories = (cashHistory, values, times) => {
     let cashPointer = 0;
     let valuesPointer = 0;
@@ -166,30 +218,6 @@ const calcAggPositionValues = (assetInformation, times) => {
             }
         }
     }
-    // times.oneDay.forEach((time, i) => {
-    //     aggValues.oneDay.push(0);
-    //     Object.values(displayedAssets).forEach(asset => {
-    //         if (asset.valueHistory && asset.valueHistory.oneDay) {
-    //             aggValues.oneDay[aggValues.oneDay.length - 1] += asset.valueHistory.oneDay[i];
-    //         }
-    //     })
-    // })
-    // times.oneWeek.forEach((time, i) => {
-    //     aggValues.oneWeek.push(0);
-    //     Object.values(displayedAssets).forEach(asset => {
-    //         if (asset.valueHistory && asset.valueHistory.oneWeek) {
-    //             aggValues.oneWeek[aggValues.oneWeek.length - 1] += asset.valueHistory.oneWeek[i];
-    //         }
-    //     })
-    // })
-    // times.oneYear.forEach((time, i) => {
-    //     aggValues.oneYear.push(0);
-    //     Object.values(displayedAssets).forEach(asset => {
-    //         if (asset.valueHistory && asset.valueHistory.oneYear) {
-    //             aggValues.oneYear[aggValues.oneYear.length - 1] += asset.valueHistory.oneYear[i];
-    //         }
-    //     })
-    // })
     return aggValues;
 }
 
@@ -257,77 +285,4 @@ const calcValuations = (times, prices, ownershipTimes, ownershipShares) => {
 
     }
     return valuations;
-}
-
-const inMarketHours = time => {
-    const date = new Date(time * 1000);
-    const dst = date.isDSTObserved();
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    const marketOpenHour = (dst ? 13 : 14);
-    if (hours < marketOpenHour || ((hours < (marketOpenHour + 1) && minutes < 30))) {
-        return false;
-    } else if (hours >= marketOpenHour + 7) {return false};
-    return true;
-}
-
-const isLastPeriod = (time, type) => {
-    const date = new Date(time * 1000);
-    const dst = date.isDSTObserved();
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    const marketCloseHour = (dst ? 20 : 21);
-    switch (type) {
-        case RECEIVE_DAILY_CANDLES:
-            if (hours === marketCloseHour - 1 && minutes === 55) {return true}
-            else {return false};
-        case RECEIVE_WEEKLY_CANDLES:
-            if (hours === marketCloseHour - 1 && minutes === 30) { return true }
-            else { return false };
-        default:
-            break;
-    }
-}
-
-const pullTimesAndPrices = (candles, type) => {
-    const arrs = [[],[]];
-    let newTime;
-    for(let i = 0; i < candles.t.length; i++ ) {
-        if (inMarketHours(candles.t[i])) {
-            arrs[0].push(candles.t[i]);
-            arrs[1].push(Math.floor(candles.o[i] * 100));
-            if (i === candles.t.length - 1) {
-                newTime = new Date(candles.t[i] * 1000);
-                switch (type) {
-                    case RECEIVE_DAILY_CANDLES:
-                        if (newTime.getUTCMinutes() + 5 >= 60) {
-                            newTime.setUTCHours(newTime.getUTCHours() + 1);
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 5) % 60);
-                        } else {
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 5));
-                        }
-                        break;
-                    case RECEIVE_WEEKLY_CANDLES:
-                        if (newTime.getUTCMinutes() + 30 >= 60) {
-                            newTime.setUTCHours(newTime.getUTCHours() + 1);
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 30) % 60);
-                        } else {
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 30));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                arrs[0].push(Date.parse(newTime) / 1000);
-                arrs[1].push(Math.floor(candles.c[i] * 100));
-            } else if (isLastPeriod(candles.t[i], type)) {
-                newTime = new Date(candles.t[i] * 1000);
-                newTime.setUTCHours(newTime.getUTCHours() + 1)
-                newTime.setUTCMinutes(0)
-                arrs[0].push(Date.parse(newTime) / 1000);
-                arrs[1].push(Math.floor(candles.c[i] * 100));
-            }
-        }
-    }
-    return arrs;
 }
