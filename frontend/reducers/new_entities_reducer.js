@@ -15,6 +15,7 @@ import {
     defaultState,
     setTimesAndPrices,
     getKey,
+    updatePortfolioValuations,
 } from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
@@ -33,36 +34,15 @@ export default (state = defaultState, action) => {
 
         case RECEIVE_CANDLES:
             newState = merge({}, state);
-            const assetInformation = newState.assetInformation;
-            const {candleTimes, candlePrices} = assetInformation;
-            
+            const {assetInformation, portfolioHistory} = newState;
             setTimesAndPrices(action, assetInformation);
             updateStockValuations(action, assetInformation);
-
+            updatePortfolioValuations(
+                action,
+                assetInformation,
+                portfolioHistory
+            );
             
-            const allPrices = Object.values(candlePrices);
-            const updateValuationHistory = allPrices.every(prices => {
-                return Object.keys(prices).length === action.tickers.size;
-            })
-            if (updateValuationHistory) {
-                const cashHistory = newState.portfolioHistory.cashHistory;
-                const valuationHistory = newState.portfolioHistory.valuationHistory;
-                Array.from(assetInformation.tickers).forEach(ticker => {
-                    for (let key in candleTimes) {
-                        if (candleTimes[key][ticker] && (candleTimes[key][ticker].length < valuationHistory.times[key].length || !valuationHistory.times[key].length)) {
-                            valuationHistory.times[key] = candleTimes[key][ticker];
-                        }
-                    }
-                })
-                let aggPositionValues = calcAggPositionValues(assetInformation, valuationHistory.times);
-                valuationHistory.valuations.oneDay = mergeHistories(cashHistory, aggPositionValues.oneDay, valuationHistory.times.oneDay);
-                valuationHistory.valuations.oneWeek = mergeHistories(cashHistory, aggPositionValues.oneWeek, valuationHistory.times.oneWeek);
-                valuationHistory.valuations.oneYear = mergeHistories(cashHistory, aggPositionValues.oneYear, valuationHistory.times.oneYear);
-                valuationHistory.times.oneWeek.push(valuationHistory.times.oneDay.last());
-                valuationHistory.times.oneYear.push(valuationHistory.times.oneDay.last());
-                valuationHistory.valuations.oneWeek.push(valuationHistory.valuations.oneDay.last());
-                valuationHistory.valuations.oneYear.push(valuationHistory.valuations.oneDay.last());
-            }
             return newState;
         case FLUSH_ASSET:
             // TODO: ITERATE THROUGH OTHER AREAS AND REMOVE TICKER
@@ -112,47 +92,6 @@ const updateStockValuations = (action, assetInformation) => {
         );
     }
 
-}
-
-const mergeHistories = (cashHistory, values, times) => {
-    let cashPointer = 0;
-    let valuesPointer = 0;
-    const totals = [];
-    const cashTimes = cashHistory.times;
-    const cashBalances = cashHistory.balances;
-    while (valuesPointer < values.length) {
-        if (cashTimes[cashPointer] <= times[valuesPointer]) {
-            if (cashTimes[cashPointer + 1] !== undefined && cashTimes[cashPointer + 1] <= times[valuesPointer]) {
-                cashPointer++;
-            } else {
-                totals.push(cashBalances[cashPointer] + values[valuesPointer]);
-                valuesPointer++
-            }
-        } else {
-            totals.push(values[valuesPointer]);
-            valuesPointer++;
-        }
-    }
-    return totals;
-}
-
-const calcAggPositionValues = (assetInformation, times) => {
-    const aggValues = {
-        oneDay: [],
-        oneWeek: [],
-        oneYear: [],
-    };
-    for (let key in times) {
-        for(let i = 0; i < times[key].length; i++) {
-            aggValues[key].push(0);
-            for(let ticker of assetInformation.tickers) {
-                if (assetInformation.valuations[key][ticker]) {
-                    aggValues[key][aggValues[key].length - 1] += assetInformation.valuations[key][ticker][i];
-                }
-            }
-        }
-    }
-    return aggValues;
 }
 
 const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {

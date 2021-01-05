@@ -281,3 +281,118 @@ export const getKey = type => {
             return "oneYear";
     }
 }
+
+export const updatePortfolioValuations = (
+    {tickers},
+    {candlePrices, candleTimes, valuations: assetValuations},
+    {cashHistory, valuationHistory}
+) => {
+
+    const allPrices = Object.values(candlePrices);
+
+    const needToUpdate = allPrices.every(prices => {
+        return Object.keys(prices).length === tickers.size;
+    })
+
+    if (!needToUpdate) return;
+
+    const {valuations, times} = valuationHistory;
+
+    tickers.forEach(ticker => {
+        for (let key in candleTimes) {
+            
+            const tickerTimes = candleTimes[key][ticker];
+            
+            if (!tickerTimes) continue;
+
+            if (tickerTimes.length < times[key].length || !times[key].length) {
+                times[key] = tickerTimes;
+            }
+
+        }
+    })
+
+    let aggPositionValues = calcAggPositionValues(
+        {tickers, valuations: assetValuations},
+        times
+    );
+
+    for (let key in valuations) {
+        valuations[key] = mergeHistories(
+            cashHistory,
+            aggPositionValues[key],
+            times[key]
+        )
+    }
+
+    // update with today's most recent price/valuation
+    times.oneWeek.push(times.oneDay.last());
+    times.oneYear.push(times.oneDay.last());
+    valuations.oneWeek.push(valuations.oneDay.last());
+    valuations.oneYear.push(valuations.oneDay.last());
+}
+
+const mergeHistories = (
+    {times: cashTimes, balances: cashBalances},
+    values,
+    times
+) => {
+
+    let cashPointer = 0;
+    let valuesPointer = 0;
+    const totals = [];
+
+    while (valuesPointer < values.length) {
+        const nextCashIdx = cashPointer + 1
+        const atEndOfCash = nextCashIdx === cashTimes.length;
+
+        if (!atEndOfCash && cashTimes[nextCashIdx] <= times[valuesPointer]) {
+            cashPointer++;
+            continue;
+        }
+
+        let amount = values[valuesPointer];
+        if (cashTimes[cashPointer] <= times[valuesPointer]) {
+            amount += cashBalances[cashPointer];
+        }
+
+        totals.push(amount);
+        valuesPointer++;
+    }
+
+    while (cashPointer < cashTimes.length) {
+        totals.push(values.last() + cashBalances[cashPointer]);
+        cashPointer++;
+    }
+
+    return totals;
+}
+
+const calcAggPositionValues = ({tickers, valuations}, times) => {
+    const aggValues = {
+        oneDay: [],
+        oneWeek: [],
+        oneYear: [],
+    };
+
+    for (let timeFrame in times) {
+        calcTimeFrameTotals(
+            times[timeFrame],
+            valuations[timeFrame],
+            aggValues[timeFrame],
+            tickers
+        );
+    }
+    return aggValues;
+}
+
+const calcTimeFrameTotals = (times, valuations, aggValues, tickers) => {
+    for(let i = 0; i < times.length; i++) {
+        aggValues.push(0);
+        for(let ticker of tickers) {
+            if (valuations[ticker]) {
+                aggValues[aggValues.length - 1] += valuations[ticker][i];
+            }
+        }
+    }
+}
