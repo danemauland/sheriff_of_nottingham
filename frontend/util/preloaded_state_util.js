@@ -1,3 +1,8 @@
+import {
+    defaultState,
+} from "./new_entities_util";
+var merge = require('lodash.merge');
+
 export default (user) => {
     if (!user) return undefined;
     const trades = [...user.trades].sort((a, b) => a.createdAt - b.createdAt);
@@ -5,63 +10,25 @@ export default (user) => {
     const ownershipHistories = getOwnershipHistories(trades);
     const tickers = new Set(Object.keys(ownershipHistories.numShares));
     const cashHistory = getCashHistoy(cashTransactions, trades);
-    return {
+    let newEntities = {
+        assetInformation: {
+            tickers,
+            ownershipHistories,
+        },
+        portfolioHistory: {
+            cashTransactions,
+            cashHistory,
+            trades,
+        },
+    };
+    newEntities = merge({}, defaultState, newEntities);
+    const preloadedState = {
         session: {
             username: user.username,
         },
-        newEntities: {
-            assetInformation: {
-                tickers,
-                ownershipHistories,
-                candlePrices: {
-                    oneDay: {},
-                    oneWeek: {},
-                    oneYear: {},
-                },
-                candleTimes: {
-                    oneDay: {},
-                    oneWeek: {},
-                    oneYear: {},
-                },
-                valuations: {
-                    oneDay: {},
-                    oneWeek: {},
-                    oneYear: {},
-                },
-                historicPrices: {
-                    oneDayHigh: {},
-                    oneDayLow: {},
-                    oneYearHigh: {},
-                    oneYearLow: {},
-                    oneDayOpen: {},
-                },
-                currentPrices: {},
-                companyOverviews: {},
-                tickerData: {},
-                companyNews: {},
-                prevVolume: {},
-                curVolume: {},
-            },
-            portfolioHistory: {
-                cashTransactions,
-                cashHistory,
-                trades,
-                valuationHistory: {
-                    times: {
-                        oneDay: [],
-                        oneWeek: [],
-                        oneYear: [],
-                    },
-                    valuations: {
-                        oneDay: [],
-                        oneWeek: [],
-                        oneYear: [],
-                    },
-                },
-            },
-            marketNews: [],
-        }
+        newEntities,
     }
+    return preloadedState;
 }
 
 const getCashHistoy = (transactions, trades) => {

@@ -13,66 +13,12 @@ import {
 } from "../actions/external_api_actions";
 import {
     LOGOUT_CURRENT_USER
-} from "../actions/session_actions.js";
+} from "../actions/session_actions";
+import {
+    defaultState,
+} from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
-const defaultState = {
-    assetInformation: {
-        tickers: new Set(),
-        ownershipHistories: {
-            times: {},
-            numShares: {},
-        },
-        candlePrices: {
-            oneDay: {},
-            oneWeek: {},
-            oneYear: {},
-        },
-        candleTimes: {
-            oneDay: {},
-            oneWeek: {},
-            oneYear: {},
-        },
-        valuations: {
-            oneDay: {},
-            oneWeek: {},
-            oneYear: {},
-        },
-        historicPrices: {
-            oneDayHigh: {},
-            oneDayLow: {},
-            oneDayOpen: {},
-            oneYearHigh: {},
-            oneYearLow: {},
-        },
-        currentPrices: {},
-        companyOverviews: {},
-        tickerData: {},
-        companyNews: {},
-        prevVolume: {},
-        curVolume: {},
-    },
-    portfolioHistory: {
-        cashTransactions: [],
-        cashHistory: {
-            times: [],
-            balances: [],
-        },
-        valuationHistory: {
-            times: {
-                oneDay: [],
-                oneWeek: [],
-                oneYear: [],
-            },
-            valuations: {
-                oneDay: [],
-                oneWeek: [],
-                oneYear: [],
-            },
-        },
-        trades: [],
-    }
-};
 export default (state = defaultState, action) => {
     Object.freeze(state);
     let newState;
