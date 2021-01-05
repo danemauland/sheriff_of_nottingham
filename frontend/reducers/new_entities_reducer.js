@@ -130,7 +130,6 @@ export default (state = defaultState, action) => {
                 const valuationHistory = newState.portfolioHistory.valuationHistory;
                 Array.from(assetInformation.tickers).forEach(ticker => {
                     for (let key in candleTimes) {
-                        debugger;
                         if (candleTimes[key][ticker] && (candleTimes[key][ticker].length < valuationHistory.times[key].length || !valuationHistory.times[key].length)) {
                             valuationHistory.times[key] = candleTimes[key][ticker];
                         }

@@ -7,6 +7,11 @@ const mapStateToProps = state => {
     const portfolioHistory = state.newEntities.portfolioHistory;
     const cashHistory = portfolioHistory.cashHistory;
     const valuationHistory = portfolioHistory.valuationHistory;
+    if (Object.values(valuationHistory.valuations).some(valuation => {
+        return !valuation.length
+    })) {
+        return({ loading: true})
+    }
     return ({
         startingCashBal: cashHistory.balances[0],
         startingCashTime: cashHistory.times[0],

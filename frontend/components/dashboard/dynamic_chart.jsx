@@ -200,6 +200,7 @@ class DynamicChart extends React.Component {
 
     render() {
         if (this.props.loading) return <></>;
+        console.log("now");
         return (
             <div className="chart-wrapper">
                 <header className="chart-header">

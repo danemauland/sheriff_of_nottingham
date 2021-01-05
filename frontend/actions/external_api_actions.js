@@ -33,17 +33,17 @@ const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
     const ownershipHistories = assetInformation.ownershipHistories;
     const tickers = assetInformation.tickers;
     const candlePrices = assetInformation.candlePrices;
-    dispatch({
-        type,
-        ticker,
-        tickers,
-        candles,
-        ownershipHistory: {
-            times: ownershipHistories.times[ticker],
-            numShares: ownershipHistories.numShares[ticker],
-        },
-        candlePrices,
-    });
+    // dispatch({
+    //     type,
+    //     ticker,
+    //     tickers,
+    //     candles,
+    //     ownershipHistory: {
+    //         times: ownershipHistories.times[ticker],
+    //         numShares: ownershipHistories.numShares[ticker],
+    //     },
+    //     candlePrices,
+    // });
     dispatch({
         type: RECEIVE_CANDLES,
         subtype: type,

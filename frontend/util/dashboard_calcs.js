@@ -31,7 +31,7 @@ export const tickerIsOwned = (ticker, ownershipHistoryShares) => (
 )
 
 export const positionValue = (ticker, state) => {
-    return state.entities.displayedAssets[ticker].valueHistory.oneDay.last();
+    return state.newEntities.assetInformation.valuations.oneDay[ticker].last();
 }
 
 export const positionCost = (ticker, state) => {
@@ -75,7 +75,7 @@ export const positionCost = (ticker, state) => {
 }
 
 export const portfolioValue = state => {
-    return state.entities.summary.valueHistory.values.oneDay.last();
+    return state.newEntities.portfolioHistory.valuationHistory.valuations.oneDay.last();
 }
 
 export const isStockLoaded = (ticker, state) => {

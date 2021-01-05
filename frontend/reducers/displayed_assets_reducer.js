@@ -64,47 +64,47 @@ const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {
     return binarySearch(arr, tar, type, i, j)
 }
 
-const calcValues = (times, prices, ownershipHistory) => {
-    const ownershipTimes = ownershipHistory.times;
-    const ownershipShares = ownershipHistory.numShares;
-    if (ownershipShares.last() === 0 && ownershipTimes.last < times[0]) {
-        const zeros = [];
-        for(let i = 0; i < times.length; i++) zeros.push(0);
-        return zeros; // need to check this, should this really be returning all 0s?
-    }
+// const calcValues = (times, prices, ownershipHistory) => {
+//     const ownershipTimes = ownershipHistory.times;
+//     const ownershipShares = ownershipHistory.numShares;
+//     if (ownershipShares.last() === 0 && ownershipTimes.last < times[0]) {
+//         const zeros = [];
+//         for(let i = 0; i < times.length; i++) zeros.push(0);
+//         return zeros; // need to check this, should this really be returning all 0s?
+//     }
 
-    let pricesPointer = 0;
-    let historyPointer = 0;
-    const values = [];
+//     let pricesPointer = 0;
+//     let historyPointer = 0;
+//     const values = [];
 
-    if (times[0] > ownershipTimes[0]) {
-        historyPointer = binarySearch(ownershipTimes, times[0], -1);
-    }
-    while (values.length < prices.length) {
-        if ((historyPointer === 0) && 
-            (times[pricesPointer] < ownershipTimes[historyPointer])
-        ) {
-            values.push(0);
-            pricesPointer++;
-        } else {
-            if (times[pricesPointer] >= ownershipTimes[historyPointer]) {
-                if (ownershipTimes[historyPointer + 1] && 
-                    times[pricesPointer] >= ownershipTimes[historyPointer + 1]) {
-                    historyPointer++;
-                } else {
-                    values.push(ownershipShares[historyPointer]
-                        * prices[pricesPointer]    
-                    )
-                    pricesPointer++;
-                }
-            } else {
-                pricesPointer++;
-            }
-        }
+//     if (times[0] > ownershipTimes[0]) {
+//         historyPointer = binarySearch(ownershipTimes, times[0], -1);
+//     }
+//     while (values.length < prices.length) {
+//         if ((historyPointer === 0) && 
+//             (times[pricesPointer] < ownershipTimes[historyPointer])
+//         ) {
+//             values.push(0);
+//             pricesPointer++;
+//         } else {
+//             if (times[pricesPointer] >= ownershipTimes[historyPointer]) {
+//                 if (ownershipTimes[historyPointer + 1] && 
+//                     times[pricesPointer] >= ownershipTimes[historyPointer + 1]) {
+//                     historyPointer++;
+//                 } else {
+//                     values.push(ownershipShares[historyPointer]
+//                         * prices[pricesPointer]    
+//                     )
+//                     pricesPointer++;
+//                 }
+//             } else {
+//                 pricesPointer++;
+//             }
+//         }
 
-    }
-    return values;
-}
+//     }
+//     return values;
+// }
 
 const inMarketHours = time => {
     const date = new Date(time * 1000);
@@ -181,9 +181,9 @@ const pullTimesAndPrices = (candles, type) => {
 
 const defaultState = {};
 const defaultAssetState = {
-    times: {},
-    prices: {},
-    valueHistory: {},
+    // times: {},
+    // prices: {},
+    // valueHistory: {},
 };
 export default (state = defaultState, action) => {
     Object.freeze(state)

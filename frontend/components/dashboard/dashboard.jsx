@@ -147,7 +147,7 @@ class Dashboard extends React.Component {
     }
 
     assetsAreStillLoading() {
-        return Object.values(this.props.tickers).some(ticker => {
+        return Array.from(this.props.tickers).some(ticker => {
             return this.assetWasOwned(ticker) && this.assetIsStillUpdating(ticker)
         })
     }

@@ -3,10 +3,11 @@ import {formatToDollar} from "../../util/dashboard_calcs";
 import {connect} from "react-redux";
 
 const mapStateToProps = state => {
+    const portfolioHistory = state.newEntities.portfolioHistory;
     return ({
         username: state.session.username,
-        cashBal: state.newEntities.portfolioHistory.cashHistory.balances.last(),
-        portfolioVal: state.entities.summary.valueHistory.values.oneDay[state.entities.summary.valueHistory.values.oneDay.length - 1],
+        cashBal: portfolioHistory.cashHistory.balances.last(),
+        portfolioVal: portfolioHistory.valuationHistory.valuations.oneDay.last(),
         trades: state.newEntities.trades,
         displayedAssets: state.entities.displayedAssets,
     })
