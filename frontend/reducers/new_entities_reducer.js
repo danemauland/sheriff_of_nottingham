@@ -4,15 +4,16 @@ import {
     RECEIVE_WEEKLY_CANDLES,
     RECEIVE_ANNUAL_CANDLES,
     RECEIVE_QUOTE,
-    INITIALIZE_ASSETS,
     INITIALIZE_ASSET,
-    dstAdjustment,
     RECEIVE_COMPANY_OVERVIEW,
     RECEIVE_TICKER_DATA,
     RECEIVE_COMPANY_NEWS,
     FLUSH_ASSET,
     RECEIVE_MARKET_NEWS,
 } from "../actions/external_api_actions";
+import {
+    LOGOUT_CURRENT_USER
+} from "../actions/session_actions.js";
 var merge = require('lodash.merge');
 
 const defaultState = {
@@ -44,6 +45,10 @@ const defaultState = {
             oneYearHigh: {},
             oneYearLow: {},
         },
+        currentPrices: {},
+        companyOverviews: {},
+        tickerData: {},
+        companyNews: {},
     },
     portfolioHistory: {
         cashTransactions: [],
@@ -144,6 +149,29 @@ export default (state = defaultState, action) => {
                 valuationHistory.valuations.oneWeek.push(valuationHistory.valuations.oneDay.last());
                 valuationHistory.valuations.oneYear.push(valuationHistory.valuations.oneDay.last());
             }
+            return newState;
+        case FLUSH_ASSET:
+            // TODO: ITERATE THROUGH OTHER AREAS AND REMOVE TICKER
+            newState = merge({}, state);
+            newState.assetInformation.tickers.delete(action.ticker);
+            return newState;
+        case LOGOUT_CURRENT_USER:
+            return defaultState;
+        case RECEIVE_QUOTE:
+            newState = {...state};
+            newState.assetInformation.currentPrices[action.ticker] = Math.floor(100*action.quote.c);
+            return newState;
+        case RECEIVE_COMPANY_OVERVIEW:
+            newState = {...state};
+            newState.assetInformation.companyOverviews[action.ticker] = action.companyOverview;
+            return newState;
+        case RECEIVE_TICKER_DATA:
+            newState = {...state};
+            newState.assetInformation.tickerData[action.ticker] = action.tickerData;
+            return newState;
+        case RECEIVE_COMPANY_NEWS:
+            newState = {...state};
+            newState.assetInformation.companyNews[action.ticker] = action.companyNews;
             return newState;
         default:
             return state;

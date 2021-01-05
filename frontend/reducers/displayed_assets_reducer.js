@@ -198,12 +198,12 @@ export default (state = defaultState, action) => {
             break;
         case INITIALIZE_ASSET:
             return merge({}, {[ticker]: {ticker: ticker, prices: {}}})
-        case FLUSH_ASSET:
-            newState = merge({}, state);
-            delete newState[ticker];
-            return newState;
-        case LOGOUT_CURRENT_USER:
-            return defaultState;
+        // case FLUSH_ASSET:
+        //     newState = merge({}, state);
+        //     delete newState[ticker];
+        //     return newState;
+        // case LOGOUT_CURRENT_USER:
+        //     return defaultState;
         // case RECEIVE_DAILY_CANDLES:
         //     newState = {...state};
         //     newState[ticker] ||= merge({}, defaultAssetState);
@@ -264,38 +264,38 @@ export default (state = defaultState, action) => {
         //     newState[ticker].prices.oneYearHigh = Math.round(Math.max(...action.candles.h) * 100);
         //     newState[ticker].prices.oneYearLow = Math.round(Math.min(...action.candles.l) * 100);
         //     return merge({},newState);
-        case RECEIVE_QUOTE:
-            newState = {...state};
-            newState[ticker] ||= merge({}, defaultAssetState);
-            return (merge({}, newState, {[ticker]:
-                Object.assign({}, state[ticker], {currentPrice: Math.floor(100*action.quote.c)})})
-            );
-        case RECEIVE_COMPANY_OVERVIEW:
-            newState = {...state};
-            newState[ticker] ||= merge({}, defaultAssetState);
-            return merge({}, newState, {[ticker]:
-                Object.assign({}, state[ticker], {companyOverview: action.companyOverview})}
-            );
-        case RECEIVE_COMPANY_OVERVIEW:
-            newState = {...state};
-            newState[ticker] ||= merge({}, defaultAssetState);
-            return merge({}, newState, {[ticker]:
-                Object.assign({}, state[ticker], {companyOverview: action.companyOverview})}
-            );
-        case RECEIVE_TICKER_DATA:
-            newState = { ...state };
-            newState[ticker] ||= merge({}, defaultAssetState);
-            return merge({}, newState, {
-                [ticker]:
-                Object.assign({}, state[ticker], { tickerData: action.tickerData })
-            });
-        case RECEIVE_COMPANY_NEWS:
-            newState = { ...state };
-            newState[ticker] ||= merge({}, defaultAssetState);
-            return merge({}, newState, {
-                [ticker]:
-                    Object.assign({}, state[ticker], { companyNews: action.companyNews })
-            });
+        // case RECEIVE_QUOTE:
+        //     newState = {...state};
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     return (merge({}, newState, {[ticker]:
+        //         Object.assign({}, state[ticker], {currentPrice: Math.floor(100*action.quote.c)})})
+        //     );
+        // case RECEIVE_COMPANY_OVERVIEW:
+        //     newState = {...state};
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     return merge({}, newState, {[ticker]:
+        //         Object.assign({}, state[ticker], {companyOverview: action.companyOverview})}
+        //     );
+        // case RECEIVE_COMPANY_OVERVIEW:
+        //     newState = {...state};
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     return merge({}, newState, {[ticker]:
+        //         Object.assign({}, state[ticker], {companyOverview: action.companyOverview})}
+        //     );
+        // case RECEIVE_TICKER_DATA:
+        //     newState = { ...state };
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     return merge({}, newState, {
+        //         [ticker]:
+        //         Object.assign({}, state[ticker], { tickerData: action.tickerData })
+        //     });
+        // case RECEIVE_COMPANY_NEWS:
+        //     newState = { ...state };
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     return merge({}, newState, {
+        //         [ticker]:
+        //             Object.assign({}, state[ticker], { companyNews: action.companyNews })
+        //     });
         default:
             return state;
     }

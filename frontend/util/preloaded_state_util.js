@@ -35,6 +35,10 @@ export default (user) => {
                     oneYearLow: {},
                     oneDayOpen: {},
                 },
+                currentPrices: {},
+                companyOverviews: {},
+                tickerData: {},
+                companyNews: {},
             },
             portfolioHistory: {
                 cashTransactions,
