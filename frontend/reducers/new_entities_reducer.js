@@ -51,6 +51,18 @@ const defaultState = {
             times: [],
             balances: [],
         },
+        valuationHistory: {
+            times: {
+                oneDay: [],
+                oneWeek: [],
+                oneYear: [],
+            },
+            valuations: {
+                oneDay: [],
+                oneWeek: [],
+                oneYear: [],
+            },
+        },
         trades: [],
     }
 };
@@ -69,6 +81,8 @@ export default (state = defaultState, action) => {
             let key;
             const ticker = action.ticker;
             newState = merge({}, state);
+            const assetInformation = newState.assetInformation;
+            const candleTimes = assetInformation.candleTimes;
             switch (action.subtype) {
                 case RECEIVE_DAILY_CANDLES:
                     key = "oneDay";
@@ -88,12 +102,12 @@ export default (state = defaultState, action) => {
             } else {
                 [times, prices] = pullTimesAndPrices(action.candles, action.subtype);
             }
-            newState.assetInformation.candlePrices[key][ticker] = prices;
-            newState.assetInformation.candleTimes[key][ticker] = times;
-            const ownershipTimes = newState.assetInformation.ownershipHistories.times[ticker];
-            const ownershipShares = newState.assetInformation.ownershipHistories.numShares[ticker];
+            assetInformation.candlePrices[key][ticker] = prices;
+            candleTimes[key][ticker] = times;
+            const ownershipTimes = assetInformation.ownershipHistories.times[ticker];
+            const ownershipShares = assetInformation.ownershipHistories.numShares[ticker];
             if (ownershipShares) {
-                newState.assetInformation.valuations[key][ticker] = calcValuations(
+                assetInformation.valuations[key][ticker] = calcValuations(
                     times,
                     prices,
                     ownershipTimes,
@@ -101,16 +115,105 @@ export default (state = defaultState, action) => {
                 );
             }
             if (key !== "oneWeek") {
-                newState.assetInformation.historicPrices[key + "Low"][ticker] = Math.round(Math.min(...action.candles.l)*100);
-                newState.assetInformation.historicPrices[key + "High"][ticker] = Math.round(Math.max(...action.candles.h)*100);
+                assetInformation.historicPrices[key + "Low"][ticker] = Math.round(Math.min(...action.candles.l)*100);
+                assetInformation.historicPrices[key + "High"][ticker] = Math.round(Math.max(...action.candles.h)*100);
                 if (key === "oneDay") {
-                    newState.assetInformation.historicPrices.oneDayOpen[ticker] = Math.round(action.candles.o[0]*100);
+                    assetInformation.historicPrices.oneDayOpen[ticker] = Math.round(action.candles.o[0]*100);
                 }
+            }
+            prices = Object.values(assetInformation.candlePrices);
+            const updateValuationHistory = prices.every(price => {
+                return Object.keys(price).length === action.tickers.size;
+            })
+            if (updateValuationHistory) {
+                const cashHistory = newState.portfolioHistory.cashHistory;
+                const valuationHistory = newState.portfolioHistory.valuationHistory;
+                Array.from(assetInformation.tickers).forEach(ticker => {
+                    for (let key in candleTimes) {
+                        debugger;
+                        if (candleTimes[key][ticker] && (candleTimes[key][ticker].length < valuationHistory.times[key].length || !valuationHistory.times[key].length)) {
+                            valuationHistory.times[key] = candleTimes[key][ticker];
+                        }
+                    }
+                })
+                let aggPositionValues = calcAggPositionValues(assetInformation, valuationHistory.times);
+                valuationHistory.valuations.oneDay = mergeHistories(cashHistory, aggPositionValues.oneDay, valuationHistory.times.oneDay);
+                valuationHistory.valuations.oneWeek = mergeHistories(cashHistory, aggPositionValues.oneWeek, valuationHistory.times.oneWeek);
+                valuationHistory.valuations.oneYear = mergeHistories(cashHistory, aggPositionValues.oneYear, valuationHistory.times.oneYear);
+                valuationHistory.times.oneWeek.push(valuationHistory.times.oneDay.last());
+                valuationHistory.times.oneYear.push(valuationHistory.times.oneDay.last());
+                valuationHistory.valuations.oneWeek.push(valuationHistory.valuations.oneDay.last());
+                valuationHistory.valuations.oneYear.push(valuationHistory.valuations.oneDay.last());
             }
             return newState;
         default:
             return state;
     }
+}
+
+const mergeHistories = (cashHistory, values, times) => {
+    let cashPointer = 0;
+    let valuesPointer = 0;
+    const totals = [];
+    const cashTimes = cashHistory.times;
+    const cashBalances = cashHistory.balances;
+    while (valuesPointer < values.length) {
+        if (cashTimes[cashPointer] <= times[valuesPointer]) {
+            if (cashTimes[cashPointer + 1] !== undefined && cashTimes[cashPointer + 1] <= times[valuesPointer]) {
+                cashPointer++;
+            } else {
+                totals.push(cashBalances[cashPointer] + values[valuesPointer]);
+                valuesPointer++
+            }
+        } else {
+            totals.push(values[valuesPointer]);
+            valuesPointer++;
+        }
+    }
+    return totals;
+}
+
+const calcAggPositionValues = (assetInformation, times) => {
+    const aggValues = {
+        oneDay: [],
+        oneWeek: [],
+        oneYear: [],
+    };
+    for (let key in times) {
+        for(let i = 0; i < times[key].length; i++) {
+            aggValues[key].push(0);
+            for(let ticker of assetInformation.tickers) {
+                if (assetInformation.valuations[key][ticker]) {
+                    aggValues[key][aggValues[key].length - 1] += assetInformation.valuations[key][ticker][i];
+                }
+            }
+        }
+    }
+    // times.oneDay.forEach((time, i) => {
+    //     aggValues.oneDay.push(0);
+    //     Object.values(displayedAssets).forEach(asset => {
+    //         if (asset.valueHistory && asset.valueHistory.oneDay) {
+    //             aggValues.oneDay[aggValues.oneDay.length - 1] += asset.valueHistory.oneDay[i];
+    //         }
+    //     })
+    // })
+    // times.oneWeek.forEach((time, i) => {
+    //     aggValues.oneWeek.push(0);
+    //     Object.values(displayedAssets).forEach(asset => {
+    //         if (asset.valueHistory && asset.valueHistory.oneWeek) {
+    //             aggValues.oneWeek[aggValues.oneWeek.length - 1] += asset.valueHistory.oneWeek[i];
+    //         }
+    //     })
+    // })
+    // times.oneYear.forEach((time, i) => {
+    //     aggValues.oneYear.push(0);
+    //     Object.values(displayedAssets).forEach(asset => {
+    //         if (asset.valueHistory && asset.valueHistory.oneYear) {
+    //             aggValues.oneYear[aggValues.oneYear.length - 1] += asset.valueHistory.oneYear[i];
+    //         }
+    //     })
+    // })
+    return aggValues;
 }
 
 const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {

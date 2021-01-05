@@ -40,6 +40,18 @@ export default (user) => {
                 cashTransactions,
                 cashHistory,
                 trades,
+                valuationHistory: {
+                    times: {
+                        oneDay: [],
+                        oneWeek: [],
+                        oneYear: [],
+                    },
+                    valuations: {
+                        oneDay: [],
+                        oneWeek: [],
+                        oneYear: [],
+                    },
+                },
             },
             marketNews: [],
         }

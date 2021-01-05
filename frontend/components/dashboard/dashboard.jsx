@@ -28,6 +28,7 @@ const mapStateToProps = state => ({
     trades: state.newEntities.portfolioHistory.trades,
     cashTransactions: state.newEntities.portfolioHistory.cashTransactions,
     ownershipHistories: state.newEntities.assetInformation.ownershipHistories,
+    valuations: state.newEntities.assetInformation.valuations,
     state: state,
 });
 
@@ -140,25 +141,15 @@ class Dashboard extends React.Component {
         return false
     }
 
-    assetIsStillUpdating(asset) {
-        if (asset.valueHistory === undefined ||
-            asset.valueHistory.oneDay === undefined ||
-            asset.valueHistory.oneWeek === undefined ||
-            asset.valueHistory.oneYear === undefined
-        ) { return true; }
-        return false;
+    assetIsStillUpdating(ticker) {
+        const valuations = this.props.valuations;
+        return !(valuations.oneDay[ticker] && valuations.oneWeek[ticker] && valuations.oneYear[ticker])
     }
 
     assetsAreStillLoading() {
-        let stillLoading = false;
-        Object.values(this.props.displayedAssets).forEach(asset => {
-            if (this.assetWasOwned(asset.ticker)) {
-                if (this.assetIsStillUpdating(asset)) {
-                    stillLoading = true;
-                }
-            }
+        return Object.values(this.props.tickers).some(ticker => {
+            return this.assetWasOwned(ticker) && this.assetIsStillUpdating(ticker)
         })
-        return stillLoading
     }
 
     getTickerFromPath() {

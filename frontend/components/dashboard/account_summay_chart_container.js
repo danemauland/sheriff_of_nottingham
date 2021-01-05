@@ -6,12 +6,13 @@ import { connect } from "react-redux";
 const mapStateToProps = state => {
     const portfolioHistory = state.newEntities.portfolioHistory;
     const cashHistory = portfolioHistory.cashHistory;
+    const valuationHistory = portfolioHistory.valuationHistory;
     return ({
         startingCashBal: cashHistory.balances[0],
         startingCashTime: cashHistory.times[0],
-        currentPortfolioVal: state.entities.summary.valueHistory.values.oneDay.last(),
-        times: state.entities.summary.valueHistory.times,
-        values: state.entities.summary.valueHistory.values,
+        currentPortfolioVal: valuationHistory.valuations.oneDay.last(),
+        times: valuationHistory.times,
+        values: valuationHistory.valuations,
         valueIncreased: state.ui.valueIncreased,
         chartSelected: state.ui.chartSelected,
         update: state.ui.updatesNeeded.chart,

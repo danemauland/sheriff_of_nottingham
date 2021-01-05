@@ -3,9 +3,7 @@ import {
     REMOVE_CASH_TRANSACTIONS,
 } from "../actions/cash_transactions_actions";
 import {
-    RECEIVE_DAILY_CANDLES,
-    RECEIVE_WEEKLY_CANDLES,
-    RECEIVE_ANNUAL_CANDLES,
+    RECEIVE_CANDLES,
 } from "../actions/external_api_actions";
 import {
     UPDATE_SUMMARY_VALUE_HISTORY,
@@ -32,14 +30,15 @@ export default (state = defaultState, action) => {
             });
         case UPDATE_CASH_HISTORY:
             newState = Object.assign({}, state, {cashHistory: false});
-        case RECEIVE_DAILY_CANDLES:
-        case RECEIVE_WEEKLY_CANDLES:
-        case RECEIVE_ANNUAL_CANDLES:
-            let readyToUpdate = true;
-            for (let ticker of action.tickers) {
-                const prices = action.displayedAssets[ticker].prices;
-                if (!(prices.oneDay && prices.oneWeek && prices.oneYear)) readyToUpdate = false;
-            }
+        case RECEIVE_CANDLES:
+            const prices = Object.values(action.candlePrices);
+            const readyToUpdate = prices.every(price => {
+                return Object.keys(price).length === action.tickers.size;
+            })
+            // for (let ticker of action.tickers) {
+            //     const prices = action.displayedAssets[ticker].prices;
+            //     if (!(prices.oneDay && prices.oneWeek && prices.oneYear)) readyToUpdate = false;
+            // }
             newState ||= Object.assign({}, state);
             newState.valueHistory = readyToUpdate;
             return newState;

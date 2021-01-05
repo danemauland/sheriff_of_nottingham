@@ -29,9 +29,10 @@ export const initializeAsset = ticker => ({
 })
 
 const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
-    const ownershipHistories = getState().newEntities.assetInformation.ownershipHistories;
-    const tickers = getState().newEntities.assetInformation.tickers;
-    const displayedAssets = getState().entities.displayedAssets;
+    const assetInformation = getState().newEntities.assetInformation;
+    const ownershipHistories = assetInformation.ownershipHistories;
+    const tickers = assetInformation.tickers;
+    const candlePrices = assetInformation.candlePrices;
     dispatch({
         type,
         ticker,
@@ -41,7 +42,7 @@ const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
             times: ownershipHistories.times[ticker],
             numShares: ownershipHistories.numShares[ticker],
         },
-        displayedAssets,
+        candlePrices,
     });
     dispatch({
         type: RECEIVE_CANDLES,
@@ -53,7 +54,7 @@ const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
             times: ownershipHistories.times[ticker],
             numShares: ownershipHistories.numShares[ticker],
         },
-        displayedAssets,
+        candlePrices,
     });
 }
 

@@ -76,20 +76,26 @@ export default (state = defaultState, action) => {
     switch (action.type) {
         case UPDATE_SUMMARY_VALUE_HISTORY:
             newState = merge({}, defaultState);
-            const displayedAssets = action.displayedAssets;
+            const assetInformation = action.assetInformation;
             const cashHistory = action.cashHistory;
-            Object.values(displayedAssets).forEach(asset => {
-                if (asset.times && Object.values(asset.times).length === 3) {
-                    if ( newState.times.oneDay.length === 0 || 
-                        newState.times.oneDay.length > asset.times.oneDay.length ||
-                        newState.times.oneWeek.length > asset.times.oneWeek.length ||
-                        newState.times.oneYear.length > asset.times.oneYear.length
-                    ) {
-                        newState.times = merge({},asset.times)
+            Object.values(assetInformation.tickers).forEach(ticker => {
+                const candleTimes = assetInformation.candleTimes;
+                for (let key in candleTimes) {
+                    if (candleTimes[key][ticker] && candleTimes[key][ticker].length < newState.times[key].length) {
+                        newState.times[key] = candleTimes[key][ticker];
                     }
                 }
+                // if (asset.times && Object.values(asset.times).length === 3) {
+                //     if ( newState.times.oneDay.length === 0 || 
+                //         newState.times.oneDay.length > asset.times.oneDay.length ||
+                //         newState.times.oneWeek.length > asset.times.oneWeek.length ||
+                //         newState.times.oneYear.length > asset.times.oneYear.length
+                //     ) {
+                //         newState.times = merge({},asset.times)
+                //     }
+                // }
             })
-            let aggPositionValues = calcAggPositionValues(displayedAssets, newState.times);
+            let aggPositionValues = calcAggPositionValues(assetInformation, newState.times);
             newState.values.oneDay = mergeHistories(cashHistory, aggPositionValues.oneDay, newState.times.oneDay);
             newState.values.oneWeek = mergeHistories(cashHistory, aggPositionValues.oneWeek, newState.times.oneWeek);
             newState.values.oneYear = mergeHistories(cashHistory, aggPositionValues.oneYear, newState.times.oneYear);

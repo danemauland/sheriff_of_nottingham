@@ -204,66 +204,66 @@ export default (state = defaultState, action) => {
             return newState;
         case LOGOUT_CURRENT_USER:
             return defaultState;
-        case RECEIVE_DAILY_CANDLES:
-            newState = {...state};
-            newState[ticker] ||= merge({}, defaultAssetState);
-            newState[ticker].ticker ||= ticker;
-            newState[ticker].times ||= {};
-            newState[ticker].prices ||= {};
-            timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_DAILY_CANDLES);
-            newState[ticker].times.oneDay = timesAndPrices[0];
-            newState[ticker].prices.oneDay = timesAndPrices[1];
-            if (ownershipHistory.numShares.length > 0) {
-                newState[ticker].valueHistory ||= {};
-                newState[ticker].valueHistory.oneDay = calcValues(
-                    newState[ticker].times.oneDay,
-                    newState[ticker].prices.oneDay,
-                    ownershipHistory,
-                );
-            }
-            newState[ticker].prices.oneDayHigh = Math.round(Math.max(...action.candles.h)*100);
-            newState[ticker].prices.oneDayLow = Math.round(Math.min(...action.candles.l)*100);
-            newState[ticker].prices.open = Math.round(action.candles.o[0]*100);
-            return merge({},newState);
-        case RECEIVE_WEEKLY_CANDLES:
-            newState = {...state};
-            newState[ticker] ||= merge({}, defaultAssetState);
-            newState[ticker].times ||= {};
-            newState[ticker].prices ||= {};
-            timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_WEEKLY_CANDLES);
-            newState[ticker].times.oneWeek = timesAndPrices[0];
-            newState[ticker].prices.oneWeek = timesAndPrices[1];
-            newState[ticker].valueHistory ||= {};
-            if (ownershipHistory.numShares.length > 0) {
-                newState[ticker].valueHistory.oneWeek = calcValues(
-                    newState[ticker].times.oneWeek,
-                    newState[ticker].prices.oneWeek,
-                    ownershipHistory,
-                );
-            }
-            return merge({},newState);
-        case RECEIVE_ANNUAL_CANDLES:
-            newState = {...state};
-            newState[ticker] ||= merge({}, defaultAssetState);
-            newState[ticker].times ||= {};
-            newState[ticker].prices ||= {};
-            newState[ticker].times.oneYear = action.candles.t;
-            newState[ticker].prices.oneYear = action.candles.c.map(price => (
-                Math.floor(price * 100)
-            ));
-            newState[ticker].valueHistory ||= {};
-            if (ownershipHistory.numShares.length > 0) {
-                newState[ticker].valueHistory.oneYear = calcValues(
-                    newState[ticker].times.oneYear,
-                    newState[ticker].prices.oneYear,
-                    ownershipHistory,
-                );
-            }
-            newState[ticker].prevVolume = action.candles.v[action.candles.v.length - 2];
-            newState[ticker].curVolume = action.candles.v.last();
-            newState[ticker].prices.oneYearHigh = Math.round(Math.max(...action.candles.h) * 100);
-            newState[ticker].prices.oneYearLow = Math.round(Math.min(...action.candles.l) * 100);
-            return merge({},newState);
+        // case RECEIVE_DAILY_CANDLES:
+        //     newState = {...state};
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     newState[ticker].ticker ||= ticker;
+        //     newState[ticker].times ||= {};
+        //     newState[ticker].prices ||= {};
+        //     timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_DAILY_CANDLES);
+        //     newState[ticker].times.oneDay = timesAndPrices[0];
+        //     newState[ticker].prices.oneDay = timesAndPrices[1];
+        //     if (ownershipHistory.numShares.length > 0) {
+        //         newState[ticker].valueHistory ||= {};
+        //         newState[ticker].valueHistory.oneDay = calcValues(
+        //             newState[ticker].times.oneDay,
+        //             newState[ticker].prices.oneDay,
+        //             ownershipHistory,
+        //         );
+        //     }
+        //     newState[ticker].prices.oneDayHigh = Math.round(Math.max(...action.candles.h)*100);
+        //     newState[ticker].prices.oneDayLow = Math.round(Math.min(...action.candles.l)*100);
+        //     newState[ticker].prices.open = Math.round(action.candles.o[0]*100);
+        //     return merge({},newState);
+        // case RECEIVE_WEEKLY_CANDLES:
+        //     newState = {...state};
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     newState[ticker].times ||= {};
+        //     newState[ticker].prices ||= {};
+        //     timesAndPrices = pullTimesAndPrices(action.candles, RECEIVE_WEEKLY_CANDLES);
+        //     newState[ticker].times.oneWeek = timesAndPrices[0];
+        //     newState[ticker].prices.oneWeek = timesAndPrices[1];
+        //     newState[ticker].valueHistory ||= {};
+        //     if (ownershipHistory.numShares.length > 0) {
+        //         newState[ticker].valueHistory.oneWeek = calcValues(
+        //             newState[ticker].times.oneWeek,
+        //             newState[ticker].prices.oneWeek,
+        //             ownershipHistory,
+        //         );
+        //     }
+        //     return merge({},newState);
+        // case RECEIVE_ANNUAL_CANDLES:
+        //     newState = {...state};
+        //     newState[ticker] ||= merge({}, defaultAssetState);
+        //     newState[ticker].times ||= {};
+        //     newState[ticker].prices ||= {};
+        //     newState[ticker].times.oneYear = action.candles.t;
+        //     newState[ticker].prices.oneYear = action.candles.c.map(price => (
+        //         Math.floor(price * 100)
+        //     ));
+        //     newState[ticker].valueHistory ||= {};
+        //     if (ownershipHistory.numShares.length > 0) {
+        //         newState[ticker].valueHistory.oneYear = calcValues(
+        //             newState[ticker].times.oneYear,
+        //             newState[ticker].prices.oneYear,
+        //             ownershipHistory,
+        //         );
+        //     }
+        //     newState[ticker].prevVolume = action.candles.v[action.candles.v.length - 2];
+        //     newState[ticker].curVolume = action.candles.v.last();
+        //     newState[ticker].prices.oneYearHigh = Math.round(Math.max(...action.candles.h) * 100);
+        //     newState[ticker].prices.oneYearLow = Math.round(Math.min(...action.candles.l) * 100);
+        //     return merge({},newState);
         case RECEIVE_QUOTE:
             newState = {...state};
             newState[ticker] ||= merge({}, defaultAssetState);
