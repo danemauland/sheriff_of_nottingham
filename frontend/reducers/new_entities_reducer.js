@@ -10,8 +10,6 @@ import {
     RECEIVE_COMPANY_NEWS,
     FLUSH_ASSET,
     RECEIVE_MARKET_NEWS,
-    DAILY_RESOLUTION,
-    WEEKLY_RESOLUTION,
 } from "../actions/external_api_actions";
 import {
     LOGOUT_CURRENT_USER

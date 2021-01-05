@@ -1,3 +1,10 @@
+import {
+    RECEIVE_DAILY_CANDLES,
+    RECEIVE_WEEKLY_CANDLES,
+    DAILY_RESOLUTION,
+    WEEKLY_RESOLUTION,
+} from "../actions/external_api_actions";
+
 export const defaultState = Object.freeze({
     assetInformation: {
         tickers: new Set(),
