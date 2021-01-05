@@ -1,17 +1,18 @@
 import React from "react";
 import Header from "./header";
-import {fetchCandles,
+import {
+    // fetchCandles,
     initializeAssets,
-    RECEIVE_WEEKLY_CANDLES,
-    RECEIVE_ANNUAL_CANDLES,
-    fetchCompanyOverview,
-    fetchTickerData,
-    fetchCompanyNews,
+    // RECEIVE_WEEKLY_CANDLES,
+    // RECEIVE_ANNUAL_CANDLES,
+    // fetchCompanyOverview,
+    // fetchTickerData,
+    // fetchCompanyNews,
     fetchMarketNews,
     initializeAsset,
-    fetchAllCandles,
+    fetchAllInfo,
 } from "../../actions/external_api_actions";
-import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
+// import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
 import { Route } from "react-router-dom";
 import Summary from "./summary";
@@ -34,16 +35,16 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
         initializeAssets: (trades, cashTransactions) => dispatch(initializeAssets(trades, cashTransactions)),
-        fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
-        fetchAllCandles: tickers => fetchAllCandles(tickers, dispatch),
-        fetchCompanyOverview: ticker => fetchCompanyOverview(ticker, dispatch),
-        updateSummaryValueHistory: state => dispatch(updateSummaryValueHistory(state)),
-        updateCashHistory: state => dispatch(updateCashHistory(state)),
+        // fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
+        fetchAllInfo: tickers => fetchAllInfo(tickers, dispatch),
+        // fetchCompanyOverview: ticker => fetchCompanyOverview(ticker, dispatch),
+        // updateSummaryValueHistory: state => dispatch(updateSummaryValueHistory(state)),
+        // updateCashHistory: state => dispatch(updateCashHistory(state)),
         setAsLoading: () => dispatch(setAsLoading()),
         finishedLoading: () => dispatch(finishedLoading()),
         updateChart: chartType => dispatch(updateChart(chartType)),
-        fetchTickerData: ticker => fetchTickerData(ticker, dispatch),
-        fetchCompanyNews: ticker => fetchCompanyNews(ticker, dispatch),
+        // fetchTickerData: ticker => fetchTickerData(ticker, dispatch),
+        // fetchCompanyNews: ticker => fetchCompanyNews(ticker, dispatch),
         fetchMarketNews: () => fetchMarketNews(dispatch),
         initializeAsset: ticker => dispatch(initializeAsset(ticker))
 });
@@ -72,15 +73,15 @@ class Dashboard extends React.Component {
     //     })
     // }
 
-    fetchInitialCompanyOverviews() {
-        Object.values(this.props.displayedAssets).forEach(asset => {
-            if (asset.companyOverview === undefined) {
-                this.props.fetchCompanyOverview(asset.ticker)
-                this.props.fetchTickerData(asset.ticker)
-                this.props.fetchCompanyNews(asset.ticker)
-            }
-        })
-    }
+    // fetchInitialCompanyOverviews() {
+    //     Object.values(this.props.tickers).forEach(asset => {
+    //         if (asset.companyOverview === undefined) {
+    //             this.props.fetchCompanyOverview(asset.ticker)
+    //             this.props.fetchTickerData(asset.ticker)
+    //             this.props.fetchCompanyNews(asset.ticker)
+    //         }
+    //     })
+    // }
 
     isStockIndexPage() {
         return (this.props.location.pathname.slice(0,18) === "/dashboard/stocks/")
@@ -101,9 +102,9 @@ class Dashboard extends React.Component {
                 // this.props.fetchCandles(ticker);
                 // this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 // this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
-                this.props.fetchCompanyOverview(ticker);
-                this.props.fetchTickerData(ticker);
-                this.props.fetchCompanyNews(ticker);
+                // this.props.fetchCompanyOverview(ticker);
+                // this.props.fetchTickerData(ticker);
+                // this.props.fetchCompanyNews(ticker);
                 this.props.setAsLoading();
             }
         } else if (this.isStockIndexPage()) {
@@ -114,9 +115,9 @@ class Dashboard extends React.Component {
                 // this.props.fetchCandles(ticker);
                 // this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
                 // this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
-                this.props.fetchCompanyOverview(ticker);
-                this.props.fetchTickerData(ticker);
-                this.props.fetchCompanyNews(ticker)
+                // this.props.fetchCompanyOverview(ticker);
+                // this.props.fetchTickerData(ticker);
+                // this.props.fetchCompanyNews(ticker)
                 this.props.setAsLoading();
             }
         }
@@ -128,8 +129,8 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.props.initializeAssets(this.props.trades, this.props.cashTransactions);
-        this.props.fetchAllCandles(this.props.tickers);
+        // this.props.initializeAssets(this.props.trades, this.props.cashTransactions);
+        this.props.fetchAllInfo(this.props.tickers);
         this.timesComponentUpdated++;
         this.props.fetchMarketNews();
     }
@@ -164,7 +165,7 @@ class Dashboard extends React.Component {
         if (this.timesComponentUpdated === 1) {
 
             // this.fetchInitialCandles();
-            this.fetchInitialCompanyOverviews();
+            // this.fetchInitialCompanyOverviews();
             
             this.checkForNeedToInitializeAStock();
             
@@ -174,10 +175,10 @@ class Dashboard extends React.Component {
                 Object.values(this.props.displayedAssets).forEach(asset =>
                     this.checkForNeedToInitializeAStock(asset)
                 );
-            } else if (this.props.state.ui.updatesNeeded.cashHistory) {
-                this.props.updateCashHistory(this.props.state);
-            } else if (this.props.state.ui.updatesNeeded.valueHistory) {
-                this.props.updateSummaryValueHistory(this.props.state);
+            // } else if (this.props.state.ui.updatesNeeded.cashHistory) {
+            //     this.props.updateCashHistory(this.props.state);
+            // } else if (this.props.state.ui.updatesNeeded.valueHistory) {
+            //     this.props.updateSummaryValueHistory(this.props.state);
             } else if (this.pageIsLoading()) {
                 let stillLoading = false;
                 if (this.isDashboardPage()) {

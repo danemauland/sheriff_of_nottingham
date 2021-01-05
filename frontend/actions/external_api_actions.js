@@ -330,12 +330,22 @@ export const fetchMarketNews = dispatch => {
     finnhubQ.push(action)
 }
 
-export const fetchAllCandles = (tickers, dispatch) => {
+const fetchAllCandles = (tickers, dispatch) => {
     if (!isIterable(tickers)) tickers = [tickers];
     for(let ticker of tickers) {
         fetchCandles(ticker, dispatch);
         fetchCandles(ticker, dispatch, RECEIVE_WEEKLY_CANDLES);
         fetchCandles(ticker, dispatch, RECEIVE_ANNUAL_CANDLES);
+    }
+}
+
+export const fetchAllInfo = (tickers, dispatch) => {
+    if (!isIterable(tickers)) tickers = [tickers];
+    fetchAllCandles(tickers, dispatch);
+    for(let ticker of tickers) {
+        fetchCompanyOverview(ticker, dispatch);
+        fetchTickerData(ticker, dispatch);
+        fetchCompanyNews(ticker, dispatch);
     }
 }
 

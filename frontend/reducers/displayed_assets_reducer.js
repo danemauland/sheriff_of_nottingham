@@ -1,20 +1,21 @@
+// import {
+//     RECEIVE_CURRENT_USER,
+//     LOGOUT_CURRENT_USER
+// } from "../actions/session_actions.js";
 import {
-    RECEIVE_CURRENT_USER,
-    LOGOUT_CURRENT_USER
-} from "../actions/session_actions.js";
-import {RECEIVE_DAILY_CANDLES,
-    RECEIVE_WEEKLY_CANDLES,
-    RECEIVE_ANNUAL_CANDLES,
-    RECEIVE_QUOTE,
+    // RECEIVE_DAILY_CANDLES,
+    // RECEIVE_WEEKLY_CANDLES,
+    // RECEIVE_ANNUAL_CANDLES,
+    // RECEIVE_QUOTE,
     INITIALIZE_ASSETS,
     INITIALIZE_ASSET,
-    dstAdjustment,
-    RECEIVE_COMPANY_OVERVIEW,
-    RECEIVE_TICKER_DATA,
-    RECEIVE_COMPANY_NEWS,
-    FLUSH_ASSET,
+    // dstAdjustment,
+    // RECEIVE_COMPANY_OVERVIEW,
+    // RECEIVE_TICKER_DATA,
+    // RECEIVE_COMPANY_NEWS,
+    // FLUSH_ASSET,
 } from "../actions/external_api_actions";
-import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
+// import { UPDATE_SUMMARY_VALUE_HISTORY } from "../actions/summary_actions";
 var merge = require('lodash.merge');
 
 const initializeState = initialTrades => {
@@ -106,78 +107,78 @@ const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {
 //     return values;
 // }
 
-const inMarketHours = time => {
-    const date = new Date(time * 1000);
-    const dst = date.isDSTObserved();
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    const marketOpenHour = (dst ? 13 : 14);
-    if (hours < marketOpenHour || ((hours < (marketOpenHour + 1) && minutes < 30))) {
-        return false;
-    } else if (hours >= marketOpenHour + 7) {return false};
-    return true;
-}
+// const inMarketHours = time => {
+//     const date = new Date(time * 1000);
+//     const dst = date.isDSTObserved();
+//     const hours = date.getUTCHours();
+//     const minutes = date.getUTCMinutes();
+//     const marketOpenHour = (dst ? 13 : 14);
+//     if (hours < marketOpenHour || ((hours < (marketOpenHour + 1) && minutes < 30))) {
+//         return false;
+//     } else if (hours >= marketOpenHour + 7) {return false};
+//     return true;
+// }
 
-const isLastPeriod = (time, type) => {
-    const date = new Date(time * 1000);
-    const dst = date.isDSTObserved();
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    const marketCloseHour = (dst ? 20 : 21);
-    switch (type) {
-        case RECEIVE_DAILY_CANDLES:
-            if (hours === marketCloseHour - 1 && minutes === 55) {return true}
-            else {return false};
-        case RECEIVE_WEEKLY_CANDLES:
-            if (hours === marketCloseHour - 1 && minutes === 30) { return true }
-            else { return false };
-        default:
-            break;
-    }
-}
+// const isLastPeriod = (time, type) => {
+//     const date = new Date(time * 1000);
+//     const dst = date.isDSTObserved();
+//     const hours = date.getUTCHours();
+//     const minutes = date.getUTCMinutes();
+//     const marketCloseHour = (dst ? 20 : 21);
+//     switch (type) {
+//         case RECEIVE_DAILY_CANDLES:
+//             if (hours === marketCloseHour - 1 && minutes === 55) {return true}
+//             else {return false};
+//         case RECEIVE_WEEKLY_CANDLES:
+//             if (hours === marketCloseHour - 1 && minutes === 30) { return true }
+//             else { return false };
+//         default:
+//             break;
+//     }
+// }
 
-const pullTimesAndPrices = (candles, type) => {
-    const arrs = [[],[]];
-    let newTime;
-    for(let i = 0; i < candles.t.length; i++ ) {
-        if (inMarketHours(candles.t[i])) {
-            arrs[0].push(candles.t[i]);
-            arrs[1].push(Math.floor(candles.o[i] * 100));
-            if (i === candles.t.length - 1) {
-                newTime = new Date(candles.t[i] * 1000);
-                switch (type) {
-                    case RECEIVE_DAILY_CANDLES:
-                        if (newTime.getUTCMinutes() + 5 >= 60) {
-                            newTime.setUTCHours(newTime.getUTCHours() + 1);
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 5) % 60);
-                        } else {
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 5));
-                        }
-                        break;
-                    case RECEIVE_WEEKLY_CANDLES:
-                        if (newTime.getUTCMinutes() + 30 >= 60) {
-                            newTime.setUTCHours(newTime.getUTCHours() + 1);
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 30) % 60);
-                        } else {
-                            newTime.setUTCMinutes((newTime.getUTCMinutes() + 30));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                arrs[0].push(Date.parse(newTime) / 1000);
-                arrs[1].push(Math.floor(candles.c[i] * 100));
-            } else if (isLastPeriod(candles.t[i], type)) {
-                newTime = new Date(candles.t[i] * 1000);
-                newTime.setUTCHours(newTime.getUTCHours() + 1)
-                newTime.setUTCMinutes(0)
-                arrs[0].push(Date.parse(newTime) / 1000);
-                arrs[1].push(Math.floor(candles.c[i] * 100));
-            }
-        }
-    }
-    return arrs;
-}
+// const pullTimesAndPrices = (candles, type) => {
+//     const arrs = [[],[]];
+//     let newTime;
+//     for(let i = 0; i < candles.t.length; i++ ) {
+//         if (inMarketHours(candles.t[i])) {
+//             arrs[0].push(candles.t[i]);
+//             arrs[1].push(Math.floor(candles.o[i] * 100));
+//             if (i === candles.t.length - 1) {
+//                 newTime = new Date(candles.t[i] * 1000);
+//                 switch (type) {
+//                     case RECEIVE_DAILY_CANDLES:
+//                         if (newTime.getUTCMinutes() + 5 >= 60) {
+//                             newTime.setUTCHours(newTime.getUTCHours() + 1);
+//                             newTime.setUTCMinutes((newTime.getUTCMinutes() + 5) % 60);
+//                         } else {
+//                             newTime.setUTCMinutes((newTime.getUTCMinutes() + 5));
+//                         }
+//                         break;
+//                     case RECEIVE_WEEKLY_CANDLES:
+//                         if (newTime.getUTCMinutes() + 30 >= 60) {
+//                             newTime.setUTCHours(newTime.getUTCHours() + 1);
+//                             newTime.setUTCMinutes((newTime.getUTCMinutes() + 30) % 60);
+//                         } else {
+//                             newTime.setUTCMinutes((newTime.getUTCMinutes() + 30));
+//                         }
+//                         break;
+//                     default:
+//                         break;
+//                 }
+//                 arrs[0].push(Date.parse(newTime) / 1000);
+//                 arrs[1].push(Math.floor(candles.c[i] * 100));
+//             } else if (isLastPeriod(candles.t[i], type)) {
+//                 newTime = new Date(candles.t[i] * 1000);
+//                 newTime.setUTCHours(newTime.getUTCHours() + 1)
+//                 newTime.setUTCMinutes(0)
+//                 arrs[0].push(Date.parse(newTime) / 1000);
+//                 arrs[1].push(Math.floor(candles.c[i] * 100));
+//             }
+//         }
+//     }
+//     return arrs;
+// }
 
 const defaultState = {};
 const defaultAssetState = {
