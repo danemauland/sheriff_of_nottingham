@@ -64,16 +64,21 @@ export const defaultState = Object.freeze({
     }
 });
 
+export const convertTimestampsToSeconds = obj => {
+    for(let ele of obj) {
+        ele.createdAt = Math.floor(ele.createdAt / 1000)
+    }
+}
+
 export const getCashHistoy = (transactions, trades) => {
     const {times, amounts} = mergeTransactions(transactions, trades);
     const balances = [];
-    const cashHistory = {times, balances};
     amounts.forEach((amount, i) => {
         let oldBalance = balances[i - 1];
         if (i === 0) oldBalance = 0;
         balances.push(oldBalance + amount);
     })
-    return cashHistory;
+    return {times, balances};
 }
 
 export const getOwnershipHistories = initialTrades => {
@@ -89,7 +94,7 @@ export const getOwnershipHistories = initialTrades => {
         }
 
         const times = ownershipHistories.times[ticker];
-        times.push(trade.createdAt / 1000);
+        times.push(trade.createdAt);
 
         const numShares = ownershipHistories.numShares[ticker];
         numShares.push(trade.numShares + (numShares.last() || 0));
@@ -100,28 +105,41 @@ export const getOwnershipHistories = initialTrades => {
 const mergeTransactions = (cash, trades) => {
     let cashPointer = 0;
     let tradesPointer = 0;
-    const merged = {times: [], amounts: []};
+    const times = [];
+    const amounts = [];
+    const merged = {times, amounts}
+
+    const mergeIn = ({createdAt, amount}) => {
+        times.push(createdAt);
+        amounts.push(amount)
+    }
+
+    const mergeInTrade = ({numShares, tradePrice, createdAt}) => {
+        mergeIn({
+            createdAt,
+            amount: -numShares * tradePrice,
+        })
+    }
+
+    // merge the two arrays until one is fully iterated through
     while (cashPointer < cash.length && tradesPointer < trades.length) {
-        if (cash[cashPointer].createdAt < trades[tradesPointer].createdAt) {
-            merged.times.push(cash[cashPointer].createdAt / 1000);
-            merged.amounts.push(cash[cashPointer].amount);
+        const transaction = cash[cashPointer];
+        const trade = trades[tradesPointer];
+        if (transaction.createdAt < trade.createdAt) {
+            mergeIn(transaction);
             cashPointer++;
         } else {
-            let amount = -trades[tradesPointer].numShares * trades[tradesPointer].tradePrice;
-            merged.times.push(trades[tradesPointer].createdAt / 1000);
-            merged.amounts.push(amount);
-            tradesPointer++
+            mergeInTrade(trade);
+            tradesPointer++;
         }
     }
+
     while (cashPointer < cash.length) {
-        merged.times.push(cash[cashPointer].createdAt / 1000);
-        merged.amounts.push(cash[cashPointer].amount);
+        mergeIn(cash[cashPointer]);
         cashPointer++;
     }
     while (tradesPointer < trades.length) {
-        let amount = -trades[tradesPointer].numShares * trades[tradesPointer].tradePrice;
-        merged.times.push(trades[tradesPointer].createdAt / 1000);
-        merged.amounts.push(amount);
+        mergeInTrade(trades[tradesPointer]);
         tradesPointer++
     }
     return merged;

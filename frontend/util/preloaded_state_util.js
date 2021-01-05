@@ -2,6 +2,7 @@ import {
     defaultState,
     getCashHistoy,
     getOwnershipHistories,
+    convertTimestampsToSeconds,
 } from "./new_entities_util";
 var merge = require('lodash.merge');
 
@@ -15,6 +16,9 @@ export default user => {
     // the database, so back-dated transactions will be out of order
     const trades = [...user.trades].sort(sortOrder);
     const cashTransactions = [...user.cashTransactions].sort(sortOrder);
+
+    convertTimestampsToSeconds(trades);
+    convertTimestampsToSeconds(cashTransactions);
 
     // calculates stocks owned at any given point in time based off the trades
     const ownershipHistories = getOwnershipHistories(trades);
