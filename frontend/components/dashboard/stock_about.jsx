@@ -8,7 +8,8 @@ import StockAboutItem from "./stock_about_item.jsx";
 const mapStateToProps = (state, { ticker }) => {
     return ({
         valueIncreased: state.ui.valueIncreased,
-        description: state.entities.displayedAssets[ticker].companyOverview.Description,
+        // description: state.entities.displayedAssets[ticker].companyOverview.Description,
+        description: state.newEntities.assetInformation.companyOverviews[ticker].Description,
         items: extractAboutItems(ticker, state),
     })
 }

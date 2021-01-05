@@ -2,14 +2,14 @@ import React from "react";
 import Header from "./header";
 import {
     // fetchCandles,
-    initializeAssets,
+    // initializeAssets,
     // RECEIVE_WEEKLY_CANDLES,
     // RECEIVE_ANNUAL_CANDLES,
     // fetchCompanyOverview,
     // fetchTickerData,
     // fetchCompanyNews,
     fetchMarketNews,
-    initializeAsset,
+    // initializeAsset,
     fetchAllInfo,
 } from "../../actions/external_api_actions";
 // import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
@@ -24,7 +24,7 @@ import { isStockLoaded, ONE_DAY} from "../../util/dashboard_calcs";
 import { updateChart } from "../../actions/chart_selected_actions";
 
 const mapStateToProps = state => ({
-    displayedAssets: state.entities.displayedAssets,
+    // displayedAssets: state.entities.displayedAssets,
     tickers: state.newEntities.assetInformation.tickers,
     trades: state.newEntities.portfolioHistory.trades,
     cashTransactions: state.newEntities.portfolioHistory.cashTransactions,
@@ -34,7 +34,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-        initializeAssets: (trades, cashTransactions) => dispatch(initializeAssets(trades, cashTransactions)),
+        // // initializeAssets: (trades, cashTransactions) => dispatch(initializeAssets(trades, cashTransactions)),
         // fetchCandles: (ticker, subtype) => (fetchCandles(ticker, dispatch, subtype)),
         fetchAllInfo: tickers => fetchAllInfo(tickers, dispatch),
         // fetchCompanyOverview: ticker => fetchCompanyOverview(ticker, dispatch),
@@ -46,7 +46,7 @@ const mapDispatchToProps = dispatch => ({
         // fetchTickerData: ticker => fetchTickerData(ticker, dispatch),
         // fetchCompanyNews: ticker => fetchCompanyNews(ticker, dispatch),
         fetchMarketNews: () => fetchMarketNews(dispatch),
-        initializeAsset: ticker => dispatch(initializeAsset(ticker))
+        // // initializeAsset: ticker => dispatch(initializeAsset(ticker))
 });
 
 
@@ -91,38 +91,38 @@ class Dashboard extends React.Component {
         return this.props.location.pathname === "/dashboard";
     }
 
-    checkForNeedToInitializeAStock(asset) {
-        let ticker;
-        const {trades, cashTransactions} = this.props;
-        if (asset) {
-            ticker = asset.ticker;
-            if ( !isStockLoaded(ticker, this.props.state)) {
-                this.props.initializeAsset(ticker);
-                this.props.initializeAssets(trades, cashTransactions);
-                // this.props.fetchCandles(ticker);
-                // this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
-                // this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
-                // this.props.fetchCompanyOverview(ticker);
-                // this.props.fetchTickerData(ticker);
-                // this.props.fetchCompanyNews(ticker);
-                this.props.setAsLoading();
-            }
-        } else if (this.isStockIndexPage()) {
-            ticker = this.getTickerFromPath();
-            if ( !isStockLoaded(ticker, this.props.state)) {
-                this.props.initializeAsset(ticker);
-                this.props.initializeAssets(trades, cashTransactions);
-                // this.props.fetchCandles(ticker);
-                // this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
-                // this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
-                // this.props.fetchCompanyOverview(ticker);
-                // this.props.fetchTickerData(ticker);
-                // this.props.fetchCompanyNews(ticker)
-                this.props.setAsLoading();
-            }
-        }
-        return true;
-    }
+    // checkForNeedToInitializeAStock(asset) {
+    //     let ticker;
+    //     const {trades, cashTransactions} = this.props;
+    //     if (asset) {
+    //         ticker = asset.ticker;
+    //         if ( !isStockLoaded(ticker, this.props.state)) {
+    //             // this.props.initializeAsset(ticker);
+    //             // this.props.initializeAssets(trades, cashTransactions);
+    //             // this.props.fetchCandles(ticker);
+    //             // this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
+    //             // this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
+    //             // this.props.fetchCompanyOverview(ticker);
+    //             // this.props.fetchTickerData(ticker);
+    //             // this.props.fetchCompanyNews(ticker);
+    //             this.props.setAsLoading();
+    //         }
+    //     } else if (this.isStockIndexPage()) {
+    //         ticker = this.getTickerFromPath();
+    //         if ( !isStockLoaded(ticker, this.props.state)) {
+    //             // this.props.initializeAsset(ticker);
+    //             // this.props.initializeAssets(trades, cashTransactions);
+    //             // this.props.fetchCandles(ticker);
+    //             // this.props.fetchCandles(ticker, RECEIVE_WEEKLY_CANDLES);
+    //             // this.props.fetchCandles(ticker, RECEIVE_ANNUAL_CANDLES);
+    //             // this.props.fetchCompanyOverview(ticker);
+    //             // this.props.fetchTickerData(ticker);
+    //             // this.props.fetchCompanyNews(ticker)
+    //             this.props.setAsLoading();
+    //         }
+    //     }
+    //     return true;
+    // }
 
     pageIsLoading() {
         return this.props.state.ui.loading
@@ -167,14 +167,14 @@ class Dashboard extends React.Component {
             // this.fetchInitialCandles();
             // this.fetchInitialCompanyOverviews();
             
-            this.checkForNeedToInitializeAStock();
+            // this.checkForNeedToInitializeAStock();
             
         } else {
             if (prevProps.location !== this.props.location) {
                 this.props.updateChart(ONE_DAY);
-                Object.values(this.props.displayedAssets).forEach(asset =>
-                    this.checkForNeedToInitializeAStock(asset)
-                );
+                // Object.values(this.props.displayedAssets).forEach(asset =>
+                //     this.checkForNeedToInitializeAStock(asset)
+                // );
             // } else if (this.props.state.ui.updatesNeeded.cashHistory) {
             //     this.props.updateCashHistory(this.props.state);
             // } else if (this.props.state.ui.updatesNeeded.valueHistory) {
@@ -191,11 +191,12 @@ class Dashboard extends React.Component {
                 if (!stillLoading) {
                     this.props.finishedLoading();
                 }
-            } else {
-                if (this.isStockIndexPage()) {
-                    this.checkForNeedToInitializeAStock()
-                }
-            }
+            } 
+            // else {
+            //     if (this.isStockIndexPage()) {
+            //         this.checkForNeedToInitializeAStock()
+            //     }
+            // }
         }
         this.timesComponentUpdated++
     }

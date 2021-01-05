@@ -79,14 +79,23 @@ export const portfolioValue = state => {
 }
 
 export const isStockLoaded = (ticker, state) => {
-    const candlePrices = state.newEntities.assetInformation.candlePrices;
-    if (state.entities.displayedAssets[ticker] === undefined ||
-        Object.values(candlePrices).some(prices => prices[ticker] === undefined) ||
-        state.entities.displayedAssets[ticker].companyOverview === undefined ||
-        state.entities.displayedAssets[ticker].tickerData === undefined ||
-        state.entities.displayedAssets[ticker].companyNews === undefined
-    ) { return false }
-    return true;
+    const assetInformation = state.newEntities.assetInformation;
+    
+    return (
+        assetInformation.tickers.has(ticker) &&
+        Object.values(assetInformation.candlePrices).every(prices => prices[ticker]) &&
+        assetInformation.companyNews[ticker] &&
+        assetInformation.tickerData[ticker] &&
+        assetInformation.companyOverviews[ticker]
+
+    )
+    // if (state.entities.displayedAssets[ticker] === undefined ||
+    //     Object.values(candlePrices).some(prices => prices[ticker] === undefined) ||
+    //     state.entities.displayedAssets[ticker].companyOverview === undefined ||
+    //     state.entities.displayedAssets[ticker].tickerData === undefined ||
+    //     state.entities.displayedAssets[ticker].companyNews === undefined
+    // ) { return false }
+    // return true;
 }
 
 const getCityAndState = address => {
@@ -113,10 +122,10 @@ const formatDividendYield = dYield => {
 }
 
 export const extractAboutItems = (ticker, state) => {
-    const asset = state.entities.displayedAssets[ticker];
-    const historicPrices = state.newEntities.assetInformation.historicPrices;
-    const desc = asset.companyOverview;
-    const data = asset.tickerData;
+    const assetInformation = state.newEntities.assetInformation;
+    const historicPrices = assetInformation.historicPrices;
+    const desc = assetInformation.companyOverviews[ticker];
+    const data = assetInformation.tickerData[ticker];
     const items = [];
     if (data.length < 1) {
         items.push(["CEO","Not Found"]);
@@ -130,11 +139,11 @@ export const extractAboutItems = (ticker, state) => {
     items.push(["Headquarters", getCityAndState(desc.Address)]);
     items.push(["Price-Earnings Ratio", parseFloat(desc.PERatio).toFixed(2)]);
     items.push(["Dividend Yield", formatDividendYield(desc.DividendYield)]);
-    items.push(["Prev. Day Volume", formatLargeNumber(asset.prevVolume)]);
+    items.push(["Prev. Day Volume", formatLargeNumber(assetInformation.prevVolume[ticker])]);
     items.push(["High Today", formatToDollar(historicPrices.oneDayHigh[ticker])]);
     items.push(["Low Today", formatToDollar(historicPrices.oneDayLow[ticker])]);
     items.push(["Open Price", formatToDollar(historicPrices.oneDayOpen[ticker])]);
-    items.push(["Volume", formatLargeNumber(asset.curVolume)]);
+    items.push(["Volume", formatLargeNumber(assetInformation.curVolume[ticker])]);
     items.push(["52 Week High", formatToDollar(historicPrices.oneYearHigh[ticker])]);
     items.push(["52 Week Low", formatToDollar(historicPrices.oneYearLow[ticker])]);
 

@@ -49,6 +49,8 @@ const defaultState = {
         companyOverviews: {},
         tickerData: {},
         companyNews: {},
+        prevVolume: {},
+        curVolume: {},
     },
     portfolioHistory: {
         cashTransactions: [],
@@ -104,6 +106,8 @@ export default (state = defaultState, action) => {
             if (key === "oneYear") {
                 times = action.candles.t;
                 prices = action.candles.c.map(price => Math.floor(price * 100));
+                assetInformation.prevVolume[ticker] = action.candles.v[action.candles.v.length - 2];
+                assetInformation.curVolume[ticker] = action.candles.v.last();
             } else {
                 [times, prices] = pullTimesAndPrices(action.candles, action.subtype);
             }

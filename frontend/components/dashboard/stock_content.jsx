@@ -10,7 +10,8 @@ import CompanyNews from "./company_news";
 const mapStateToProps = (state, {ticker}) => ({
     ticker,
     owned: tickerIsOwned(ticker, state.newEntities.assetInformation.ownershipHistories.numShares[ticker]),
-    companyName: state.entities.displayedAssets[ticker].companyOverview.Name,
+    // companyName: state.entities.displayedAssets[ticker].companyOverview.Name,
+    companyName: state.newEntities.assetInformation.companyOverviews[ticker].Name,
 })
 
 

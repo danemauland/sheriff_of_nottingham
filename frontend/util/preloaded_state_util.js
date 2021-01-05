@@ -39,6 +39,8 @@ export default (user) => {
                 companyOverviews: {},
                 tickerData: {},
                 companyNews: {},
+                prevVolume: {},
+                curVolume: {},
             },
             portfolioHistory: {
                 cashTransactions,
