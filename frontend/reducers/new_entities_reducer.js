@@ -1,8 +1,5 @@
 import {
     RECEIVE_CANDLES,
-    RECEIVE_DAILY_CANDLES,
-    RECEIVE_WEEKLY_CANDLES,
-    RECEIVE_ANNUAL_CANDLES,
     RECEIVE_QUOTE,
     INITIALIZE_ASSET,
     RECEIVE_COMPANY_OVERVIEW,
@@ -16,7 +13,8 @@ import {
 } from "../actions/session_actions";
 import {
     defaultState,
-    pullTimesAndPrices,
+    setTimesAndPrices,
+    getKey,
 } from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
@@ -34,42 +32,14 @@ export default (state = defaultState, action) => {
             return newState;
 
         case RECEIVE_CANDLES:
-            const key = getKey(action.subtype);
-            const ticker = action.ticker;
             newState = merge({}, state);
             const assetInformation = newState.assetInformation;
-            const {
-                candleTimes,
-                candlePrices,
-                historicPrices
-            } = assetInformation;
+            const {candleTimes, candlePrices} = assetInformation;
             
-            // const [times, prices] = setTimesAndPrices(action, assetInformation)
-            setTimesAndPrices(action, assetInformation)
-
-            // candlePrices[key][ticker] = prices;
-            // candleTimes[key][ticker] = times;
-            
+            setTimesAndPrices(action, assetInformation);
             updateStockValuations(action, assetInformation);
-            // const ownershipTimes = ownershipHistories.times[ticker];
-            // const ownershipShares = ownershipHistories.numShares[ticker];
 
-            // if (ownershipShares) {
-            //     assetInformation.valuations[key][ticker] = calcValuations(
-            //         times,
-            //         prices,
-            //         ownershipTimes,
-            //         ownershipShares,
-            //     );
-            // }
-
-            if (key !== "oneWeek") {
-                historicPrices[key + "Low"][ticker] = Math.round(Math.min(...action.candles.l)*100);
-                historicPrices[key + "High"][ticker] = Math.round(Math.max(...action.candles.h)*100);
-                if (key === "oneDay") {
-                    historicPrices.oneDayOpen[ticker] = Math.round(action.candles.o[0]*100);
-                }
-            }
+            
             const allPrices = Object.values(candlePrices);
             const updateValuationHistory = allPrices.every(prices => {
                 return Object.keys(prices).length === action.tickers.size;
@@ -120,40 +90,6 @@ export default (state = defaultState, action) => {
         default:
             return state;
     }
-}
-
-const getKey = type => {
-    switch (type) {
-        case RECEIVE_DAILY_CANDLES:
-            return "oneDay";
-        case RECEIVE_WEEKLY_CANDLES:
-            return "oneWeek";
-        case RECEIVE_ANNUAL_CANDLES:
-            return "oneYear";
-    }
-}
-
-const setTimesAndPrices = (
-    {subtype, ticker, candles},
-    {candlePrices, candleTimes, prevVolume, curVolume}
-) => {
-
-    let times;
-    let prices;
-    const key = getKey(subtype);
-
-    if (key === "oneYear") {
-        times = candles.t;
-        prices = candles.c.map(price => Math.floor(price * 100));
-
-        prevVolume[ticker] = candles.v[candles.v.length - 2];
-        curVolume[ticker] = candles.v.last();
-    } else {
-        [times, prices] = pullTimesAndPrices(candles, subtype);
-    }
-
-    candlePrices[key][ticker] = prices;
-    candleTimes[key][ticker] = times;
 }
 
 const updateStockValuations = (action, assetInformation) => {

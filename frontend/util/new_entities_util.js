@@ -1,6 +1,7 @@
 import {
     RECEIVE_DAILY_CANDLES,
     RECEIVE_WEEKLY_CANDLES,
+    RECEIVE_ANNUAL_CANDLES,
     DAILY_RESOLUTION,
     WEEKLY_RESOLUTION,
 } from "../actions/external_api_actions";
@@ -196,7 +197,7 @@ const isLastPeriod = (time, type) => {
     return minutes === (60 - resolution);
 }
 
-export const pullTimesAndPrices = (candles, type) => {
+const pullTimesAndPrices = (candles, type) => {
     const times = [];
     const prices = [];
     
@@ -235,4 +236,48 @@ export const pullTimesAndPrices = (candles, type) => {
 
 const convertToCents = n => {
     return Math.floor(n * 100)
+}
+
+export const setTimesAndPrices = (
+    {subtype, ticker, candles},
+    {candlePrices, candleTimes, prevVolume, curVolume, historicPrices}
+) => {
+
+    let times;
+    let prices;
+    const key = getKey(subtype);
+
+    if (key === "oneYear") {
+        times = candles.t;
+        prices = candles.c.map(price => Math.floor(price * 100));
+
+        prevVolume[ticker] = candles.v[candles.v.length - 2];
+        curVolume[ticker] = candles.v.last();
+    } else {
+        [times, prices] = pullTimesAndPrices(candles, subtype);
+    }
+
+    candlePrices[key][ticker] = prices;
+    candleTimes[key][ticker] = times;
+
+    if (key !== "oneWeek") {
+        const minPrice = Math.min(...candles.l);
+        const maxPrice = Math.max(...candles.h);
+        historicPrices[key + "Low"][ticker] = convertToCents(minPrice);
+        historicPrices[key + "High"][ticker] = convertToCents(maxPrice);
+        if (key === "oneDay") {
+            historicPrices.oneDayOpen[ticker] = convertToCents(candles.o[0]);
+        }
+    }
+}
+
+export const getKey = type => {
+    switch (type) {
+        case RECEIVE_DAILY_CANDLES:
+            return "oneDay";
+        case RECEIVE_WEEKLY_CANDLES:
+            return "oneWeek";
+        case RECEIVE_ANNUAL_CANDLES:
+            return "oneYear";
+    }
 }
