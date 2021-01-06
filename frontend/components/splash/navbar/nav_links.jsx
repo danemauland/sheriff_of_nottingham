@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "./logo";
+import Logo from "../logo";
 import NavLinkHeader from "./nav_link_headers";
 
 class NavLinks extends React.Component {

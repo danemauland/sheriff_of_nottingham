@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "./navbar.jsx"
+import Navbar from "./navbar/navbar.jsx"
 import Header from "./header.jsx"
 import Commission from "./commission.jsx"
 
