@@ -5,13 +5,16 @@ import { CgChevronDown, CgChevronUp } from "react-icons/cg";
 class NavLinks extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {selected: ""}
-        document.addEventListener("click", () => {
-            $(".extended").removeClass("extended");
-            $(".nav-bar-wrapper").removeClass("extended-wrapper");
-            $(".splash-nav").removeClass("nested-links");
-            this.setState({ selected: "" })
-        })
+        this.state = {selected: ""};
+        this.collapseNavMenu = this.collapseNavMenu.bind(this);
+        document.addEventListener("click", this.collapseNavMenu);
+    }
+
+    collapseNavMenu() {
+        $(".extended").removeClass("extended");
+        $(".nav-bar-wrapper").removeClass("extended-wrapper");
+        $(".splash-nav").removeClass("nested-links");
+        this.setState({ selected: "" })
     }
 
     addClickHandler(field) {
@@ -24,12 +27,7 @@ class NavLinks extends React.Component {
                 tar.addClass("extended");
                 this.setState({ selected: field });
                 e.stopPropagation();
-            } else {
-                $(".extended").removeClass("extended");
-                $(".nav-bar-wrapper").removeClass("extended-wrapper");
-                $(".splash-nav").removeClass("nested-links");
-                this.setState({ selected: "" })
-            }
+            } else { this.collapseNavMenu() }
         }
     }
 
@@ -45,6 +43,10 @@ class NavLinks extends React.Component {
             e.stopPropagation();
             tar.removeClass("dark-green");
         })
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("click", this.collapseNavMenu);
     }
 
     render() {
