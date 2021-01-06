@@ -396,3 +396,96 @@ const calcTimeFrameTotals = (times, valuations, aggValues, tickers) => {
         }
     }
 }
+
+export const updateStockValuations = (
+    {ticker, subtype},
+    {ownershipHistories, candlePrices, candleTimes, valuations}
+) => {
+
+    const ownershipShares = ownershipHistories.numShares[ticker];
+    
+    if (ownershipShares) {
+        const key = getKey(subtype);
+        const ownershipTimes = ownershipHistories.times[ticker];
+        const prices = candlePrices[key][ticker];
+        const times = candleTimes[key][ticker];
+
+        valuations[key][ticker] = calcValuations(
+            times,
+            prices,
+            ownershipTimes,
+            ownershipShares,
+        );
+    }
+
+}
+
+const binarySearch = (arr, tar, type, i = 0, j = arr.length) => {
+    if (j - i < 2) {
+        if (type === 1) return i + (tar > arr[i] ? 1 : 0);
+
+        // cannot use (tar < arr[i] ? 1 : 0) even though it is logically
+        // equivalent, as it is possible that i can be as large as the 
+        // array length, so arr[i] could be undefined. The below logic
+        // implicitly handles that. Who decided to build the modern internet
+        // on a programming language that can return two different results from
+        // two logically equivalent statements?
+        return i - (tar >= arr[i] ? 0 : 1);
+    }
+
+    let mid = Math.floor((i + j) / 2);
+
+    if (tar < arr[mid]) { 
+        j = mid
+    } else if (tar > arr[mid]) {
+        i = mid + 1
+    } else return mid;
+    
+    return binarySearch(arr, tar, type, i, j)
+}
+
+const calcValuations = (times, prices, ownershipTimes, ownershipShares) => {
+
+    if (ownershipShares.last() === 0 && ownershipTimes.last < times[0]) {
+        const zeros = [];
+        for(let i = 0; i < times.length; i++) zeros.push(0);
+        return zeros;
+    }
+
+    let pricesPointer = 0;
+    let historyPointer = 0;
+    const valuations = [];
+
+    if (times[0] > ownershipTimes[0]) {
+        historyPointer = binarySearch(ownershipTimes, times[0], -1);
+    }
+
+    // cannot be done in else statement above because binarySearch may
+    // return 0
+    if (!historyPointer) {
+        while (times[pricesPointer] < ownershipTimes[historyPointer]) {
+            valuations.push(0);
+            pricesPointer++;
+        }
+    }
+
+    while (valuations.length < prices.length) {
+        if (times[pricesPointer] < ownershipTimes[historyPointer]) {
+            pricesPointer++;
+            continue;
+        }
+
+        const nextHistIdx = historyPointer + 1;
+        const idxLeft = ownershipTimes.length - nextHistIdx;
+        
+        if (idxLeft && times[pricesPointer] >= ownershipTimes[nextHistIdx]) {
+            historyPointer++;
+            continue;
+        }
+
+        valuations.push(ownershipShares[historyPointer] * prices[pricesPointer])
+        pricesPointer++;
+
+    }
+    return valuations;
+}
