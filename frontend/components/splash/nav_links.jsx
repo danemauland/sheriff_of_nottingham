@@ -1,13 +1,22 @@
 import React from "react";
 import Logo from "./logo";
-import { CgChevronDown, CgChevronUp } from "react-icons/cg";
+import NavLinkHeader from "./nav_link_headers";
 
 class NavLinks extends React.Component {
     constructor(props) {
         super(props);
         this.state = {selected: ""};
         this.collapseNavMenu = this.collapseNavMenu.bind(this);
+        this.generateNavHeader = this.generateNavHeader.bind(this);
         document.addEventListener("click", this.collapseNavMenu);
+        this.items = [
+            [
+                "Products",
+                ["Stocks & Funds","Options","Gold","Cash Management","Crypto"]
+            ],
+            ["Learn", ["Snacks", "Learn"]],
+            ["About Me", ["LinkedIn", "Github"]],
+        ]
     }
 
     collapseNavMenu() {
@@ -35,39 +44,27 @@ class NavLinks extends React.Component {
         document.removeEventListener("click", this.collapseNavMenu);
     }
 
+    generateNavHeader(item, i) {
+        const title = item[0];
+        const items = item[1];
+        return <NavLinkHeader
+            key={i}
+            clickHandler={this.addClickHandler(title)}
+            title={title}
+            items={items}
+            selected={this.state.selected === title}
+        />
+    }
+
     render() {
         return (
             <div className="nav-bar-wrapper">
                 <div className="splash-nav-links-div">
                     <Logo />
                     <div className="dropdowns small-menu hidden-1024">
-                        <span>
-                            <button className="dark-green-hover" onClick={this.addClickHandler("products")}>Products {this.state.selected === "products" ? <CgChevronUp /> : <CgChevronDown />}</button>
-                            <ul className="product-list">
-                                <li className="dark-green-hover"><a href="#">Stocks &amp; Funds</a></li>
-                                <li className="dark-green-hover"><a href="#">Options</a></li>
-                                <li className="dark-green-hover"><a href="#">Gold</a></li>
-                                <li className="dark-green-hover"><a href="#">Cash Management</a></li>
-                                <li className="crypto-li"><a href="#">Crypto</a></li>
-                            </ul>
-                        </span>
-                        <span>
-                            <button className="dark-green-hover" onClick={this.addClickHandler("learn")}>Learn  {this.state.selected === "learn" ? <CgChevronUp /> : <CgChevronDown />}</button>
-                            <ul className="learn-list">
-                                <li className="dark-green-hover"><a href="#">Snacks</a></li>
-                                <li className="dark-green-hover"><a href="#">Learn</a></li>
-                            </ul>
-                        </span>
-                        <span>
-                            <button className="dark-green-hover" onClick={this.addClickHandler("about")}>About Me {this.state.selected === "about" ? <CgChevronUp /> : <CgChevronDown />}</button>
-                            <ul className="about-list">
-                                <li className="dark-green-hover"><a target="_blank" href="https://www.linkedin.com/in/dane-m-63a34412a/">LinkedIn</a></li>
-                                <li className="dark-green-hover"><a target="_blank" href="https://github.com/danemauland">Github</a></li>
-                            </ul>
-                        </span>
+                        {this.items.map(this.generateNavHeader)}
                     </div>
                 </div>
-
             </div>
         )
     }
