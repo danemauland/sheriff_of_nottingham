@@ -1,16 +1,13 @@
 import React from "react";
 
 class Initialize extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {path: this.props.location.pathname}
-    }
+
     componentDidUpdate(prevProps) {
         const isDashboard = (
             this.props.location.pathname.slice(0, 10) === "/dashboard"
         );
         let wasDashboard;
-        
+
         if (!prevProps) {
             wasDashboard = !isDashboard;
             const meta = document.createElement("meta");
@@ -22,7 +19,6 @@ class Initialize extends React.Component {
             );
         }
 
-        
         if (isDashboard !== wasDashboard) {
             const tag = $('meta[name="color-scheme"]');
             const body = $("body");
@@ -35,10 +31,12 @@ class Initialize extends React.Component {
             }
         }
     }
+
     componentDidMount() {
         this.componentDidUpdate();
     }
+
     render() {return <></>}
 }
 
-export default Initialize
+export default Initialize;
