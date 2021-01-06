@@ -5,28 +5,34 @@ class Initialize extends React.Component {
         super(props);
         this.state = {path: this.props.location.pathname}
     }
-    componentDidUpdate() {
-        const tag = $('meta[name="color-scheme"]');
-        const body = $("body");
-        if (tag.length === 1) {
-            if (this.props.location.pathname.slice(0, 10) === "/dashboard") {
+    componentDidUpdate(prevProps) {
+        const isDashboard = (
+            this.props.location.pathname.slice(0, 10) === "/dashboard"
+        );
+        let wasDashboard;
+        
+        if (!prevProps) {
+            wasDashboard = !isDashboard;
+            const meta = document.createElement("meta");
+            meta.setAttribute("name", "color-scheme");
+            document.getElementsByTagName("head")[0].appendChild(meta);
+        } else {
+            wasDashboard = (
+                prevProps.location.pathname.slice(0, 10) === "/dashboard"
+            );
+        }
+
+        
+        if (isDashboard !== wasDashboard) {
+            const tag = $('meta[name="color-scheme"]');
+            const body = $("body");
+            if (isDashboard) {
                 tag.attr("content", "dark");
                 body.addClass("dark");
             } else {
                 tag.attr("content", "light"); 
                 body.removeClass("dark");
             }
-        } else if (tag.length === 0) {
-            const meta = document.createElement("meta");
-            meta.setAttribute("name", "color-scheme");
-            if (this.props.location.pathname.slice(0,10) === "/dashboard") {
-                meta.setAttribute("content", "dark");
-                body.addClass("dark");
-            } else {
-                meta.setAttribute("content", "light");
-                body.removeClass("dark");
-            }
-            document.getElementsByTagName("head")[0].appendChild(meta);
         }
     }
     componentDidMount() {

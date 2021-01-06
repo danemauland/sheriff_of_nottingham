@@ -125,7 +125,7 @@ class Dashboard extends React.Component {
     // }
 
     pageIsLoading() {
-        return this.props.state.ui.loading
+        return this.props.state.ui.loading;
     }
 
     componentDidMount() {
@@ -139,7 +139,7 @@ class Dashboard extends React.Component {
         if (typeof(this.props.ownershipHistories.numShares[ticker].last()) === "number") {
             return true;
         }
-        return false
+        return false;
     }
 
     assetIsStillUpdating(ticker) {
