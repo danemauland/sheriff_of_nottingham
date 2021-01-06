@@ -1,5 +1,4 @@
 import React from "react";
-import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import NewsItem from "./news_item";
 
@@ -20,9 +19,10 @@ class News extends React.Component {
         window.removeEventListener("scroll", this.listenToScroll)
     }
 
-    listenToScroll(e) {
+    listenToScroll() {
         const winScroll = $(window).scrollTop() + $(window).height();
         const totHeight = document.documentElement.scrollHeight;
+
         if (totHeight - winScroll < 450) {
             this.setState({
                 itemsToShow: 3 + this.state.itemsToShow,
@@ -45,9 +45,13 @@ class News extends React.Component {
     render() {
         return (
             <div className="news-container">
+
                 <h2 className="news-title">News</h2>
+
                 <ul className="news-items">
-                    {this.newsItemsToRender().map((news, i) => <NewsItem key={i} news={news}/>)}
+                    {this.newsItemsToRender().map((news, i) => {
+                        return <NewsItem key={i} news={news}/>
+                    })}
                 </ul>
             </div>
         )
