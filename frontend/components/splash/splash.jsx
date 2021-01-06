@@ -1,9 +1,9 @@
 import React from "react";
 import Navbar from "./navbar/navbar.jsx"
-import Header from "./header.jsx"
+import Header from "./header/header.jsx"
 import Commission from "./commission.jsx"
 
-export default (props) => (
+export default () => (
     <>
         <div>
             <Navbar />
