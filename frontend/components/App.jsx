@@ -1,7 +1,7 @@
 import React from "react";
-import Splash from "./splash/splash";
-import SignupFormContainer from "./auth/signup_form_container";
-import LoginFormContainer from "./auth/login_form_container";
+import Splash from "./pre-auth/splash/splash";
+import SignupFormContainer from "./pre-auth/auth/signup_form_container";
+import LoginFormContainer from "./pre-auth/auth/login_form_container";
 import Dashboard from "./dashboard/dashboard";
 import Initialize from "./initialize";
 import { Route } from "react-router-dom";

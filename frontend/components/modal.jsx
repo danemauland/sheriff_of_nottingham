@@ -1,7 +1,7 @@
 import React from "react";
 import {closeModal} from "../actions/modal_actions.js";
 import { connect } from "react-redux";
-import CommissionPrompt from "./splash/commission/commission_prompt";
+import CommissionPrompt from "./pre-auth/splash/commission/commission_prompt";
 import { GrClose } from "react-icons/gr";
 
 const Modal = ({modal, closeModal}) => {

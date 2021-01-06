@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import AuthFormWrapper from "./auth_form_wrapper";
-import {signup, createDemo} from "../../actions/session_actions";
-import {clearSessionErrors} from "../../actions/session_error_actions";
+import {signup, createDemo} from "../../../actions/session_actions";
+import {clearSessionErrors} from "../../../actions/session_error_actions";
 const mapStateToProps = state => ({
     user: {
         username: "",

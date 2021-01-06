@@ -1,7 +1,7 @@
 import React from "react";
 import SessionErrors from "./session_errors";
 import SessionAlternative from "./session_alternative";
-import Logo from "../splash/logo";
+import Logo from "../logo";
 
 class AuthForm extends React.Component {
     constructor(props) {
