@@ -1,14 +1,14 @@
 import React from "react";
 import Splash from "./splash/splash";
-import SignupFormContainer from "./signup_form_container"
-import LoginFormContainer from "./login_form_container"
-import Dashboard from "./dashboard/dashboard"
-import Initialize from "./initialize"
+import SignupFormContainer from "./auth/signup_form_container";
+import LoginFormContainer from "./auth/login_form_container";
+import Dashboard from "./dashboard/dashboard";
+import Initialize from "./initialize";
 import { Route } from "react-router-dom";
-import {AuthRoute, ProtectedRoute} from "../util/route_util"
-import Modal from "./modal.jsx"
+import {AuthRoute, ProtectedRoute} from "../util/route_util";
+import Modal from "./modal.jsx";
 
-export default props => (
+export default () => (
     <>
         <Modal />
         <Route path="/" component={Initialize} />
