@@ -1,6 +1,9 @@
-import { updateValueIncreased } from "../../actions/value_increased_actions";
-import { updateChart, chartUpdated } from "../../actions/chart_selected_actions";
-import DynamicChart from "./dynamic_chart"
+import { updateValueIncreased } from "../../../actions/value_increased_actions";
+import {
+    updateChart,
+    chartUpdated
+} from "../../../actions/chart_selected_actions";
+import DynamicChart from "../dynamic_chart"
 import { connect } from "react-redux";
 
 const mapStateToProps = state => {

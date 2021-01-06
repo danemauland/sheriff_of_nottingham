@@ -1,5 +1,5 @@
 import React from "react";
-import AccountSummaryChartContainer from "./account_summay_chart_container";
+import AccountSummaryChartContainer from "./account_chart_container";
 import Cash from "./cash";
 import MarketNews from "./market_news";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import {formatToDollar} from "../../util/dashboard_calcs";
+import {formatToDollar} from "../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 
 const mapStateToProps = state => {

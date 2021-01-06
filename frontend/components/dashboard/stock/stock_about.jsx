@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import {
     extractAboutItems,
-} from "../../util/dashboard_calcs";
+} from "../../../util/dashboard_calcs";
 import StockAboutItem from "./stock_about_item.jsx";
 
 const mapStateToProps = (state, { ticker }) => {

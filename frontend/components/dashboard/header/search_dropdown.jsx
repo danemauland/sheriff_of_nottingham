@@ -1,6 +1,6 @@
 import React from "react";
 import SearchResultItem from "./search_result_item";
-import tickers from "../../util/all_tickers";
+import tickers from "../../../util/all_tickers";
 
 // TODO: rework to use a trie
 

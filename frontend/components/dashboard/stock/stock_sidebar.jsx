@@ -1,7 +1,7 @@
 import React from "react";
-import {formatToDollar} from "../../util/dashboard_calcs";
+import {formatToDollar} from "../../../util/dashboard_calcs";
 import {connect} from "react-redux";
-import {createTrade} from "../../actions/trade_actions";
+import {createTrade} from "../../../actions/trade_actions";
 
 const mapStateToProps = (state, {ticker}) => ({
     valueIncreased: state.ui.valueIncreased,

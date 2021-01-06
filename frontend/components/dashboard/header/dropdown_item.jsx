@@ -1,11 +1,16 @@
 import React from "react";
 import {connect} from "react-redux";
-import {logout} from "../../actions/session_actions";
+import {logout} from "../../../actions/session_actions";
 import {IoIosGift, IoIosHelpCircle} from "react-icons/io";
 import {FaBriefcase} from "react-icons/fa";
 import {MdAccountBalance} from "react-icons/md";
 import {BsArrowRepeat} from "react-icons/bs";
-import {RiHistoryLine, RiMessage2Fill, RiFileTextFill, RiLogoutBoxRLine} from "react-icons/ri";
+import {
+    RiHistoryLine,
+    RiMessage2Fill,
+    RiFileTextFill,
+    RiLogoutBoxRLine
+} from "react-icons/ri";
 import {HiDocumentDuplicate} from "react-icons/hi";
 import {AiFillSetting} from "react-icons/ai";
 

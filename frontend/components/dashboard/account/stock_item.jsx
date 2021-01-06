@@ -3,7 +3,7 @@ import React from "react";
 import {connect} from "react-redux";
 import {getStrChange,
     getPreviousEndingValue
-} from "../../util/chart_utils";
+} from "../../../util/chart_utils";
 import {
     formatToDollar,
     ONE_DAY,
@@ -11,7 +11,7 @@ import {
     ONE_MONTH,
     THREE_MONTH,
     ONE_YEAR,
-} from "../../util/dashboard_calcs";
+} from "../../../util/dashboard_calcs";
 
 const mapStateToProps = (state, ownProps) => {
     const ticker = ownProps.ticker;

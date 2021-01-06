@@ -1,7 +1,10 @@
 import React from "react";
-import { postCashTransaction, demolishCashTransactions} from "../../actions/cash_transactions_actions";
+import {
+    postCashTransaction,
+    demolishCashTransactions
+} from "../../../actions/cash_transactions_actions";
 import {connect} from "react-redux";
-import {formatToDollar} from "../../util/dashboard_calcs";
+import {formatToDollar} from "../../../util/dashboard_calcs";
 
 const ONE = "1";
 const TEN = "10";

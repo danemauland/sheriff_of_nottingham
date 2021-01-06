@@ -6,11 +6,11 @@ import {
     formatToDollar,
     ONE_DAY,
     portfolioValue,
-} from "../../util/dashboard_calcs";
+} from "../../../util/dashboard_calcs";
 import {
     getPreviousEndingValue,
     getStrChange,
-} from "../../util/chart_utils";
+} from "../../../util/chart_utils";
 
 const mapStateToProps = (state, {ticker}) => {
     const marketValue = positionValue(ticker, state);

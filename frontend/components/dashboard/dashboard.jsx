@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./header";
+import Header from "./header/header";
 import {
     // fetchCandles,
     // initializeAssets,
@@ -15,8 +15,8 @@ import {
 // import {updateSummaryValueHistory, updateCashHistory} from "../../actions/summary_actions"
 import {connect} from "react-redux";
 import { Route } from "react-router-dom";
-import Summary from "./summary";
-import Stock from "./stock";
+import Summary from "./account/summary";
+import Stock from "./stock/stock";
 import Loading from "./loading";
 import {setAsLoading, finishedLoading} from "../../actions/loading_actions";
 import {withRouter} from "react-router-dom";

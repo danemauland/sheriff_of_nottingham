@@ -3,7 +3,7 @@ import StockSidebar from "./stock_sidebar";
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { isStockLoaded } from "../../util/dashboard_calcs";
+import { isStockLoaded } from "../../../util/dashboard_calcs";
 
 
 const mapStateToProps = (state, ownProps) => {

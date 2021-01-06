@@ -1,5 +1,5 @@
 import React from "react";
-import AccountDropdownItem from "./account_dropdown_item";
+import AccountDropdownItem from "./dropdown_item";
 
 class AccountDropdownNav extends React.Component {
     constructor(props) {
