@@ -19,8 +19,8 @@ class NavLinks extends React.Component {
 
     addClickHandler(field) {
         return e => {
-            let tar = $(e.target);
-            while (tar.is("path") || tar.is("svg")) { tar = tar.parent() }
+            const tar = $(e.currentTarget);
+
             if (!tar.hasClass("extended")) {
                 $(".splash-nav").addClass("nested-links");
                 $(".extended").removeClass("extended");
@@ -29,20 +29,6 @@ class NavLinks extends React.Component {
                 e.stopPropagation();
             } else { this.collapseNavMenu() }
         }
-    }
-
-    componentDidMount() {
-        $(".green-hover").mouseover(e => {
-            e.stopPropagation();
-            let tar = $(e.target);
-            while (tar.is("path") || tar.is("svg")) { tar = tar.parent() }
-            tar.addClass("dark-green");
-        }).mouseout(e => {
-            let tar = $(e.target);
-            while (tar.is("path") || tar.is("svg")) { tar = tar.parent() }
-            e.stopPropagation();
-            tar.removeClass("dark-green");
-        })
     }
 
     componentWillUnmount() {

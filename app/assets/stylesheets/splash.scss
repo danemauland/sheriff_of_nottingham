@@ -299,6 +299,10 @@ nav.nested-links {
     }
 }
 
+.dropdowns .green-hover:hover {
+    color: $dark-green;
+}
+
 .extended + ul {
     display: flex;
     flex-direction: column;
