@@ -337,7 +337,7 @@ export const fetchMarketNews = dispatch => {
     finnhubQ.push(action);
 }
 
-const fetchAllCandles = (tickers, dispatch) => {
+export const fetchAllCandles = (tickers, dispatch) => {
     if (!isIterable(tickers)) tickers = [tickers];
     for(let ticker of tickers) {
         fetchCandles(ticker, dispatch);

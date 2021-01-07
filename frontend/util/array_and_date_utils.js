@@ -14,6 +14,12 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
+Array.convert = function(input) {
+    if (Array.isArray(input)) return input;
+    if (typeof input === "string") return [input]; 
+    if (!Array.isArray(input)) return Array.from(input);
+}
+
 export const formatDate = datetime => {
     const date = new Date(datetime * 1000);
     const month = parseMonth(date);

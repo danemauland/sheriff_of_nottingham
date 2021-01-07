@@ -45,7 +45,7 @@ export const positionCost = (ticker, state) => {
     let cost = 0;
     let i = trades.length - 1;
     while (sharesRemaining > 0) {
-        let trade = trades[i]
+        let trade = trades[i];
         if (trade.ticker === ticker) {
             if (short) {
                 if (trade.numShares < 0) {
@@ -139,6 +139,31 @@ export const extractAboutItems = (ticker, state) => {
     items.push(["52 Week Low", formatToDollar(historicPrices.oneYearLow[ticker])]);
 
     return items;
+}
+
+export const pricesAreLoaded = (prices, tickers) => {
+    tickers = Array.convert(tickers);
+
+    prices = Object.values(prices);
+    
+    return tickers.every(ticker => prices.every(price => price[ticker]));
+}
+
+export const ownedPricesAreLoaded = (
+    {tickers, ownershipHistories, candlePrices}
+) => {
+    tickers = Array.convert(tickers);
+    const ownedTickers = getOwnedTickers(tickers, ownershipHistories);
+    return pricesAreLoaded(candlePrices, ownedTickers);
+}
+
+const getOwnedTickers = (tickers, ownershipHistories) => {
+    tickers = Array.convert(tickers);
+    return tickers.filter(ticker => tickerWasOwned(ticker, ownershipHistories));
+}
+
+const tickerWasOwned = (ticker, ownershipHistories) => {
+    return (typeof ownershipHistories.numShares[ticker].last()) === "number";
 }
 
 const states = {
