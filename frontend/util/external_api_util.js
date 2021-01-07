@@ -2,38 +2,65 @@ const alphaAPIKey = window.alphavantageAPIKey;
 const finnAPIKey = window.finnhubAPIKey;
 const polygonAPIKey = window.polygonAPIKey;
 
+const genAjax = (url, method = "GET") => $.ajax({url, method});
+
+const getParamStr = params => (
+    Object.entries(params).map(param => `${param[0]}=${param[1]}`).join("&")
+)
+
+const getAVUrl = params => {
+    params.apikey = alphaAPIKey;
+    return `https://www.alphavantage.co/query?${getParamStr(params)}`;
+}
+
+const getPolygonUrl = ticker => {
+    const urlStart = "https://api.polygon.io/v1/meta/symbols/";
+    const params = {apiKey: polygonAPIKey};
+    return `${urlStart}${ticker}/company?${getParamStr(params)}`;
+}
+
+const getFinnUrl = (type, params) => {
+    params.token = finnAPIKey;
+    const urlStart = `https://finnhub.io/api/v1/${type}?`;
+    return `${urlStart}${getParamStr(params)}`;
+}
+
+export const fetchCandles = (ticker, resolution, from, to) => {
+    const params = {
+        symbol: ticker,
+        resolution,
+        from,
+        to,
+    };
+    return genAjax(getFinnUrl("stock/candle", params));
+}
+
+export const fetchCompanyNews = (ticker, from, to) => {
+    const params = {
+        symbol: ticker,
+        from,
+        to,
+    };
+    const url = getFinnUrl("company-news", params);
+    console.log(url);
+    return genAjax(url);
+}
+
+export const fetchMarketNews = (from, to) => {
+    const params = {
+        category: "general",
+        from,
+        to,
+    }
+    return genAjax(getFinnUrl("news", params));
+}
+
 export const fetchCompanyOverview = ticker => {
-    return (
-    $.ajax({
-        url: `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${alphaAPIKey}`,
-        method: "GET",
-    })
-)}
+    const params = {
+        function: "OVERVIEW",
+        symbol: ticker,
+    }
+    return genAjax(getAVUrl(params));
+}
 
-export const fetchCandles = (ticker, resolution, from, to) => (
-    $.ajax({
-        url: `https://finnhub.io/api/v1/stock/candle?symbol=${ticker}&resolution=${resolution}&from=${from}&to=${to}&token=${finnAPIKey}`,
-        method: "GET",
-    })
-)
-
-export const fetchTickerData = ticker => (
-    $.ajax({
-        url: `https://api.polygon.io/v1/meta/symbols/${ticker}/company?apiKey=${polygonAPIKey}`,
-        method: "GET",
-    })
-)
-
-export const fetchCompanyNews = (ticker, from, to) => (
-    $.ajax({
-        url: `https://finnhub.io/api/v1/company-news?symbol=${ticker}&from=${from}&to=${to}&token=${finnAPIKey}`,
-        method: "GET",
-    })
-)
-
-export const fetchMarketNews = (from, to) => (
-    $.ajax({
-        url: `https://finnhub.io/api/v1/news?category=general&from=${from}&to=${to}&token=${finnAPIKey}`,
-        method: "GET",
-    })
-)
+export const fetchTickerData = ticker => genAjax(getPolygonUrl(ticker));

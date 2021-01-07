@@ -309,7 +309,10 @@ export const fetchTickerData = (ticker, dispatch) => {
 }
 
 function formatDate(date) {
-    return "" + date.getUTCFullYear() + "-" + (1 + date.getUTCMonth()) + "-" + date.getUTCDate()
+    const year = date.getUTCFullYear().toString();
+    const month = (1 + date.getUTCMonth()).toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");;
+    return `${year}-${month}-${day}`;
 }
 
 export const fetchCompanyNews = (ticker, dispatch) => {
