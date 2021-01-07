@@ -1,10 +1,11 @@
 import React from "react";
 import {withRouter} from "react-router-dom";
 import NewsItem from "./news_item";
+import Loading from "../loading";
 
 class News extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             itemsToShow: 3,
         }
@@ -12,11 +13,13 @@ class News extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener("scroll", this.listenToScroll)
+        if (!this.props.hasReceivedNews) this.props.fetchNews();
+
+        window.addEventListener("scroll", this.listenToScroll);
     }
 
     componentWillUnmount() {
-        window.removeEventListener("scroll", this.listenToScroll)
+        window.removeEventListener("scroll", this.listenToScroll);
     }
 
     listenToScroll() {
@@ -26,20 +29,30 @@ class News extends React.Component {
         if (totHeight - winScroll < 450) {
             this.setState({
                 itemsToShow: 3 + this.state.itemsToShow,
-            })
+            });
         }
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.location !== this.props.location) {
-            this.setState({
-                itemsToShow: 3,
-            })
-        } 
+        // if (prevProps.location !== this.props.location) {
+        //     this.setState({
+        //         itemsToShow: 3,
+        //     })
+        // } 
     }
 
     newsItemsToRender() {
-        return this.props.news.slice(0,this.state.itemsToShow)
+        return this.props.news.slice(0,this.state.itemsToShow);
+    }
+
+    renderNewsItems() {
+        return (
+            <ul className="news-items">
+                {this.newsItemsToRender().map((news, i) => {
+                    return <NewsItem key={i} news={news}/>
+                })}
+            </ul>
+        )
     }
 
     render() {
@@ -48,11 +61,11 @@ class News extends React.Component {
 
                 <h2 className="news-title">News</h2>
 
-                <ul className="news-items">
-                    {this.newsItemsToRender().map((news, i) => {
-                        return <NewsItem key={i} news={news}/>
-                    })}
-                </ul>
+                {this.props.hasReceivedNews ?
+                    this.renderNewsItems()
+                :
+                    <Loading/>
+                }
             </div>
         )
     }
