@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import News from "../news"
+import News from "../news/news"
 
 const mapStateToProps = (state, {ticker}) => ({
     ticker,
