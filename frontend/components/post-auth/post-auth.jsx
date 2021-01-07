@@ -1,8 +1,5 @@
 import React from "react";
-import {
-    fetchMarketNews,
-    fetchAllCandles,
-} from "../../actions/external_api_actions";
+import {fetchAllCandles} from "../../actions/external_api_actions";
 import {connect} from "react-redux";
 import Loading from "./loading";
 import {
@@ -37,7 +34,7 @@ class PostAuth extends React.Component {
 
     render() {
         if (this.props.loading) return <Loading />;
-        
+
         return (<>
             <Header />
             <Switch>

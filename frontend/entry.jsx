@@ -1,5 +1,6 @@
 // TODO
 // PRIORITY
+// refactor loading, skipped due to no stock pages yet
 // stock trade menu
 // autofill stock trade menu from clicking graph
 // stock positions on dashboard
