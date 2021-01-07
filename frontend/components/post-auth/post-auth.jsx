@@ -8,7 +8,7 @@ import {
     Redirect
 } from "react-router-dom";
 import Header from "./header/header";
-import Dashboard from "./dashboard/dashboard_wrapper";
+import Dashboard from "./dashboard/dashboard";
 import StockInitializer from "./stocks/stock_initializer";
 import {ownedPricesAreLoaded} from "../../util/dashboard_calcs";
 

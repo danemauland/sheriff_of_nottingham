@@ -1,19 +1,18 @@
 import React from "react";
-import Header from "../header/header";
-import Summary from "./summary";
-import Stock from "../stocks/stock";
+import DashboardMainContent from "./dashboard_main_content";
+import Sidebar from "../sidebar";
 
-
-const DashboardWrapper = () => (
+const Dashboard = () => (
     <>
         <div className="scroll-bar-correction">
             <div className="dashboard-centering-div">
                 <div className="dashboard-main-div">
-                    <Summary/>
+                    <DashboardMainContent />
+                    <Sidebar />
                 </div>
             </div>
         </div>
     </>
 )
 
-export default DashboardWrapper;
+export default Dashboard;

@@ -3,7 +3,7 @@ import AccountSummaryChartContainer from "./account_chart_container";
 import Cash from "./cash";
 import MarketNews from "./market_news";
 
-class DashboardContent extends React.Component {
+class DashboardMainContent extends React.Component {
     constructor(props) {
         super(props)
     }
@@ -19,4 +19,4 @@ class DashboardContent extends React.Component {
     }
 }
 
-export default DashboardContent;
+export default DashboardMainContent;
