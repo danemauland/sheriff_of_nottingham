@@ -78,25 +78,16 @@ export const portfolioValue = state => {
     return state.newEntities.portfolioHistory.valuationHistory.valuations.oneDay.last();
 }
 
-export const isStockLoaded = (ticker, state) => {
-    const assetInformation = state.newEntities.assetInformation;
-    
-    return (
-        assetInformation.tickers.has(ticker) &&
-        Object.values(assetInformation.candlePrices).every(prices => prices[ticker]) &&
-        assetInformation.companyNews[ticker] &&
-        assetInformation.tickerData[ticker] &&
-        assetInformation.companyOverviews[ticker]
-
-    )
-    // if (state.entities.displayedAssets[ticker] === undefined ||
-    //     Object.values(candlePrices).some(prices => prices[ticker] === undefined) ||
-    //     state.entities.displayedAssets[ticker].companyOverview === undefined ||
-    //     state.entities.displayedAssets[ticker].tickerData === undefined ||
-    //     state.entities.displayedAssets[ticker].companyNews === undefined
-    // ) { return false }
-    // return true;
-}
+export const isStockLoaded = (
+    ticker,
+    {tickers, candlePrices, companyNews, tickerData, companyOverviews}
+) => (
+    tickers.has(ticker) &&
+    Object.values(candlePrices).every(prices => prices[ticker]) &&
+    companyNews[ticker] &&
+    tickerData[ticker] &&
+    companyOverviews[ticker]
+)
 
 const getCityAndState = address => {
     const firstComma = address.indexOf(",");

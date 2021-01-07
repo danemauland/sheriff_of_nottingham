@@ -334,7 +334,7 @@ export const fetchMarketNews = dispatch => {
         type: FETCH_MARKET_NEWS,
         dispatch,
     }
-    finnhubQ.push(action)
+    finnhubQ.push(action);
 }
 
 const fetchAllCandles = (tickers, dispatch) => {
@@ -347,7 +347,7 @@ const fetchAllCandles = (tickers, dispatch) => {
 }
 
 export const fetchAllInfo = (tickers, dispatch) => {
-    if (!isIterable(tickers)) tickers = [tickers];
+    if (typeof tickers === "string") tickers = [tickers];
     fetchAllCandles(tickers, dispatch);
     for(let ticker of tickers) {
         fetchCompanyOverview(ticker, dispatch);

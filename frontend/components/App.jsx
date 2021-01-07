@@ -1,20 +1,20 @@
 import React from "react";
-import Splash from "./pre-auth/splash/splash";
-import SignupFormContainer from "./pre-auth/auth/signup_form_container";
-import LoginFormContainer from "./pre-auth/auth/login_form_container";
-import Dashboard from "./dashboard/dashboard";
 import Initialize from "./initialize";
-import { Route } from "react-router-dom";
-import {AuthRoute, ProtectedRoute} from "../util/route_util";
+import {connect} from "react-redux";
 import Modal from "./modal.jsx";
+import PostAuth from "./post-auth/post-auth";
+import PreAuth from "./pre-auth/pre-auth";
 
-export default () => (
+const App = ({isLoggedIn}) => (
     <>
         <Modal />
-        <Route path="/" component={Initialize} />
-        <AuthRoute exact path="/" component={Splash} />
-        <AuthRoute exact path="/signup" component={SignupFormContainer} />
-        <AuthRoute exact path="/login" component={LoginFormContainer} />
-        <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <Initialize isLoggedIn={isLoggedIn}/>
+        {isLoggedIn ? <PostAuth /> : <PreAuth />}
     </>
 )
+
+const mapStateToProps = state => ({
+    isLoggedIn: !!state.session.username,
+});
+
+export default connect(mapStateToProps, null)(App);
