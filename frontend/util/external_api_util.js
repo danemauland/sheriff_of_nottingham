@@ -41,9 +41,7 @@ export const fetchCompanyNews = (ticker, from, to) => {
         from,
         to,
     };
-    const url = getFinnUrl("company-news", params);
-    console.log(url);
-    return genAjax(url);
+    return genAjax(getFinnUrl("company-news", params));
 }
 
 export const fetchMarketNews = (from, to) => {

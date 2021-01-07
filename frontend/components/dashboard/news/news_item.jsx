@@ -1,12 +1,13 @@
 import React from "react";
 import { formatDate } from "../../../util/array_and_date_utils";
+import { formatSource } from "../../../util/news_util";
 
 const newsItem = ({news}) => (
     <a className="news-item" href={news.url}>
 
                 <div className="news-item-text">
                     <span className="news-item-header">
-                        <span>{news.source}</span>
+                        <span>{formatSource(news.source)}</span>
                         <span>{formatDate(news.datetime)}</span>
                     </span>
 
