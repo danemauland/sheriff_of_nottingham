@@ -43,56 +43,25 @@ class StockInitializer extends React.Component {
     componentDidMount() {
         const assetInformation = this.props.assetInformation;
 
-        this.props.updateChart(ONE_DAY);
-        ticker = this.getTickerFromPath();
+        const ticker = this.ticker;
         if (!isStockLoaded(ticker, assetInformation)) {
             this.props.initializeAsset(ticker);
             this.props.fetchAllInfo(ticker);
         }
         
     }
-    
-    isStockIndexPage() {
-        return (this.props.location.pathname.slice(0,18) === "/dashboard/stocks/")
+
+    get ticker() {
+        return this.props.match.params.ticker;
     }
 
     pageIsLoading() {
         return this.props.loading;
     }
 
-    assetWasOwned(ticker) {
-        if (typeof(this.props.ownershipHistories.numShares[ticker].last()) === "number") {
-            return true;
-        }
-        return false;
-    }
-
     assetIsStillUpdating(ticker) {
         const valuations = this.props.valuations;
         return !(valuations.oneDay[ticker] && valuations.oneWeek[ticker] && valuations.oneYear[ticker])
-    }
-
-    getTickerFromPath() {
-        return this.props.location.pathname.slice(18,this.props.location.pathname.length);
-    }
-
-    componentDidUpdate(prevProps) {
-        let ticker;
-        if (prevProps.location !== this.props.location) {
-            this.props.updateChart(ONE_DAY);
-            ticker = this.getTickerFromPath();
-            if (!isStockLoaded(ticker, assetInformation)) {
-                this.props.initializeAsset(ticker);
-                this.props.fetchAllInfo(ticker);
-            }
-        } else if (this.pageIsLoading()) {
-            let stillLoading = false;
-            ticker = this.getTickerFromPath();
-            stillLoading ||= !isStockLoaded(ticker, this.props.assetInformation);
-            if (!stillLoading) {
-                this.props.finishedLoading();
-            }
-        } 
     }
 
     render() {

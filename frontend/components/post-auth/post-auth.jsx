@@ -39,7 +39,10 @@ class PostAuth extends React.Component {
             <Header />
             <Switch>
                 <Route exact path ="/" component={Dashboard} />
-                <Route exact path ="/stocks" component={StockInitializer} />
+                <Route 
+                    exact path ="/stocks/:ticker"
+                    component={StockInitializer}
+                />
                 <Route >
                     <Redirect to="/" />
                 </Route>

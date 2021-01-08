@@ -76,11 +76,10 @@ export const portfolioValue = state => {
 
 export const isStockLoaded = (
     ticker,
-    {tickers, candlePrices, companyNews, tickerData, companyOverviews}
+    {tickers, candlePrices, tickerData, companyOverviews}
 ) => (
     tickers.has(ticker) &&
     Object.values(candlePrices).every(prices => prices[ticker]) &&
-    companyNews[ticker] &&
     tickerData[ticker] &&
     companyOverviews[ticker]
 )
