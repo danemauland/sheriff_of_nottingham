@@ -1,10 +1,6 @@
 import {
     formatToDollar,
     ONE_DAY,
-    ONE_WEEK,
-    ONE_MONTH,
-    THREE_MONTH,
-    ONE_YEAR,
 } from "../util/dashboard_calcs";
 
 const PREMARKET_TIMESLOTS = 6;
@@ -12,6 +8,15 @@ const MARKET_HOURS_TIMESLOTS = 79;
 const TOTAL_ONE_DAY_TIMESLOTS = 109;
 const ONE_MONTH_OFFSET = 31;
 const THREE_MONTH_OFFSET = 91;
+
+export const ONE_WEEK = "ONE_WEEK";
+export const ONE_MONTH = "ONE_MONTH";
+export const THREE_MONTH = "THREE_MONTH";
+export const ONE_YEAR = "ONE_YEAR";
+
+export const GRAPH_VIEWS = [ONE_DAY,ONE_WEEK,ONE_MONTH,THREE_MONTH,ONE_YEAR];
+
+Chart.defaults.global.animation.duration = 0;
 
 Chart.Tooltip.positioners.custom = (elements, position) => {
     if (elements.length === 0) return false;
@@ -53,7 +58,7 @@ export const getStrChange = function(startVal, currentVal) {
     return strChange;
 }
 
-export const getTimesArray = function(times, type) {
+const getTimesArray = function(times, type) {
     let newTimes;
     const yearLength = times.oneYear.length;
     switch (type) {
@@ -134,7 +139,7 @@ const formatDateTime = function (date, includeTime = true) {
     else return `${month} ${day}`
 }
 
-export const getLabelsArray = function(times, type) {
+const getLabelsArray = function(times, type) {
     let labels;
     switch (type) {
         case ONE_DAY:
@@ -168,7 +173,7 @@ export const getLabelsArray = function(times, type) {
     return labels;
 }
 
-export const getDatasets = function(values, type, times) {
+const getDatasets = function(values, type, times) {
     const newValues = [ [], [], [], [], ];
 
     let [
@@ -238,6 +243,7 @@ export const getDatasets = function(values, type, times) {
         default:
             break;
     }
+    newValues.push(times);
     return newValues;
 }
 
@@ -270,7 +276,7 @@ const generateCustomTooltip = function(boundSetState) {
         }
         if (tooltipModel.dataPoints[0]) {
             boundSetState({
-                display: Math.floor(tooltipModel.dataPoints[0].yLabel * 100),
+                displayVal: Math.floor(tooltipModel.dataPoints[0].yLabel * 100),
                 dataPointIndex: tooltipModel.dataPoints[0].index,
             })
         }
@@ -386,7 +392,7 @@ export const chartOptions = function(valueIncreased, boundSetState) {
     }
 }
 
-export const graphView = function(type) {
+export const formatGraphView = function(type) {
     switch (type) {
         case ONE_DAY:
             return "Today";
@@ -401,4 +407,140 @@ export const graphView = function(type) {
         default:
             break;
     }
+}
+
+const resetChartLabels = labels => {
+    while (labels.length > 0) {
+        labels.pop();
+    }
+}
+
+const resetChartDatasets = datasets => {
+    datasets.forEach(set => {
+        while (set.data.length > 0) {
+            set.data.pop()
+        }
+    })
+}
+
+const resetChartData = ({labels, datasets}) => {
+    resetChartLabels(labels);
+    resetChartDatasets(datasets);
+}
+
+const fillChartLabels = (labels, newLabels) => {
+    for (let i = 0; i < newLabels.length; i++) {
+        labels.push(newLabels[i])
+    }
+}
+
+const fillChartDataSets = (datasets, newDatasets) => {
+    newDatasets.forEach((dataset, i) => {
+        dataset.forEach(data => datasets[i].data.push(data))
+    })
+}
+
+const fillChartData = ({labels, datasets}, newLabels, newDatasets) =>{
+    fillChartLabels(labels, newLabels);
+    fillChartDataSets(datasets, newDatasets)
+}
+
+const updateScale = (chart, newDatasets) => {
+    // removes the hidden times array from datasets
+    newDatasets.pop();
+
+    const flat = newDatasets.flat().filter(ele => ele !== undefined);
+
+    let max = Math.max(...flat);
+    let min = Math.min(...flat);
+
+    const delta = max - min;
+
+    max = max + delta * 0.01;
+    min = min - delta * 0.01;
+
+    const ticks = chart.options.scales.yAxes[0].ticks;
+    ticks.max = max;
+    ticks.min = min;
+}
+
+export const refreshChartData = (chart, times, values, chartSelected)=>{
+    const data = chart.data;
+
+    resetChartData(data);
+
+    const newTimes = getTimesArray(times, chartSelected);
+    const newLabels = getLabelsArray(newTimes, chartSelected);
+    const newDatasets = getDatasets(values, chartSelected, newTimes);
+
+    fillChartData(data, newLabels, newDatasets);
+    updateScale(chart.chart, newDatasets);
+    chart.update();
+}
+
+export const removeToolTip = () => {
+    $("#chartjs-tooltip").remove();
+}
+
+export const updateLineColor = (chart, valInc) => {
+    const datasets = chart.data.datasets;
+    let darkColor;
+    let brightColor;
+
+    if (valInc) {
+        darkColor = "rgba(0,200,5,0.5)";
+        brightColor = "rgba(0,200,5,1)";
+    } else {
+        darkColor = "rgba(255,80,0,0.5)";
+        brightColor = "rgba(255,80,0,1)";
+    }
+
+    datasets[0].borderColor = brightColor;
+    datasets[1].borderColor = darkColor;
+    
+    chart.update();
+}
+
+export const chartSelectorClassNamesGenerator = (valInc, selectedView) => {
+    const color = valInc ? "dark-green" : "red";
+
+    const classNames = `chart-selector-link ${color}-hover `;
+
+    return view => {
+        const isNotSelected = view !== selectedView;
+
+        if (isNotSelected) return classNames;
+
+        return `${classNames}chart-selector-link-selected-${color} `;
+    }
+}
+
+export const getViewName = view => {
+    switch (view) {
+        case ONE_DAY: return "1D";
+        case ONE_WEEK: return "1W";
+        case ONE_MONTH: return "1M";
+        case THREE_MONTH: return "3M";
+        case ONE_YEAR: return "1Y";
+    }
+}
+
+export const calcStrChange = (
+    {values, startingCashTime, startingCashBal},
+    {chartSelected, displayVal, dataPointIndex},
+    timesDataset,
+) => {
+    let startVal = getPreviousEndingValue(values.oneYear, chartSelected);
+    let endVal = displayVal;
+
+    if (startVal === 0) {
+        const chartStartTime = timesDataset.data[dataPointIndex];
+        const cashStartsBeforeChart = startingCashTime < chartStartTime;
+
+        if (this.chartIsHovered() || cashStartsBeforeChart) {
+            startVal = startingCashBal;
+        } else endVal = 0;
+    }
+
+    return getStrChange(startVal, endVal);
 }

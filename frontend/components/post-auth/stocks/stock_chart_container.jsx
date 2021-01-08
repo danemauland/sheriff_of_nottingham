@@ -1,6 +1,6 @@
 import { updateValueIncreased } from "../../../actions/value_increased_actions";
 import { updateChart, chartUpdated } from "../../../actions/chart_selected_actions";
-import DynamicChart from "../dynamic_chart"
+import DynamicChart from "../chart/dynamic_chart"
 import { connect } from "react-redux";
 import {withRouter} from "react-router-dom";
 
@@ -25,7 +25,7 @@ const mapStateToProps = (state, ownProps) => {
     return ({
         startingCashBal: cashHistory.balances[0],
         startingCashTime: cashHistory.times[0],
-        currentPortfolioVal: values.oneDay.last(),
+        mostRecentVal: values.oneDay.last(),
         times,
         values,
         valueIncreased: state.ui.valueIncreased,

@@ -1,3 +1,5 @@
+export const ONE_DAY = "ONE_DAY";
+
 export const formatToDollar = (num, numDecimals = 2) => {
     if ((typeof num) !== "number") return false;
     let trail = Math.floor(num % 100).toString();
@@ -19,12 +21,6 @@ export const formatToDollar = (num, numDecimals = 2) => {
     }
     return "$" + num;
 }
-
-export const ONE_DAY = "ONE_DAY";
-export const ONE_WEEK = "ONE_WEEK";
-export const ONE_MONTH = "ONE_MONTH";
-export const THREE_MONTH = "THREE_MONTH";
-export const ONE_YEAR = "ONE_YEAR";
 
 export const tickerIsOwned = (ticker, ownershipHistoryShares) => (
     ownershipHistoryShares && ownershipHistoryShares.last() !== 0
