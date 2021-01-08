@@ -1,5 +1,4 @@
 import { updateValueIncreased } from "../../../actions/value_increased_actions";
-import { updateChart, chartUpdated } from "../../../actions/chart_selected_actions";
 import DynamicChart from "../chart/dynamic_chart"
 import { connect } from "react-redux";
 import {withRouter} from "react-router-dom";
@@ -8,9 +7,6 @@ const mapStateToProps = (state, ownProps) => {
     const ticker = ownProps.match.params.ticker;
     const candlePrices = state.newEntities.assetInformation.candlePrices;
     const candleTimes = state.newEntities.assetInformation.candleTimes;
-    if (Object.values(candlePrices).some(prices => prices[ticker] === undefined)) {
-        return({ loading: true})
-    }
     const cashHistory = state.newEntities.portfolioHistory.cashHistory;
     const values = {
         oneDay: candlePrices.oneDay[ticker],
@@ -29,15 +25,12 @@ const mapStateToProps = (state, ownProps) => {
         times,
         values,
         valueIncreased: state.ui.valueIncreased,
-        chartSelected: state.ui.chartSelected,
-        update: state.ui.updatesNeeded.chart,
     })
 }
 
 const mapDispatchToProps = dispatch => ({
     updateValueIncreased: bool => dispatch(updateValueIncreased(bool)),
-    updateChart: chartType => dispatch(updateChart(chartType)),
-    chartUpdated: () => dispatch(chartUpdated()),
 })
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DynamicChart));
+const mapped = connect(mapStateToProps, mapDispatchToProps)(DynamicChart);
+export default withRouter(mapped);
