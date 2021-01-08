@@ -5,6 +5,7 @@ import {
 } from "../../../actions/cash_transactions_actions";
 import {connect} from "react-redux";
 import {formatToDollar} from "../../../util/dashboard_calcs";
+import {CASH_AMOUNTS} from "../../../util/cash_utils";
 
 const ONE = "1";
 const TEN = "10";
@@ -16,12 +17,12 @@ const MILLION = "1,000,000";
 
 
 
-const mapDispatchToProps = props => {
-    return ({
-        postCashTransaction: transaction => dispatch(postCashTransaction(transaction)),
-        demolishCashTransactions: () => dispatch(demolishCashTransactions()),
-    })
-}
+const mapDispatchToProps = dispatch => ({
+    postCashTransaction: transaction => (
+        dispatch(postCashTransaction(transaction))
+    ),
+    demolishCashTransactions: () => dispatch(demolishCashTransactions()),
+})
 
 class Cash extends React.Component {
     constructor(props) {
