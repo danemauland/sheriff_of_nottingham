@@ -3,12 +3,12 @@ import StockSummaryChartContainer from "./stock_chart_container";
 import StockOwnershipInfo from "./stock_ownership_info";
 import StockAbout from "./stock_about";
 import {connect} from "react-redux";
-import {withRouter} from "react-router-dom";
 import {tickerIsOwned} from "../../../util/dashboard_calcs";
 import CompanyNews from "./company_news";
 
 const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => {
     const numShares = assetInformation.ownershipHistories.numShares;
+    debugger;
     return ({
         ticker,
         owned: tickerIsOwned(ticker, numShares[ticker]),
@@ -26,4 +26,4 @@ const StockContent = ({companyName, ticker, owned}) => (
     </div>
 )
 
-export default withRouter(connect(mapStateToProps, null)(StockContent));
+export default connect(mapStateToProps, null)(StockContent);
