@@ -41,6 +41,7 @@ export const defaultState = Object.freeze({
         companyNews: {},
         prevVolume: {},
         curVolume: {},
+        trades: {},
     },
     marketNews: [],
     portfolioHistory: {
@@ -488,4 +489,20 @@ const calcValuations = (times, prices, ownershipTimes, ownershipShares) => {
 
     }
     return valuations;
+}
+
+export const getTradesByTicker = initialTrades => {
+    const trades = [...initialTrades].sort((a, b) => a.createdAt - b.createdAt);
+    const tradesByTicker = {};
+
+    for (let trade of trades) {
+        const ticker = trade.ticker;
+
+        if (!tradesByTicker[ticker]) {
+            tradesByTicker[ticker] = [];
+        }
+
+        tradesByTicker[ticker].push(trade);
+    }
+    return tradesByTicker;
 }

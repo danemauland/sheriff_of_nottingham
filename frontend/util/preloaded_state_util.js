@@ -3,6 +3,7 @@ import {
     getCashHistoy,
     getOwnershipHistories,
     convertTimestampsToSeconds,
+    getTradesByTicker,
 } from "./new_entities_util";
 var merge = require('lodash.merge');
 
@@ -22,6 +23,8 @@ export default user => {
 
     // calculates stocks owned at any given point in time based off the trades
     const ownershipHistories = getOwnershipHistories(trades);
+
+    const tradesByTicker = getTradesByTicker(trades);
     
     const tickers = new Set(Object.keys(ownershipHistories.numShares));
 
@@ -33,6 +36,7 @@ export default user => {
         assetInformation: {
             tickers,
             ownershipHistories,
+            trades: tradesByTicker,
         },
         portfolioHistory: {
             cashTransactions,
