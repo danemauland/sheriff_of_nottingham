@@ -21,7 +21,6 @@ class StockAbout extends React.Component {
         this.state = {
             expanded: false,
             descriptionExpanded: false,
-            ticker: "",
         };
 
         this.toggleExpand = this.toggleExpand.bind(this);
