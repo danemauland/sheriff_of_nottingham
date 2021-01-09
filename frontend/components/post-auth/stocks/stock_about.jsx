@@ -4,7 +4,8 @@ import {
     extractAboutItems,
     getCutoffDescription,
 } from "../../../util/dashboard_calcs";
-import StockAboutItem from "./stock_about_item.jsx";
+import StockAboutItem from "./stock_about_item";
+import StockAboutHeader from "./stock_about_header";
 
 const mapStateToProps = (
     {newEntities: {assetInformation}, ui: {valueIncreased}},
@@ -57,17 +58,23 @@ class StockAbout extends React.Component {
         return (this.state.expanded ? items : items.slice(0,8));
     }
 
+    get className() {
+        const color = this.props.valueIncreased ? "green" : "red";
+        return `${color} light-${color}-hover`;
+    }
+
+    get toggleType() {
+        return this.state.expanded ? "Less" : "More";
+    }
+
     render() {
         return (
             <div className="stock-about-positioner">
-                    <header className="stock-about-header">
-                        <span>
-                            <h2>About</h2>
-                        </span>
-                        <span>
-                            <button onClick={this.toggleExpand} className={this.props.valueIncreased ? "green light-green-hover" : "red light-red-hover" }>Show {this.state.expanded ? "Less" : "More"}</button>
-                        </span>
-                    </header>
+                <StockAboutHeader 
+                    className={this.className}
+                    toggle={this.toggleExpand}
+                    toggleType={this.toggleType}
+                />
                 <div className="stock-description-positioner">
                     <span>
                         {this.generateChartDescription()}
