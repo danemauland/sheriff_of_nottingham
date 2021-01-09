@@ -3,11 +3,16 @@ import DynamicChart from "../chart/dynamic_chart"
 import { connect } from "react-redux";
 import {withRouter} from "react-router-dom";
 
-const mapStateToProps = (state, ownProps) => {
-    const ticker = ownProps.match.params.ticker;
-    const candlePrices = state.newEntities.assetInformation.candlePrices;
-    const candleTimes = state.newEntities.assetInformation.candleTimes;
-    const cashHistory = state.newEntities.portfolioHistory.cashHistory;
+const mapStateToProps = (
+    {
+        newEntities: {
+            assetInformation: {candlePrices, candleTimes},
+            portfolioHistory: {cashHistory},
+        },
+        ui: {valueIncreased},
+    },
+    {match: {params: {ticker}}}
+) => {
     const values = {
         oneDay: candlePrices.oneDay[ticker],
         oneWeek: candlePrices.oneWeek[ticker],
@@ -24,7 +29,7 @@ const mapStateToProps = (state, ownProps) => {
         mostRecentVal: values.oneDay.last(),
         times,
         values,
-        valueIncreased: state.ui.valueIncreased,
+        valueIncreased,
     })
 }
 
