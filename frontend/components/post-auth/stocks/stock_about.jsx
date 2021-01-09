@@ -52,7 +52,9 @@ class StockAbout extends React.Component {
     }
 
     getAboutItems() {
-        return (this.state.expanded ? this.props.items : this.props.items.slice(0,8));
+        const items = this.props.items;
+
+        return (this.state.expanded ? items : items.slice(0,8));
     }
 
     render() {
