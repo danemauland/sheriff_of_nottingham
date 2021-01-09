@@ -1,3 +1,9 @@
+import {
+    pricesAreLoaded,
+    assetIsInitialized,
+    companyOverviewIsLoaded,
+    tickerDataIsLoaded,
+} from "../util/dashboard_calcs";
 import * as externalAPIUtil from "../util/external_api_util"
 import {
     setAPIDebounceStartTime,
@@ -352,7 +358,32 @@ export const fetchAllInfo = (tickers, dispatch) => {
     for(let ticker of tickers) {
         fetchCompanyOverview(ticker, dispatch);
         fetchTickerData(ticker, dispatch);
-        fetchCompanyNews(ticker, dispatch);
+    }
+}
+
+export const fetchNeededInfo = (
+    tickersToFetch,
+    {tickers, candlePrices, companyOverviews, tickerData},
+    dispatch
+) => {
+    tickers = Set.convert(tickers);
+    tickersToFetch = Array.convert(tickersToFetch);
+    for(let ticker of tickersToFetch) {
+        if (!assetIsInitialized(ticker, tickers)) {
+            initializeAsset(ticker);
+            fetchAllInfo(ticker, dispatch);
+            continue;
+        }
+
+        if (!pricesAreLoaded(ticker, candlePrices)) {
+            fetchAllCandles(ticker, dispatch);
+        }
+        if (!companyOverviewIsLoaded(ticker, companyOverviews)) {
+            fetchCompanyOverview(ticker, dispatch);
+        }
+        if (!tickerDataIsLoaded(ticker, tickerData)) {
+            fetchTickerData(ticker, dispatch);
+        }
     }
 }
 

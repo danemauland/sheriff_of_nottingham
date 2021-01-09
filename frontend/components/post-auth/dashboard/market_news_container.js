@@ -4,7 +4,6 @@ import {fetchMarketNews} from "../../../actions/external_api_actions";
 
 const mapStateToProps = ({newEntities : {marketNews}}) => ({
     news: marketNews,
-    hasReceivedNews: !!marketNews.length,
 });
 
 const mapDispatchToProps = dispatch => ({

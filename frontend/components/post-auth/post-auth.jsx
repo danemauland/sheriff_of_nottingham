@@ -9,16 +9,14 @@ import {
 } from "react-router-dom";
 import Header from "./header/header";
 import Dashboard from "./dashboard/dashboard";
-import StockInitializer from "./stocks/stock_initializer";
+import Stock from "./stocks/stock";
 import {ownedPricesAreLoaded} from "../../util/dashboard_calcs";
 
-const mapStateToProps = ({newEntities, ui}) => {
-    const assetInformation = newEntities.assetInformation;
-    return ({
-        tickers: assetInformation.tickers,
-        loading: !ownedPricesAreLoaded(assetInformation),
-    })
-};
+const mapStateToProps = ({newEntities: {assetInformation}}) => ({
+    assetInformation,
+    tickers: assetInformation.tickers,
+    loading: !ownedPricesAreLoaded(assetInformation),
+})
 
 const mapDispatchToProps = dispatch => ({
         fetchAllCandles: tickers => fetchAllCandles(tickers, dispatch),
@@ -34,14 +32,19 @@ class PostAuth extends React.Component {
 
     render() {
         if (this.props.loading) return <Loading />;
-
+        const assetInformation = this.props.assetInformation;
+        
         return (<>
             <Header />
             <Switch>
-                <Route exact path ="/" component={Dashboard} />
+                <Route exact path ="/">
+                    <Dashboard />
+                </Route>
                 <Route 
                     exact path ="/stocks/:ticker"
-                    component={StockInitializer}
+                    render={props => (
+                        <Stock {...props} assetInformation={assetInformation}/>
+                    )}
                 />
                 <Route >
                     <Redirect to="/" />

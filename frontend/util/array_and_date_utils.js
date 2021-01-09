@@ -20,6 +20,11 @@ Array.convert = function(input) {
     if (!Array.isArray(input)) return Array.from(input);
 }
 
+Set.convert = function(input) {
+    if (input instanceof Set) return input;
+    return new Set(Array.convert(input));
+}
+
 export const formatDate = datetime => {
     const date = new Date(datetime * 1000);
     const month = parseMonth(date);

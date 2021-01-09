@@ -1,47 +1,42 @@
+import React from "react";
+import {fetchNeededInfo} from "../../../actions/external_api_actions";
+import {connect} from "react-redux";
+import Loading from "../loading";
+import {isStockLoaded} from "../../../util/dashboard_calcs";
 import StockContent from "./stock_content";
 import StockSidebar from "./stock_sidebar";
-import React from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
-import { isStockLoaded } from "../../../util/dashboard_calcs";
 
+const mapStateToProps = ({newEntities: {assetInformation}}, ownProps) => ({
+    assetInformation,
+    isLoading: (!isStockLoaded(ownProps.match.params.ticker, assetInformation)),
+})
 
-const mapStateToProps = (state, ownProps) => {
-    const ticker = ownProps.match.params.ticker;
-    const assetInformation = state.newEntities.assetInformation;
-    return {
-        loading: !isStockLoaded(ticker, assetInformation),
-        ticker,
-        assetInformation,
-    }
-}
-
-const mapDispatchToProps = dispatch => ({
-        fetchAllInfo: tickers => fetchAllInfo(tickers, dispatch),
+const mapDispatchToProps = (dispatch, {assetInformation}) => ({
+        fetchNeededInfo: tickers => (
+            fetchNeededInfo(tickers, assetInformation, dispatch)
+        ),
 });
 
+class StockInitializer extends React.Component {
 
-class Stock extends React.Component {
-    constructor(props) {
-        super(props)
+    componentDidMount() {
+        this.props.fetchNeededInfo(this.ticker);
     }
 
-    // componentDidMount() {
-    //     if (this.props.loading) {
-    //         this.props.fetchAllInfo(this.props.ticker, this.props.assetInformation);
-    //     }
-    // }
+    get ticker() {
+        return this.props.match.params.ticker;
+    }
+
     render() {
-        if (this.props.loading) {
-            return <></>
-        }
+        if (this.props.isLoading) return <Loading />;
+        
         return (
             <>
-                <StockContent ticker={this.props.ticker}/>
-                <StockSidebar ticker={this.props.ticker}/>
+                <StockContent ticker={this.ticker}/>
+                <StockSidebar ticker={this.ticker}/>
             </>
         )
     }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Stock));
+export default connect(mapStateToProps, mapDispatchToProps)(StockInitializer);

@@ -1,9 +1,13 @@
 import {connect} from "react-redux";
 import News from "../news/news"
+import {fetchCompanyNews} from "../../../actions/external_api_actions";
 
-const mapStateToProps = (state, {ticker}) => ({
-    ticker,
-    news: state.newEntities.assetInformation.companyNews[ticker],
-})
+const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => ({
+    news: assetInformation.companyNews[ticker] || [],
+});
 
-export default (connect(mapStateToProps, null)(News));
+const mapDispatchToProps = (dispatch, {ticker}) => ({
+    fetchNews: () => fetchCompanyNews(ticker, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(News);

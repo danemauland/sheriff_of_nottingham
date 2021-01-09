@@ -77,12 +77,14 @@ export const portfolioValue = state => {
 export const isStockLoaded = (
     ticker,
     {tickers, candlePrices, tickerData, companyOverviews}
-) => (
+) => {
+    // if (ticker==="AAPL") debugger;
+    return (
     tickers.has(ticker) &&
     Object.values(candlePrices).every(prices => prices[ticker]) &&
     tickerData[ticker] &&
     companyOverviews[ticker]
-)
+)};
 
 const getCityAndState = address => {
     const firstComma = address.indexOf(",");
@@ -136,7 +138,7 @@ export const extractAboutItems = (ticker, state) => {
     return items;
 }
 
-export const pricesAreLoaded = (prices, tickers) => {
+export const pricesAreLoaded = (tickers, prices) => {
     tickers = Array.convert(tickers);
 
     prices = Object.values(prices);
@@ -149,7 +151,7 @@ export const ownedPricesAreLoaded = (
 ) => {
     tickers = Array.convert(tickers);
     const ownedTickers = getOwnedTickers(tickers, ownershipHistories);
-    return pricesAreLoaded(candlePrices, ownedTickers);
+    return pricesAreLoaded(ownedTickers, candlePrices);
 }
 
 const getOwnedTickers = (tickers, ownershipHistories) => {
@@ -222,3 +224,11 @@ const states = {
     "WI": "Wisconsin",
     "WY": "Wyoming"
 }
+
+export const assetIsInitialized = (ticker, tickers) => tickers.has(ticker);
+
+export const companyOverviewIsLoaded = (ticker, companyOverviews) => (
+    !!companyOverviews[ticker]
+)
+
+export const tickerDataIsLoaded = (ticker, tickerData) => !!tickerData[ticker];

@@ -12,8 +12,12 @@ class News extends React.Component {
         this.listenToScroll = this.listenToScroll.bind(this);
     }
 
+    get hasReceivedNews() {
+        return !!this.props.news.length;
+    }
+
     componentDidMount() {
-        if (!this.props.hasReceivedNews) this.props.fetchNews();
+        if (!this.hasReceivedNews) this.props.fetchNews();
 
         window.addEventListener("scroll", this.listenToScroll);
     }
@@ -61,11 +65,7 @@ class News extends React.Component {
 
                 <h2 className="news-title">News</h2>
 
-                {this.props.hasReceivedNews ?
-                    this.renderNewsItems()
-                :
-                    <Loading/>
-                }
+                {this.hasReceivedNews ? this.renderNewsItems() : <Loading/> }
             </div>
         )
     }
