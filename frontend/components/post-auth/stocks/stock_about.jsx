@@ -14,7 +14,7 @@ const mapStateToProps = (
     items: extractAboutItems(ticker, assetInformation),
 })
 
-class OwnershipInfo extends React.Component {
+class StockAbout extends React.Component {
     constructor(props) {
         super(props)
         this.defaultState = {
@@ -36,11 +36,11 @@ class OwnershipInfo extends React.Component {
         return (this.props.ticker !== this.state.ticker)
     }
 
-    componentDidUpdate() {
-        if (this.stockChanged()) {
-            this.resetState();
-        }
-    }
+    // componentDidUpdate() {
+    //     if (this.stockChanged()) {
+    //         this.resetState();
+    //     }
+    // }
 
     toggleExpand(e) {
         e.preventDefault()
@@ -95,4 +95,4 @@ class OwnershipInfo extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(OwnershipInfo)
+export default connect(mapStateToProps, null)(StockAbout)

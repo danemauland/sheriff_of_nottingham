@@ -20,6 +20,10 @@ const mapDispatchToProps = (dispatch, {assetInformation}) => ({
 class StockInitializer extends React.Component {
 
     componentDidMount() {
+        this.componentDidUpdate();
+    }
+
+    componentDidUpdate() {
         this.props.fetchNeededInfo(this.ticker);
     }
 
