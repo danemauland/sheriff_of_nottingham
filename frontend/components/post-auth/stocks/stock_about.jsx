@@ -6,6 +6,7 @@ import {
 } from "../../../util/dashboard_calcs";
 import StockAboutItem from "./stock_about_item";
 import StockAboutHeader from "./stock_about_header";
+import StockAboutDescription from "./stock_about_description";
 
 const mapStateToProps = (
     {newEntities: {assetInformation}, ui: {valueIncreased}},
@@ -45,17 +46,17 @@ class StockAbout extends React.Component {
         });
     }
 
-    generateChartDescription() {
+    get items() {
+        const items = this.props.items;
+
+        return (this.state.expanded ? items : items.slice(0,8));
+    }
+
+    get description() {
         const description = this.props.description;
         const expanded = this.state.descriptionExpanded;
 
         return (expanded ? description : getCutoffDescription(description))+" ";
-    }
-
-    getAboutItems() {
-        const items = this.props.items;
-
-        return (this.state.expanded ? items : items.slice(0,8));
     }
 
     get className() {
@@ -75,14 +76,18 @@ class StockAbout extends React.Component {
                     toggle={this.toggleExpand}
                     toggleType={this.toggleType}
                 />
-                <div className="stock-description-positioner">
-                    <span>
-                        {this.generateChartDescription()}
-                        <button onClick={this.toggleDescriptionExpand} className={this.props.valueIncreased ? "green light-green-hover" : "red light-red-hover"}>Read {this.state.descriptionExpanded ? "Less" : "More"}</button>
-                    </span>
-                </div>
+
+                <StockAboutDescription 
+                    className={this.className}
+                    toggle={this.toggleDescriptionExpand}
+                    toggleType={this.toggleType}
+                    desc={this.description}
+                />
+
                 <ul className="stock-items">
-                    {this.getAboutItems().map((item, i)=> <StockAboutItem key={i} item={item}/>)}
+                    {this.items.map((item, i)=> (
+                        <StockAboutItem key={i} item={item}/>
+                    ))}
                 </ul>
             </div>
         )
