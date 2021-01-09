@@ -32,9 +32,9 @@ class StockAbout extends React.Component {
         this.setState(Object.assign({}, this.defaultState, { ticker: this.props.ticker }))
     }
 
-    stockChanged() {
-        return (this.props.ticker !== this.state.ticker)
-    }
+    // stockChanged() {
+    //     return (this.props.ticker !== this.state.ticker)
+    // }
 
     // componentDidUpdate() {
     //     if (this.stockChanged()) {

@@ -23,8 +23,14 @@ class StockInitializer extends React.Component {
         this.componentDidUpdate();
     }
 
-    componentDidUpdate() {
-        this.props.fetchNeededInfo(this.ticker);
+    componentDidUpdate(prevProps) {
+        if (this.tickerChanged(prevProps)) {
+            this.props.fetchNeededInfo(this.ticker);
+        }
+    }
+
+    tickerChanged(prevProps) {
+        return !prevProps || prevProps.match.params.ticker !== this.ticker;
     }
 
     get ticker() {
