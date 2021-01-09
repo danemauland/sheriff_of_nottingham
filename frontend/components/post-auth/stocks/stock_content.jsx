@@ -1,6 +1,6 @@
 import React from "react";
 import StockSummaryChartContainer from "./stock_chart_container";
-import StockOwnershipInfo from "./stock_ownership_info";
+import StockOwnershipInfo from "./ownership_info/stock_ownership_info";
 import StockAbout from "./about/stock_about";
 import {connect} from "react-redux";
 import {tickerIsOwned} from "../../../util/dashboard_calcs";
