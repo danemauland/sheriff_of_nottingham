@@ -16,21 +16,14 @@ const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => {
     })
 }
 
-
-
-class StockContent extends React.Component {
-
-    render() {
-        return (
-            <div className="post-auth-main-content">
-                <h1 className="post-auth-title">{this.props.companyName}</h1>
-                <StockSummaryChartContainer ticker={this.props.ticker}/>
-                {this.props.owned ? <StockOwnershipInfo ticker={this.props.ticker} /> : <></>}
-                <StockAbout ticker={this.props.ticker}/>
-                <CompanyNews ticker={this.props.ticker}/>
-            </div>
-        )
-    }
-}
+const StockContent = ({companyName, ticker, owned}) => (
+    <div className="post-auth-main-content">
+        <h1 className="post-auth-title">{companyName}</h1>
+        <StockSummaryChartContainer ticker={ticker}/>
+        {owned ? <StockOwnershipInfo ticker={ticker} /> : <></>}
+        <StockAbout ticker={ticker}/>
+        <CompanyNews ticker={ticker}/>
+    </div>
+)
 
 export default withRouter(connect(mapStateToProps, null)(StockContent));
