@@ -4,7 +4,7 @@ import Cash from "./cash";
 import MarketNewsContainer from "./market_news_container";
 
 const DashboardMainContent = () => (
-    <div className="dashboard-main-content">
+    <div className="post-auth-main-content">
         <AccountChartContainer />
         <Cash />
         <MarketNewsContainer />

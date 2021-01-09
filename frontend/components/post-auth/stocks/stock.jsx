@@ -6,9 +6,9 @@ import {isStockLoaded} from "../../../util/dashboard_calcs";
 import StockContent from "./stock_content";
 import StockSidebar from "./stock_sidebar";
 
-const mapStateToProps = ({newEntities: {assetInformation}}, ownProps) => ({
+const mapStateToProps = (state, {match: {params}, assetInformation}) => ({
     assetInformation,
-    isLoading: (!isStockLoaded(ownProps.match.params.ticker, assetInformation)),
+    isLoading: (!isStockLoaded(params.ticker, assetInformation)),
 })
 
 const mapDispatchToProps = (dispatch, {assetInformation}) => ({

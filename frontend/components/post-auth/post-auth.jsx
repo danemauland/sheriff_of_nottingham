@@ -33,23 +33,34 @@ class PostAuth extends React.Component {
     render() {
         if (this.props.loading) return <Loading />;
         const assetInformation = this.props.assetInformation;
-        
+
         return (<>
             <Header />
-            <Switch>
-                <Route exact path ="/">
-                    <Dashboard />
-                </Route>
-                <Route 
-                    exact path ="/stocks/:ticker"
-                    render={props => (
-                        <Stock {...props} assetInformation={assetInformation}/>
-                    )}
-                />
-                <Route >
-                    <Redirect to="/" />
-                </Route>
-            </Switch>
+            <div className="scroll-bar-correction">
+                <div className="post-auth-centering-div">
+                    <div className="post-auth-main-div">
+                        <Switch>
+                            <Route exact path ="/">
+                                <Dashboard />
+                            </Route>
+
+                            <Route 
+                                exact path ="/stocks/:ticker"
+                                render={props => (
+                                    <Stock 
+                                        {...props}
+                                        assetInformation={assetInformation}
+                                    />
+                                )}
+                            />
+
+                            <Route >
+                                <Redirect to="/" />
+                            </Route>
+                        </Switch>
+                    </div>
+                </div>
+            </div>
         </>)
     }
 }

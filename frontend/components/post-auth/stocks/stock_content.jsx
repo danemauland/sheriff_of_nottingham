@@ -17,14 +17,11 @@ const mapStateToProps = (state, {ticker}) => ({
 
 
 class StockContent extends React.Component {
-    constructor(props) {
-        super(props)
-    }
 
     render() {
         return (
-            <div className="dashboard-main-content">
-                <h1 className="dashboard-title">{this.props.companyName}</h1>
+            <div className="post-auth-main-content">
+                <h1 className="post-auth-title">{this.props.companyName}</h1>
                 <StockSummaryChartContainer ticker={this.props.ticker}/>
                 {this.props.owned ? <StockOwnershipInfo ticker={this.props.ticker} /> : <></>}
                 <StockAbout ticker={this.props.ticker}/>

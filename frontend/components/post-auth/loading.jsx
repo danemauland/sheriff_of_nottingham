@@ -60,11 +60,13 @@ class Loading extends React.Component {
 
     render() {
         return (
-            <div className="fill-vertically">
-                <div className="spinner-container">
-                    <div>
-                        <div className={"lds-spinner " + (this.props.increase ? "lds-spinner-dark-green" : "lds-spinner-red")}><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                        <div>{this.state.counting ? `Time to next API Pull: ${this.state.secondsUntilNextAPIPull}` : ""}</div>
+            <div className="center">
+                <div className="fill-vertically">
+                    <div className="spinner-container">
+                        <div>
+                            <div className={"lds-spinner " + (this.props.increase ? "lds-spinner-dark-green" : "lds-spinner-red")}><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                            <div>{this.state.counting ? `Time to next API Pull: ${this.state.secondsUntilNextAPIPull}` : ""}</div>
+                        </div>
                     </div>
                 </div>
             </div>
