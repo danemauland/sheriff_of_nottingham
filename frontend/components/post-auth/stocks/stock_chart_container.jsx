@@ -11,7 +11,7 @@ const mapStateToProps = (
         },
         ui: {valueIncreased},
     },
-    {match: {params: {ticker}}}
+    {ticker},
 ) => {
     const values = {
         oneDay: candlePrices.oneDay[ticker],
@@ -37,5 +37,4 @@ const mapDispatchToProps = dispatch => ({
     updateValueIncreased: bool => dispatch(updateValueIncreased(bool)),
 })
 
-const mapped = connect(mapStateToProps, mapDispatchToProps)(DynamicChart);
-export default withRouter(mapped);
+export default connect(mapStateToProps, mapDispatchToProps)(DynamicChart);

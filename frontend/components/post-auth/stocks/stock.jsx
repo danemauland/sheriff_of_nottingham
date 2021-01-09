@@ -6,9 +6,8 @@ import {isStockLoaded} from "../../../util/dashboard_calcs";
 import StockContent from "./stock_content";
 import StockSidebar from "./stock_sidebar";
 
-const mapStateToProps = (state, {match: {params}, assetInformation}) => ({
-    assetInformation,
-    isLoading: (!isStockLoaded(params.ticker, assetInformation)),
+const mapStateToProps = (state, {ticker, assetInformation}) => ({
+    isLoading: (!isStockLoaded(ticker, assetInformation)),
 })
 
 const mapDispatchToProps = (dispatch, {assetInformation}) => ({
@@ -30,11 +29,11 @@ class StockInitializer extends React.Component {
     }
 
     tickerChanged(prevProps) {
-        return !prevProps || prevProps.match.params.ticker !== this.ticker;
+        return !prevProps || prevProps.ticker !== this.ticker;
     }
 
     get ticker() {
-        return this.props.match.params.ticker;
+        return this.props.ticker;
     }
 
     render() {

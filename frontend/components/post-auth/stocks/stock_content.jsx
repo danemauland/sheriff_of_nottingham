@@ -8,12 +8,11 @@ import CompanyNews from "./company_news";
 
 const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => {
     const numShares = assetInformation.ownershipHistories.numShares;
-    debugger;
     return ({
         ticker,
         owned: tickerIsOwned(ticker, numShares[ticker]),
         companyName: assetInformation.companyOverviews[ticker].Name,
-    })
+    });
 }
 
 const StockContent = ({companyName, ticker, owned}) => (
@@ -25,7 +24,7 @@ const StockContent = ({companyName, ticker, owned}) => (
         {owned ? <StockOwnershipInfo ticker={ticker} /> : <></>}
 
         <StockAbout ticker={ticker}/>
-        
+
         <CompanyNews ticker={ticker}/>
     </div>
 )

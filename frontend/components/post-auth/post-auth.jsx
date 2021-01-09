@@ -48,7 +48,7 @@ class PostAuth extends React.Component {
                                 exact path ="/stocks/:ticker"
                                 render={props => (
                                     <Stock 
-                                        {...props}
+                                        ticker={props.match.params.ticker}
                                         assetInformation={assetInformation}
                                     />
                                 )}
