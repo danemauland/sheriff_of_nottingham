@@ -4,6 +4,7 @@ import {
     getOwnershipHistories,
     convertTimestampsToSeconds,
     getTradesByTicker,
+    calcPositionCosts,
 } from "./new_entities_util";
 var merge = require('lodash.merge');
 
@@ -26,7 +27,10 @@ export default user => {
 
     const tradesByTicker = getTradesByTicker(trades);
     
-    const tickers = new Set(Object.keys(ownershipHistories.numShares));
+    const numShares = ownershipHistories.numShares;
+    const tickers = new Set(Object.keys(numShares));
+
+    const positionCosts = calcPositionCosts(tickers, tradesByTicker, numShares);
 
     // calculates the cash balance at any given time based off deposits/
     // withdrawals and cash spent on trades
@@ -37,6 +41,7 @@ export default user => {
             tickers,
             ownershipHistories,
             trades: tradesByTicker,
+            positionCosts,
         },
         portfolioHistory: {
             cashTransactions,

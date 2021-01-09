@@ -26,50 +26,6 @@ export const tickerIsOwned = (ticker, ownershipHistoryShares) => (
     ownershipHistoryShares && ownershipHistoryShares.last() !== 0
 )
 
-// export const calcPositionValue = (ticker, state) => {
-//     return state.newEntities.assetInformation.valuations.oneDay[ticker].last();
-// }
-
-export const calcPositionCost = (ticker, state) => {
-    let sharesRemaining = state.newEntities.assetInformation.ownershipHistories.numShares[ticker].last();
-    const trades = state.newEntities.portfolioHistory.trades;
-    let short = false;
-    if (sharesRemaining < 0) {
-        short = true;
-        sharesRemaining *= -1;
-    }
-    let cost = 0;
-    let i = trades.length - 1;
-    while (sharesRemaining > 0) {
-        let trade = trades[i];
-        if (trade.ticker === ticker) {
-            if (short) {
-                if (trade.numShares < 0) {
-                    if (-trade.numShares < sharesRemaining) {
-                        cost += trade.tradePrice * trade.numShares;
-                        sharesRemaining += trade.numShares;
-                    } else {
-                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
-                        sharesRemaining = 0;
-                    }
-                }
-            } else {
-                if (trade.numShares > 0) {
-                    if (trade.numShares < sharesRemaining) {
-                        cost += trade.tradePrice * trade.numShares;
-                        sharesRemaining -= trade.numShares;
-                    } else {
-                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
-                        sharesRemaining = 0;
-                    }
-                }
-            }
-        }
-        i--
-    }
-    return cost;
-}
-
 export const portfolioValue = state => {
     return state.newEntities.portfolioHistory.valuationHistory.valuations.oneDay.last();
 }
@@ -77,14 +33,12 @@ export const portfolioValue = state => {
 export const isStockLoaded = (
     ticker,
     {tickers, candlePrices, tickerData, companyOverviews}
-) => {
-    // if (ticker==="AAPL") debugger;
-    return (
+) => (
     tickers.has(ticker) &&
     Object.values(candlePrices).every(prices => prices[ticker]) &&
     tickerData[ticker] &&
     companyOverviews[ticker]
-)};
+);
 
 const getCityAndState = address => {
     const firstComma = address.indexOf(",");

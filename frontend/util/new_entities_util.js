@@ -42,6 +42,7 @@ export const defaultState = Object.freeze({
         prevVolume: {},
         curVolume: {},
         trades: {},
+        positionCosts: {},
     },
     marketNews: [],
     portfolioHistory: {
@@ -506,3 +507,53 @@ export const getTradesByTicker = initialTrades => {
     }
     return tradesByTicker;
 }
+
+export const calcPositionCosts = (tickers, trades, numShares) => {
+    const posCosts = {};
+
+    tickers.forEach(ticker => {
+        const sharesOwned = numShares[ticker].last();
+        posCosts[ticker] = calcPositionCost(ticker,trades[ticker],sharesOwned);
+    });
+
+    return posCosts;
+};
+
+const calcPositionCost = (ticker, trades, sharesOwned) => {
+    let sharesRemaining = sharesOwned;
+    let short = false;
+    if (sharesRemaining < 0) {
+        short = true;
+        sharesRemaining *= -1;
+    }
+    let cost = 0;
+    let i = trades.length - 1;
+    while (sharesRemaining > 0) {
+        let trade = trades[i];
+        if (trade.ticker === ticker) {
+            if (short) {
+                if (trade.numShares < 0) {
+                    if (-trade.numShares < sharesRemaining) {
+                        cost += trade.tradePrice * trade.numShares;
+                        sharesRemaining += trade.numShares;
+                    } else {
+                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
+                        sharesRemaining = 0;
+                    }
+                }
+            } else {
+                if (trade.numShares > 0) {
+                    if (trade.numShares < sharesRemaining) {
+                        cost += trade.tradePrice * trade.numShares;
+                        sharesRemaining -= trade.numShares;
+                    } else {
+                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
+                        sharesRemaining = 0;
+                    }
+                }
+            }
+        }
+        i--
+    }
+    return cost;
+};
