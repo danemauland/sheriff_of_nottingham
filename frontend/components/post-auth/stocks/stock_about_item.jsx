@@ -1,8 +1,8 @@
 import React from "react";
 
-export default props => (
+export default ({item: [title, val]}) => (
     <span className="stock-item">
-        <h4>{props.item[0]}</h4>
-        <p>{props.item[1]}</p>
+        <h4>{title}</h4>
+        <p>{val}</p>
     </span>
 )
