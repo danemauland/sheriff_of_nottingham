@@ -1,7 +1,6 @@
 import { updateValueIncreased } from "../../../actions/value_increased_actions";
 import DynamicChart from "../chart/dynamic_chart"
 import { connect } from "react-redux";
-import {withRouter} from "react-router-dom";
 
 const mapStateToProps = (
     {
