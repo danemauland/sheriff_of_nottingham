@@ -12,48 +12,34 @@ const mapStateToProps = (
     valueIncreased,
     description: assetInformation.companyOverviews[ticker].Description,
     items: extractAboutItems(ticker, assetInformation),
-})
+});
 
 class StockAbout extends React.Component {
     constructor(props) {
-        super(props)
-        this.defaultState = {
+        super(props);
+
+        this.state = {
             expanded: false,
             descriptionExpanded: false,
             ticker: "",
-        }
-        this.state = Object.assign({},this.defaultState, {ticker: this.props.ticker})
+        };
+
         this.toggleExpand = this.toggleExpand.bind(this);
         this.toggleDescriptionExpand = this.toggleDescriptionExpand.bind(this);
-        
     }
-
-    resetState() {
-        this.setState(Object.assign({}, this.defaultState, { ticker: this.props.ticker }))
-    }
-
-    // stockChanged() {
-    //     return (this.props.ticker !== this.state.ticker)
-    // }
-
-    // componentDidUpdate() {
-    //     if (this.stockChanged()) {
-    //         this.resetState();
-    //     }
-    // }
 
     toggleExpand(e) {
-        e.preventDefault()
+        e.preventDefault();
         this.setState({
             expanded: !this.state.expanded,
-        })
+        });
     }
 
     toggleDescriptionExpand(e) {
-        e.preventDefault()
+        e.preventDefault();
         this.setState({
             descriptionExpanded: !this.state.descriptionExpanded,
-        })
+        });
     }
 
     generateChartDescription() {
@@ -67,7 +53,7 @@ class StockAbout extends React.Component {
     }
 
     getAboutItems() {
-        return (this.state.expanded ? this.props.items : this.props.items.slice(0,8))
+        return (this.state.expanded ? this.props.items : this.props.items.slice(0,8));
     }
 
     render() {
