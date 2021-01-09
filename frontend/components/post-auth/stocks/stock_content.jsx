@@ -7,12 +7,14 @@ import {withRouter} from "react-router-dom";
 import {tickerIsOwned} from "../../../util/dashboard_calcs";
 import CompanyNews from "./company_news";
 
-const mapStateToProps = (state, {ticker}) => ({
-    ticker,
-    owned: tickerIsOwned(ticker, state.newEntities.assetInformation.ownershipHistories.numShares[ticker]),
-    // companyName: state.entities.displayedAssets[ticker].companyOverview.Name,
-    companyName: state.newEntities.assetInformation.companyOverviews[ticker].Name,
-})
+const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => {
+    const numShares = assetInformation.ownershipHistories.numShares;
+    return ({
+        ticker,
+        owned: tickerIsOwned(ticker, numShares[ticker]),
+        companyName: assetInformation.companyOverviews[ticker].Name,
+    })
+}
 
 
 
