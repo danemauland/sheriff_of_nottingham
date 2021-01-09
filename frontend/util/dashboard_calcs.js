@@ -26,11 +26,11 @@ export const tickerIsOwned = (ticker, ownershipHistoryShares) => (
     ownershipHistoryShares && ownershipHistoryShares.last() !== 0
 )
 
-export const positionValue = (ticker, state) => {
-    return state.newEntities.assetInformation.valuations.oneDay[ticker].last();
-}
+// export const calcPositionValue = (ticker, state) => {
+//     return state.newEntities.assetInformation.valuations.oneDay[ticker].last();
+// }
 
-export const positionCost = (ticker, state) => {
+export const calcPositionCost = (ticker, state) => {
     let sharesRemaining = state.newEntities.assetInformation.ownershipHistories.numShares[ticker].last();
     const trades = state.newEntities.portfolioHistory.trades;
     let short = false;

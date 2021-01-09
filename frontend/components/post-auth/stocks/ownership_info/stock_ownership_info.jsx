@@ -1,8 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {
-    positionValue,
-    positionCost,
+    calcPositionCost,
     formatToDollar,
     ONE_DAY,
     portfolioValue,
@@ -11,63 +10,49 @@ import {
     getPreviousEndingValue,
     getStrChange,
 } from "../../../../util/chart_utils";
+import StockOwnershipBox from "./stock_ownership_box";
 
 const mapStateToProps = (state, {ticker}) => {
-    const marketValue = positionValue(ticker, state);
+    let marketValue = state.newEntities.assetInformation.valuations.oneDay[ticker].last();
     const numShares = state.newEntities.assetInformation.ownershipHistories.numShares[ticker].last();
-    const totalPositionCost = positionCost(ticker, state);
+    const totalPositionCost = calcPositionCost(ticker, state);
     const prevDayCloseValue = getPreviousEndingValue(
         state.newEntities.assetInformation.valuations.oneYear[ticker],
         ONE_DAY
     );
+    const averageCost = formatToDollar(totalPositionCost / numShares);
+    const positionCost = formatToDollar(totalPositionCost);
+    const oneDayReturn = getStrChange(prevDayCloseValue, marketValue);
+    const totalReturn = getStrChange(totalPositionCost, marketValue);
+    const portfolioDiversity = (marketValue / portfolioValue(state) * 100).toFixed(2) + "%";
+    const marketValStr = formatToDollar(marketValue);
     return ({
-        marketValue: formatToDollar(marketValue),
-        numShares,
-        positionCost: formatToDollar(totalPositionCost),
-        oneDayReturn: getStrChange(prevDayCloseValue, marketValue),
-        totalReturn: getStrChange(totalPositionCost, marketValue),
-        averageCost: formatToDollar(totalPositionCost / numShares),
-        portfolioDiversity: (marketValue / portfolioValue(state) * 100).toFixed(2) + "%",
-})
+        items: [
+            {
+                title: "Your Market Value",
+                titleVal: marketValStr,
+                items: [
+                    {title: "Cost", val: positionCost},
+                    {title: "Today's Return", val: oneDayReturn},
+                    {title: "Total Return", val: totalReturn},
+                ]
+            },
+            {
+                title: "Your Average Cost",
+                titleVal: averageCost,
+                items: [
+                    {title: "Shares", val: numShares},
+                    {title: "Portfolio Diversity", val: portfolioDiversity},
+                ]
+            },
+        ]
+    })
 }
 
-const OwnershipInfo = props => (
+const StockOwnershipInfo = ({items}) => (
     <div className="stock-ownership-positioner">
-        <div>
-            <div className="stock-ownership-market-val-info-wrapper">
-                <div>Your Market Value</div>
-                <h3>{props.marketValue}</h3>
-                <div className="stock-ownership-sub-container">
-                    <div>
-                        <span>Cost</span>
-                        <span>{props.positionCost}</span>
-                    </div>
-                    <div>
-                        <span>Today's Return</span>
-                        <span>{props.oneDayReturn}</span>
-                    </div>
-                    <div>
-                        <span>Total Return</span>
-                        <span>{props.totalReturn}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div>
-            <div>Your Average Cost</div>
-            <h3>{props.averageCost}</h3>
-            <div className="stock-ownership-sub-container">
-                <div>
-                    <span>Shares</span>
-                    <span>{props.numShares}</span>
-                </div>
-                <div>
-                    <span>Portfolio Diversity</span>
-                    <span>{props.portfolioDiversity}</span>
-                </div>
-            </div>
-        </div>
+        {items.map((item, i) => <StockOwnershipBox key={i} {...item} />)}
     </div>
 )
 
-export default connect(mapStateToProps, null)(OwnershipInfo)
+export default connect(mapStateToProps, null)(StockOwnershipInfo);
