@@ -109,8 +109,7 @@ const formatDividendYield = dYield => {
     return (dYield === "0" ? "–" : parseFloat(dYield).toFixed(2))
 }
 
-export const extractAboutItems = (ticker, state) => {
-    const assetInformation = state.newEntities.assetInformation;
+export const extractAboutItems = (ticker, assetInformation) => {
     const historicPrices = assetInformation.historicPrices;
     const desc = assetInformation.companyOverviews[ticker];
     const data = assetInformation.tickerData[ticker];

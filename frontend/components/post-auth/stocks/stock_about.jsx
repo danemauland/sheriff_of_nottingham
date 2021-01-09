@@ -5,14 +5,14 @@ import {
 } from "../../../util/dashboard_calcs";
 import StockAboutItem from "./stock_about_item.jsx";
 
-const mapStateToProps = (state, { ticker }) => {
-    return ({
-        valueIncreased: state.ui.valueIncreased,
-        // description: state.entities.displayedAssets[ticker].companyOverview.Description,
-        description: state.newEntities.assetInformation.companyOverviews[ticker].Description,
-        items: extractAboutItems(ticker, state),
-    })
-}
+const mapStateToProps = (
+    {newEntities: {assetInformation}, ui: {valueIncreased}},
+    { ticker }
+) => ({
+    valueIncreased,
+    description: assetInformation.companyOverviews[ticker].Description,
+    items: extractAboutItems(ticker, assetInformation),
+})
 
 class OwnershipInfo extends React.Component {
     constructor(props) {
