@@ -19,9 +19,13 @@ const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => {
 const StockContent = ({companyName, ticker, owned}) => (
     <div className="post-auth-main-content">
         <h1 className="post-auth-title">{companyName}</h1>
+
         <StockSummaryChartContainer ticker={ticker}/>
+
         {owned ? <StockOwnershipInfo ticker={ticker} /> : <></>}
+
         <StockAbout ticker={ticker}/>
+        
         <CompanyNews ticker={ticker}/>
     </div>
 )
