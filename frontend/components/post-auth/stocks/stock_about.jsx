@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import {
     extractAboutItems,
+    getCutoffDescription,
 } from "../../../util/dashboard_calcs";
 import StockAboutItem from "./stock_about_item.jsx";
 
@@ -29,6 +30,7 @@ class StockAbout extends React.Component {
 
     toggleExpand(e) {
         e.preventDefault();
+
         this.setState({
             expanded: !this.state.expanded,
         });
@@ -36,19 +38,17 @@ class StockAbout extends React.Component {
 
     toggleDescriptionExpand(e) {
         e.preventDefault();
+
         this.setState({
             descriptionExpanded: !this.state.descriptionExpanded,
         });
     }
 
     generateChartDescription() {
-        if (this.state.descriptionExpanded) {
-            return this.props.description + " ";
-        } else {
-            const cutoffIndex = this.props.description.slice(160).indexOf(".") + 161;
-            let cutoff = this.props.description.slice(0,cutoffIndex)
-            return cutoff + " ";
-        }
+        const description = this.props.description;
+        const expanded = this.state.descriptionExpanded;
+
+        return (expanded ? description : getCutoffDescription(description))+" ";
     }
 
     getAboutItems() {

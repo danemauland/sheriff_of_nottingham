@@ -231,3 +231,9 @@ export const companyOverviewIsLoaded = (ticker, companyOverviews) => (
 )
 
 export const tickerDataIsLoaded = (ticker, tickerData) => !!tickerData[ticker];
+
+export const getCutoffDescription = desc => {
+    const cutoffIndex = desc.slice(160).indexOf(".") + 161;
+    
+    return desc.slice(0,cutoffIndex);
+}
