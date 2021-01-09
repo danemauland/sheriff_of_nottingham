@@ -146,20 +146,20 @@ export const pricesAreLoaded = (tickers, prices) => {
 }
 
 export const ownedPricesAreLoaded = (
-    {tickers, ownershipHistories, candlePrices}
+    {tickers, trades, candlePrices}
 ) => {
     tickers = Array.convert(tickers);
-    const ownedTickers = getOwnedTickers(tickers, ownershipHistories);
+    const ownedTickers = getOwnedTickers(tickers, trades);
     return pricesAreLoaded(ownedTickers, candlePrices);
 }
 
-const getOwnedTickers = (tickers, ownershipHistories) => {
+const getOwnedTickers = (tickers, trades) => {
     tickers = Array.convert(tickers);
-    return tickers.filter(ticker => tickerWasOwned(ticker, ownershipHistories));
+    return tickers.filter(ticker => tickerWasOwned(ticker, trades));
 }
 
-const tickerWasOwned = (ticker, ownershipHistories) => {
-    return (typeof ownershipHistories.numShares[ticker].last()) === "number";
+const tickerWasOwned = (ticker, trades) => {
+    return trades[ticker] && trades[ticker].length > 0;
 }
 
 const states = {
