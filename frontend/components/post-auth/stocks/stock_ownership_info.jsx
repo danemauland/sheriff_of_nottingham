@@ -31,52 +31,43 @@ const mapStateToProps = (state, {ticker}) => {
 })
 }
 
-class OwnershipInfo extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-    
-
-    render() {
-        return (
-            <div className="stock-ownership-positioner">
-                <div>
-                    <div className="stock-ownership-market-val-info-wrapper">
-                        <div>Your Market Value</div>
-                        <h3>{this.props.marketValue}</h3>
-                        <div className="stock-ownership-sub-container">
-                            <div>
-                                <span>Cost</span>
-                                <span>{this.props.positionCost}</span>
-                            </div>
-                            <div>
-                                <span>Today's Return</span>
-                                <span>{this.props.oneDayReturn}</span>
-                            </div>
-                            <div>
-                                <span>Total Return</span>
-                                <span>{this.props.totalReturn}</span>
-                            </div>
-                        </div>
+const OwnershipInfo = props => (
+    <div className="stock-ownership-positioner">
+        <div>
+            <div className="stock-ownership-market-val-info-wrapper">
+                <div>Your Market Value</div>
+                <h3>{props.marketValue}</h3>
+                <div className="stock-ownership-sub-container">
+                    <div>
+                        <span>Cost</span>
+                        <span>{props.positionCost}</span>
                     </div>
-                </div>
-                <div>
-                    <div>Your Average Cost</div>
-                    <h3>{this.props.averageCost}</h3>
-                    <div className="stock-ownership-sub-container">
-                        <div>
-                            <span>Shares</span>
-                            <span>{this.props.numShares}</span>
-                        </div>
-                        <div>
-                            <span>Portfolio Diversity</span>
-                            <span>{this.props.portfolioDiversity}</span>
-                        </div>
+                    <div>
+                        <span>Today's Return</span>
+                        <span>{props.oneDayReturn}</span>
+                    </div>
+                    <div>
+                        <span>Total Return</span>
+                        <span>{props.totalReturn}</span>
                     </div>
                 </div>
             </div>
-        )
-    }
-}
+        </div>
+        <div>
+            <div>Your Average Cost</div>
+            <h3>{props.averageCost}</h3>
+            <div className="stock-ownership-sub-container">
+                <div>
+                    <span>Shares</span>
+                    <span>{props.numShares}</span>
+                </div>
+                <div>
+                    <span>Portfolio Diversity</span>
+                    <span>{props.portfolioDiversity}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+)
 
 export default connect(mapStateToProps, null)(OwnershipInfo)
