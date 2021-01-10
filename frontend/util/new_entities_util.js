@@ -485,7 +485,7 @@ const calcValuations = (times, prices, ownershipTimes, ownershipShares) => {
             continue;
         }
 
-        valuations.push(ownershipShares[historyPointer] * prices[pricesPointer])
+        valuations.push(ownershipShares[historyPointer] *prices[pricesPointer]);
         pricesPointer++;
 
     }
@@ -513,47 +513,29 @@ export const calcPositionCosts = (tickers, trades, numShares) => {
 
     tickers.forEach(ticker => {
         const sharesOwned = numShares[ticker].last();
-        posCosts[ticker] = calcPositionCost(ticker,trades[ticker],sharesOwned);
+        posCosts[ticker] = calcPositionCost(trades[ticker], sharesOwned);
     });
 
     return posCosts;
 };
 
-const calcPositionCost = (ticker, trades, sharesOwned) => {
+const calcPositionCost = (trades, sharesOwned) => {
     let sharesRemaining = sharesOwned;
-    let short = false;
-    if (sharesRemaining < 0) {
-        short = true;
-        sharesRemaining *= -1;
-    }
+
     let cost = 0;
     let i = trades.length - 1;
-    while (sharesRemaining > 0) {
-        let trade = trades[i];
-        if (trade.ticker === ticker) {
-            if (short) {
-                if (trade.numShares < 0) {
-                    if (-trade.numShares < sharesRemaining) {
-                        cost += trade.tradePrice * trade.numShares;
-                        sharesRemaining += trade.numShares;
-                    } else {
-                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
-                        sharesRemaining = 0;
-                    }
-                }
-            } else {
-                if (trade.numShares > 0) {
-                    if (trade.numShares < sharesRemaining) {
-                        cost += trade.tradePrice * trade.numShares;
-                        sharesRemaining -= trade.numShares;
-                    } else {
-                        cost += trade.tradePrice * trade.numShares / sharesRemaining;
-                        sharesRemaining = 0;
-                    }
-                }
-            }
-        }
-        i--
+
+    while (sharesRemaining !== 0) {
+        const trade = trades[i--];
+        let numShares = trade.numShares;
+
+        const sharesRemainingHits0 = (
+            (sharesRemaining <= 0) !== (sharesRemaining + numShares <= 0)
+        );
+        if (sharesRemainingHits0) numShares = sharesRemaining;
+
+        cost += trade.tradePrice * numShares;
+        sharesRemaining -= numShares;
     }
     return cost;
 };
