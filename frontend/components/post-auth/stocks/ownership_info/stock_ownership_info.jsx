@@ -2,12 +2,14 @@ import React from "react";
 import {connect} from "react-redux";
 import {
     formatToDollar,
+} from "../../../../util/dashboard_calcs";
+import {
     getPosMarketValue,
     getSharesOwned,
     getPosCost,
     getPrevDayClose,
     getPortfolioValue,
-} from "../../../../util/dashboard_calcs";
+} from "../../../../util/extract_from_state_utils";
 import {
     getStrChange,
 } from "../../../../util/chart_utils";
