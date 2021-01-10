@@ -1,6 +1,7 @@
 import {
     formatToDollar,
     ONE_DAY,
+    getPreviousEndingValue,
 } from "../util/dashboard_calcs";
 
 const PREMARKET_TIMESLOTS = 6;
@@ -23,23 +24,6 @@ Chart.Tooltip.positioners.custom = (elements, position) => {
     return {
         x: position.x,
         y: 9,
-    }
-}
-
-export const getPreviousEndingValue = function(oneYearValues, type) {
-    switch (type) {
-        case ONE_DAY:
-            return oneYearValues[oneYearValues.length - 2];
-        case ONE_WEEK:
-            return oneYearValues[oneYearValues.length - 8];
-        case ONE_MONTH:
-            return oneYearValues[oneYearValues.length - ONE_MONTH_OFFSET];
-        case THREE_MONTH:
-            return oneYearValues[oneYearValues.length - THREE_MONTH_OFFSET];
-        case ONE_YEAR:
-            return oneYearValues[0];
-        default:
-            break;
     }
 }
 

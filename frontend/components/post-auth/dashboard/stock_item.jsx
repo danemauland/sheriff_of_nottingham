@@ -2,9 +2,9 @@ import {Link} from "react-router-dom";
 import React from "react";
 import {connect} from "react-redux";
 import {getStrChange,
-    getPreviousEndingValue
 } from "../../../util/chart_utils";
 import {
+    getPreviousEndingValue,
     formatToDollar,
     ONE_DAY,
     ONE_WEEK,

@@ -178,11 +178,28 @@ const states = {
     "WY": "Wyoming"
 }
 
+export const getPreviousEndingValue = function(oneYearValues, type) {
+    switch (type) {
+        case ONE_DAY:
+            return oneYearValues[oneYearValues.length - 2];
+        case ONE_WEEK:
+            return oneYearValues[oneYearValues.length - 8];
+        case ONE_MONTH:
+            return oneYearValues[oneYearValues.length - ONE_MONTH_OFFSET];
+        case THREE_MONTH:
+            return oneYearValues[oneYearValues.length - THREE_MONTH_OFFSET];
+        case ONE_YEAR:
+            return oneYearValues[0];
+        default:
+            break;
+    }
+}
+
 export const assetIsInitialized = (ticker, tickers) => tickers.has(ticker);
 
 export const companyOverviewIsLoaded = (ticker, companyOverviews) => (
     !!companyOverviews[ticker]
-)
+);
 
 export const tickerDataIsLoaded = (ticker, tickerData) => !!tickerData[ticker];
 
@@ -190,4 +207,24 @@ export const getCutoffDescription = desc => {
     const cutoffIndex = desc.slice(160).indexOf(".") + 161;
     
     return desc.slice(0,cutoffIndex);
-}
+};
+
+export const getPosMarketValue = (ticker, {newEntities}) => (
+    newEntities.assetInformation.valuations.oneDay[ticker].last()
+);
+
+export const getSharesOwned = (ticker, {newEntities}) => (
+    newEntities.assetInformation.ownershipHistories.numShares[ticker].last()
+);
+
+export const getPosCost = (ticker, {newEntities}) => (
+    newEntities.assetInformation.positionCosts[ticker]
+);
+
+export const getPrevDayClose = (ticker, {newEntities: {assetInformation}}) => (
+    getPreviousEndingValue(assetInformation.valuations.oneYear[ticker], ONE_DAY)
+);
+
+export const getPortfolioValue = ({newEntities}) => (
+    newEntities.portfolioHistory.valuationHistory.valuations.oneDay.last()
+);

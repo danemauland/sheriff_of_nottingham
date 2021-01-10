@@ -2,28 +2,29 @@ import React from "react";
 import {connect} from "react-redux";
 import {
     formatToDollar,
-    ONE_DAY,
-    portfolioValue,
+    getPosMarketValue,
+    getSharesOwned,
+    getPosCost,
+    getPrevDayClose,
+    getPortfolioValue,
 } from "../../../../util/dashboard_calcs";
 import {
-    getPreviousEndingValue,
     getStrChange,
 } from "../../../../util/chart_utils";
 import StockOwnershipBox from "./stock_ownership_box";
 
 const mapStateToProps = (state, {ticker}) => {
-    let marketValue = state.newEntities.assetInformation.valuations.oneDay[ticker].last();
-    const numShares = state.newEntities.assetInformation.ownershipHistories.numShares[ticker].last();
-    const positionCost = state.newEntities.assetInformation.positionCosts[ticker];
-    const prevDayCloseValue = getPreviousEndingValue(
-        state.newEntities.assetInformation.valuations.oneYear[ticker],
-        ONE_DAY
-    );
-    const averageCost = formatToDollar(positionCost / numShares);
+    const marketValue = getPosMarketValue(ticker, state);
+    const sharesOwned = getSharesOwned(ticker, state);
+    const positionCost = getPosCost(ticker, state);
+    const prevDayMarketValue = getPrevDayClose(ticker, state);
+    const portfolioValue = getPortfolioValue(state);
+    
+    const averageCost = formatToDollar(positionCost / sharesOwned);
     const positionCostStr = formatToDollar(positionCost);
-    const oneDayReturn = getStrChange(prevDayCloseValue, marketValue);
+    const oneDayReturn = getStrChange(prevDayMarketValue, marketValue);
     const totalReturn = getStrChange(positionCost, marketValue);
-    const portfolioDiversity = (marketValue / portfolioValue(state) * 100).toFixed(2) + "%";
+    const portfolioDiversity = (marketValue / portfolioValue * 100).toFixed(2) + "%";
     const marketValStr = formatToDollar(marketValue);
     return ({
         items: [
@@ -40,7 +41,7 @@ const mapStateToProps = (state, {ticker}) => {
                 title: "Your Average Cost",
                 titleVal: averageCost,
                 items: [
-                    {title: "Shares", val: numShares},
+                    {title: "Shares", val: sharesOwned},
                     {title: "Portfolio Diversity", val: portfolioDiversity},
                 ]
             },
