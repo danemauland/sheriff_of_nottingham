@@ -17,10 +17,10 @@ const mapStateToProps = state => ({
     times: getPortfolioValuationsTimes(state),
     values: getPortfolioValuations(state),
     valueIncreased: getValueIncreased(state),
-})
+});
 
 const mapDispatchToProps = dispatch => ({
     updateValueIncreased: bool => dispatch(updateValueIncreased(bool)),
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(DynamicChart);
