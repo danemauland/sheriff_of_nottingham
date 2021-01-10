@@ -1,19 +1,19 @@
 import {
     formatToDollar,
     ONE_DAY,
+    ONE_WEEK,
+    ONE_MONTH,
+    THREE_MONTH,
+    ONE_YEAR,
+    THREE_MONTH_OFFSET,
+    ONE_MONTH_OFFSET,
+
     getPreviousEndingValue,
 } from "../util/dashboard_calcs";
 
 const PREMARKET_TIMESLOTS = 6;
 const MARKET_HOURS_TIMESLOTS = 79;
 const TOTAL_ONE_DAY_TIMESLOTS = 109;
-const ONE_MONTH_OFFSET = 31;
-const THREE_MONTH_OFFSET = 91;
-
-export const ONE_WEEK = "ONE_WEEK";
-export const ONE_MONTH = "ONE_MONTH";
-export const THREE_MONTH = "THREE_MONTH";
-export const ONE_YEAR = "ONE_YEAR";
 
 export const GRAPH_VIEWS = [ONE_DAY,ONE_WEEK,ONE_MONTH,THREE_MONTH,ONE_YEAR];
 

@@ -10,6 +10,7 @@ import {
     refreshChartData,
     removeToolTip,
     updateLineColor,
+    chartSelectorClassNamesGenerator,
 } from "../../../util/chart_utils";
 import { withRouter } from "react-router-dom";
 import ChartHeader from "./chart_header";
@@ -108,6 +109,13 @@ class DynamicChart extends React.Component {
         return formatGraphView(this.state.chartSelected);
     }
 
+    get classNameGenerator() {
+        const valInc = this.props.valueIncreased;
+        const selectedView = this.state.chartSelected;
+
+        return chartSelectorClassNamesGenerator(valInc, selectedView);
+    }
+
     render() {
         return (
             <div className="chart-wrapper">
@@ -129,8 +137,7 @@ class DynamicChart extends React.Component {
                 />
 
                 <ChartSelectors
-                    valInc={this.props.valueIncreased}
-                    selectedView={this.state.chartSelected}
+                    genClassNames={this.classNameGenerator}
                     genChartChanger={this.generateChartChanger}
                 />
             </div>

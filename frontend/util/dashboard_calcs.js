@@ -1,4 +1,10 @@
 export const ONE_DAY = "ONE_DAY";
+export const ONE_WEEK = "ONE_WEEK";
+export const ONE_MONTH = "ONE_MONTH";
+export const THREE_MONTH = "THREE_MONTH";
+export const ONE_YEAR = "ONE_YEAR";
+export const ONE_MONTH_OFFSET = 31;
+export const THREE_MONTH_OFFSET = 91;
 
 export const formatToDollar = (num, numDecimals = 2) => {
     if ((typeof num) !== "number") return false;
