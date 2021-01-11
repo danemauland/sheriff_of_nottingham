@@ -39,7 +39,7 @@ class SearchResultItem extends React.Component {
     render() {
         return (
             <div className="seach-result-item-wrapper">
-                <Link to={`/dashboard/stocks/${this.props.result[0]}`} className={"search-result-item " + (this.props.selected ? "selected" : "")} onClick={this.handleClick}>
+                <Link to={`/stocks/${this.props.result[0]}`} className={"search-result-item " + (this.props.selected ? "selected" : "")} onClick={this.handleClick}>
                     <span>
                         {this.mapToSlices(this.props.result[0], this.props.input)}
                     </span>
