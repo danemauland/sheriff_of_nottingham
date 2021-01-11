@@ -80,3 +80,5 @@ export const getPortfolioValuationsTimes = state => (
 );
 
 export const getValueIncreased = state => getUI(state).valueIncreased;
+
+export const getMarketNews = state => getNewEntities(state).marketNews;
