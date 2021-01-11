@@ -14,6 +14,7 @@ import {
 } from "../../../util/dashboard_calcs";
 import {
     getSharesOwned,
+    getLastPrice,
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => {

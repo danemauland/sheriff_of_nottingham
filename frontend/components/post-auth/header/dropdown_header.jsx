@@ -9,7 +9,6 @@ const mapStateToProps = state => {
         cashBal: portfolioHistory.cashHistory.balances.last(),
         portfolioVal: portfolioHistory.valuationHistory.valuations.oneDay.last(),
         trades: state.newEntities.trades,
-        // displayedAssets: state.entities.displayedAssets,
     })
 }
 
