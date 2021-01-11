@@ -2,12 +2,11 @@ import React from "react";
 import {Link} from "react-router-dom";
 import HeaderDropdown from "./header_dropdown";
 import { connect } from "react-redux";
+import {
+    getValueIncreased,
+} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = state => {
-    return ({
-        valueIncreased: state.ui.valueIncreased,
-    })
-}
+const mapStateToProps = state => ({valueIncreased: getValueIncreased(state)});
 
 class NavLinks extends React.Component {
     constructor(props) {
