@@ -12,7 +12,6 @@ import {
     updateLineColor,
     chartSelectorClassNamesGenerator,
 } from "../../../util/chart_utils";
-import { withRouter } from "react-router-dom";
 import ChartHeader from "./chart_header";
 import ChartSelectors from "./chart_selectors";
 
@@ -145,4 +144,4 @@ class DynamicChart extends React.Component {
     }
 }
 
-export default withRouter(DynamicChart);
+export default DynamicChart;
