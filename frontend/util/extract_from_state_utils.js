@@ -99,4 +99,4 @@ const getSession = state => state.session;
 
 export const getUsername = state => getSession(state).username;
 
-export const getTrades = state => getAssetInformation(state).trades;
+export const getAssetTrades = state => getAssetInformation(state).trades;

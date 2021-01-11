@@ -7,12 +7,12 @@ import {
 import StockAboutItem from "./stock_about_item";
 import StockAboutHeader from "./stock_about_header";
 import StockAboutDescription from "./stock_about_description";
+import {
+    getValueIncreased,
+} from "../../../../util/extract_from_state_utils";
 
-const mapStateToProps = (
-    {newEntities: {assetInformation}, ui: {valueIncreased}},
-    { ticker }
-) => ({
-    valueIncreased,
+const mapStateToProps = (state, {ticker}) => ({
+    valueIncreased: getValueIncreased(state),
     description: assetInformation.companyOverviews[ticker].Description,
     items: extractAboutItems(ticker, assetInformation),
 });

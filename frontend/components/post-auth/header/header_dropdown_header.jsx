@@ -5,14 +5,12 @@ import {
     getUsername,
     getCashBalance,
     getPortfolioValue,
-    getTrades
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = state => ({
         username: getUsername(state),
         cashBal: getCashBalance(state),
         portfolioVal: getPortfolioValue(state),
-        trades: getTrades(state),
 });
 
 class DropdownHeader extends React.Component {
