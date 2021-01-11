@@ -94,3 +94,9 @@ export const getMarketNews = state => getNewEntities(state).marketNews;
 export const getLastPrice = (state, ticker) => (
     getTickerOneDayCandlePrices(state, ticker).last()
 );
+
+const getSession = state => state.session;
+
+export const getUsername = state => getSession(state).username;
+
+export const getTrades = state => getAssetInformation(state).trades;

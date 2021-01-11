@@ -1,16 +1,19 @@
 import React from "react";
 import {formatToDollar} from "../../../util/dashboard_calcs";
 import {connect} from "react-redux";
+import {
+    getUsername,
+    getCashBalance,
+    getPortfolioValue,
+    getTrades
+} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = state => {
-    const portfolioHistory = state.newEntities.portfolioHistory;
-    return ({
-        username: state.session.username,
-        cashBal: portfolioHistory.cashHistory.balances.last(),
-        portfolioVal: portfolioHistory.valuationHistory.valuations.oneDay.last(),
-        trades: state.newEntities.trades,
-    })
-}
+const mapStateToProps = state => ({
+        username: getUsername(state),
+        cashBal: getCashBalance(state),
+        portfolioVal: getPortfolioValue(state),
+        trades: getTrades(state),
+});
 
 class AccountDropdownHeader extends React.Component {
     constructor(props) {
