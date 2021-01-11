@@ -1,6 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import AccountDropdown from "./account_dropdown";
+import HeaderDropdown from "./header_dropdown";
 import { connect } from "react-redux";
 
 const mapStateToProps = state => {
@@ -69,7 +69,7 @@ class NavLinks extends React.Component {
                     <li>
                         <div className="absolute-positioner">
                             <Link to="#" className={"navbar-link " + (this.props.valueIncreased ? "dark-green-hover" : "red-hover")} onClick={this.toggleHidden}>Account</Link>
-                            <AccountDropdown onClick={e => e.stopPropagation()}/>
+                            <HeaderDropdown onClick={e => e.stopPropagation()}/>
                         </div>
                     </li>
                 </ul>
