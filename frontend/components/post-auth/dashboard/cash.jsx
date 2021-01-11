@@ -1,13 +1,10 @@
 import React from "react";
 import {formatToDollar} from "../../../util/dashboard_calcs";
 import {connect} from "react-redux";
-import CashForm from "./cash_form.jsx"
+import CashForm from "./cash_form.jsx";
+import {getCashBalance} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = state => {
-    return ({
-        cashBal: state.newEntities.portfolioHistory.cashHistory.balances.last(),
-    })
-}
+const mapStateToProps = state => ({cashBal: getCashBalance(state)});
 
 class Cash extends React.Component {
     constructor(props) {

@@ -69,6 +69,8 @@ export const getStartingCashBal = state => getCashBalances(state)[0];
 
 export const getStartingCashTime = state => getCashTimes(state)[0];
 
+export const getCashBalance = state => getCashBalances(state).last();
+
 export const getPortfolioValuations = state => (
     getValuationHistory(state).valuations
 );
