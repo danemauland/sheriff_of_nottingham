@@ -12,16 +12,16 @@ import {
     THREE_MONTH,
     ONE_YEAR,
 } from "../../../util/dashboard_calcs";
+import {
+    getSharesOwned,
+} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = (state, ownProps) => {
-    const ticker = ownProps.ticker;
-    const assetInformation = state.newEntities.assetInformation;
-    const candlePrices = assetInformation.candlePrices;
-    const prevEndValue = getPreviousEndingValue(candlePrices.oneYear[ticker], ONE_DAY);
-    const lastPrice = candlePrices.oneDay.last();
+const mapStateToProps = (state, {ticker}) => {
+    const prevDayClose = getPrevDayClose(ticker, state);
+    const lastPrice = getLastPrice(ticker, state);
     return {
-        strChange: getStrChange(prevEndValue, lastPrice),
-        numShares: assetInformation.ownershipHistories.numShares[ticker].last(),
+        strChange: getStrChange(prevDayClose, lastPrice),
+        numShares: getSharesOwned(ticker, state),
     }
 }
 

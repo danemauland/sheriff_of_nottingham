@@ -7,6 +7,14 @@ const getNewEntities = state => state.newEntities;
 
 const getAssetInformation = state => getNewEntities(state).assetInformation;
 
+const getCandlePrices = state => getAssetInformation(state).candlePrices;
+
+const getOneDayCandlePrices = state => getCandlePrices(state).oneDay;
+
+const getTickerOneDayCandlePrices = (state, ticker) => (
+    getOneDayCandlePrices(state)[ticker]
+);
+
 const getAssetValuations = state => getAssetInformation(state).valuations;
 
 const getOwnershipHistories = state => (
@@ -82,3 +90,7 @@ export const getPortfolioValuationsTimes = state => (
 export const getValueIncreased = state => getUI(state).valueIncreased;
 
 export const getMarketNews = state => getNewEntities(state).marketNews;
+
+export const getLastPrice = (state, ticker) => (
+    getTickerOneDayCandlePrices(state, ticker).last()
+);
