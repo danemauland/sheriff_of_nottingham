@@ -1,10 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import {Link} from "react-router-dom";
+import {
+    getValueIncreased,
+} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = state => ({
-    valueIncreased: state.ui.valueIncreased,
-})
+const mapStateToProps = state => ({valueIncreased: getValueIncreased(state)});
 
 class SearchResultItem extends React.Component {
     constructor(props) {
