@@ -65,13 +65,9 @@ export const getPortfolioValue = state => (
     getOneDayPortfolioValuations(state).last()
 );
 
-export const getStartingCashBal = state => (
-    getCashBalances(state)[0]
-);
+export const getStartingCashBal = state => getCashBalances(state)[0];
 
-export const getStartingCashTime = state => (
-    getCashTimes(state)[0]
-);
+export const getStartingCashTime = state => getCashTimes(state)[0];
 
 export const getPortfolioValuations = state => (
     getValuationHistory(state).valuations
@@ -81,6 +77,4 @@ export const getPortfolioValuationsTimes = state => (
     getValuationHistory(state).times
 );
 
-export const getValueIncreased = state => (
-    getUI(state).valueIncreased
-);
+export const getValueIncreased = state => getUI(state).valueIncreased;
