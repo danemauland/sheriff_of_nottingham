@@ -13,7 +13,7 @@ const mapStateToProps = state => ({
         portfolioVal: getPortfolioValue(state),
 });
 
-class DropdownHeader extends React.Component {
+class HeaderDropdownHeader extends React.Component {
     constructor(props) {
         super(props)
     }
@@ -37,4 +37,4 @@ class DropdownHeader extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(DropdownHeader);
+export default connect(mapStateToProps, null)(HeaderDropdownHeader);

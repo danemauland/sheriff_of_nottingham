@@ -1,6 +1,6 @@
 import React from "react";
-import DropdownHeader from "./header_dropdown_header";
-import DropdownNav from "./header_dropdown_nav";
+import HeaderDropdownHeader from "./header_dropdown_header";
+import HeaderDropdownNav from "./header_dropdown_nav";
 
 class HeaderDropdown extends React.Component {
     constructor(props) {
@@ -10,8 +10,8 @@ class HeaderDropdown extends React.Component {
     render() {
         return (
             <div className="account-dropdown hidden">
-                <DropdownHeader />
-                <DropdownNav />
+                <HeaderDropdownHeader />
+                <HeaderDropdownNav />
             </div>
         )
     }
