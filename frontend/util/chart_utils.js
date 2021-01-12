@@ -7,7 +7,7 @@ import {
     ONE_YEAR,
     THREE_MONTH_OFFSET,
     ONE_MONTH_OFFSET,
-
+    formatPercentage,
     getPreviousEndingValue,
 } from "../util/dashboard_calcs";
 
@@ -33,12 +33,11 @@ export const getStrChange = function(startVal, currentVal) {
     let percentage;
     let delta = currentVal - startVal;
     sign = (delta < 0 ? "-" : "+");
-    delta = Math.abs(delta);
     percentage = (startVal === 0 ? 0 : delta / startVal);
-    percentage = (percentage * 100).toFixed(2);
+    delta = Math.abs(delta);
     strChange += sign;
     strChange += formatToDollar(delta);
-    strChange += ` (${sign}${percentage}%)`;
+    strChange += ` (${formatPercentage(percentage)})`;
     return strChange;
 }
 

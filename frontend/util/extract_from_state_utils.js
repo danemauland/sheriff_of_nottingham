@@ -262,3 +262,7 @@ export const tickerIsOwned = (state, ticker) => {
     const sharesHistory = getPosSharesHistory(state, ticker);
     return sharesHistory && sharesHistory.last() !== 0;
 }
+
+export const getDayPercentChange = (state, ticker) => (
+    (getLastPrice(state, ticker) / getPrevDayClose(state, ticker)) - 1
+)

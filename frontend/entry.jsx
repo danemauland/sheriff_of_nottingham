@@ -1,18 +1,17 @@
 // TODO
-// PRIORITY
-// refactor loading, skipped due to no stock pages yet
-// stock trade menu
+// refactor cash form
 // autofill stock trade menu from clicking graph
-// stock positions on dashboard
 // Change free stocks to random stocks
+// fix chart tooltip when scrolled
+// fix chart to show new day at 8am
+// fix chart not showing out to 6pm after hours
 
 
-// remove event handlers when component unmounts
 // ADD SEPARATE SIGNUP PAGE
 // Add in messages/trade confirms
 // history
 // reflect changes in cash balance outside market hours for the day
-//toggle to sandbox api key
+// toggle to sandbox api key
 // error handler for APIs
 
 import React from "react";

@@ -187,3 +187,8 @@ export const getCutoffDescription = desc => {
     
     return desc.slice(0,cutoffIndex);
 };
+
+export const formatPercentage = num => {
+    const sign = (num < 0 ? "-" : "+");
+    return sign + Math.abs(num * 100).toFixed(2) + "%";
+}
