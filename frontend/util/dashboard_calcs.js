@@ -71,7 +71,7 @@ export const formatPERatio = ratio => {
 }
 
 export const formatDividendYield = dYield => {
-    return (dYield === "0" ? "–" : parseFloat(dYield).toFixed(2))
+    return (dYield === "0" ? "–" : (parseFloat(dYield) * 100).toFixed(2))
 }
 
 export const pricesAreLoaded = (tickers, prices) => {
