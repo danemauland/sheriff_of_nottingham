@@ -13,6 +13,7 @@ import {
     ONE_YEAR,
 } from "../../../util/dashboard_calcs";
 import {
+    getPrevDayClose,
     getSharesOwned,
     getLastPrice,
 } from "../../../util/extract_from_state_utils";
