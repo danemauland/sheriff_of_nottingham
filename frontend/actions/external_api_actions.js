@@ -32,7 +32,7 @@ export const DAILY_RESOLUTION = 5;
 export const WEEKLY_RESOLUTION = 30;
 const ANNUAL_RESOLUTION = "D";
 
-export const initializeAsset = ticker => ({
+const initializeAsset = ticker => ({
     type: INITIALIZE_ASSET,
     ticker,
 })
@@ -370,7 +370,7 @@ export const fetchNeededInfo = (
     tickersToFetch = Array.convert(tickersToFetch);
     for(let ticker of tickersToFetch) {
         if (!assetIsInitialized(ticker, tickers)) {
-            initializeAsset(ticker);
+            dispatch(initializeAsset(ticker));
             fetchAllInfo(ticker, dispatch);
             continue;
         }
