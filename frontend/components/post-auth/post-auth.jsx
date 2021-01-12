@@ -15,6 +15,7 @@ import {
     getAssetInformation,
     getTickers,
 } from "../../util/extract_from_state_utils";
+import PostAuthWrapper from "./post-auth_wrapper";
 
 const mapStateToProps = state => {
     const assetInformation = getAssetInformation(state);
@@ -29,46 +30,41 @@ const mapDispatchToProps = dispatch => ({
         fetchAllCandles: tickers => fetchAllCandles(tickers, dispatch),
 });
 
-
-
 class PostAuth extends React.Component {
 
     componentDidMount() {
         this.props.fetchAllCandles(this.props.tickers);
     }
 
+    renderStock({match: {params: {ticker}}}) {
+        const assetInformation = this.props.assetInformation;
+        return <Stock ticker={ticker} assetInformation={assetInformation}/>
+    }
+
     render() {
         if (this.props.loading) return <Loading />;
-        const assetInformation = this.props.assetInformation;
 
         return (<>
             <Header />
-            <div className="scroll-bar-correction">
-                <div className="post-auth-centering-div">
-                    <div className="post-auth-main-div">
-                        <Switch>
-                            <Route exact path ="/">
-                                <Dashboard />
-                            </Route>
+            <PostAuthWrapper>
 
-                            <Route 
-                                exact path ="/stocks/:ticker"
-                                render={props => (
-                                    <Stock 
-                                        ticker={props.match.params.ticker}
-                                        assetInformation={assetInformation}
-                                    />
-                                )}
-                            />
+                <Switch>
+                    <Route exact path ="/">
+                        <Dashboard />
+                    </Route>
 
-                            <Route >
-                                <Redirect to="/" />
-                            </Route>
-                        </Switch>
-                    </div>
-                </div>
-            </div>
+                    <Route exact path ="/stocks/:ticker"
+                        render={props => this.renderStock(props)}
+                    />
+                    
+                    <Route >
+                        <Redirect to="/" />
+                    </Route>
+                </Switch>
+                
+            </PostAuthWrapper>
         </>)
     }
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(PostAuth);
