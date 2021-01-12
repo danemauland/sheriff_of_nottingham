@@ -3,7 +3,13 @@ import {connect} from "react-redux";
 import Modal from "./modal.jsx";
 import PostAuth from "./post-auth/post-auth";
 import PreAuth from "./pre-auth/pre-auth";
+import {
+    getUsername,
+} from "../util/extract_from_state_utils";
 
+const mapStateToProps = state => ({
+    isLoggedIn: !!getUsername(state),
+});
 
 class App extends React.Component {
 
@@ -34,9 +40,7 @@ class App extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.componentDidUpdate();
-    }
+    componentDidMount() { this.componentDidUpdate(); }
 
     render() {
         return (<>
@@ -45,9 +49,5 @@ class App extends React.Component {
         </>)
     }
 }
-
-const mapStateToProps = state => ({
-    isLoggedIn: !!state.session.username,
-});
 
 export default connect(mapStateToProps, null)(App);
