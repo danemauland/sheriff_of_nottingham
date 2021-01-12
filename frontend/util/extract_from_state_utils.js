@@ -234,3 +234,5 @@ export const getAboutItems = (state, ticker) => {
 
     return items;
 }
+
+export const getAPIDebounceStartTime = state=>getUI(state).apiDebounceStartTime;

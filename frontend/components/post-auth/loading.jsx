@@ -1,9 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
+import {
+    getAPIDebounceStartTime,
+    getValueIncreased,
+} from "../../util/extract_from_state_utils";
 
 const mapStateToProps = state => ({
-    increase: state.ui.valueIncreased,
-    apiDebounceStartTime: state.ui.apiDebounceStartTime,
+    increase: getValueIncreased(state),
+    apiDebounceStartTime: getAPIDebounceStartTime(state),
 })
 
 class Loading extends React.Component {
