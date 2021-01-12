@@ -18,11 +18,11 @@ import {
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => {
-    const prevDayClose = getPrevDayClose(ticker, state);
-    const lastPrice = getLastPrice(ticker, state);
+    const prevDayClose = getPrevDayClose(state, ticker);
+    const lastPrice = getLastPrice(state, ticker);
     return {
         strChange: getStrChange(prevDayClose, lastPrice),
-        numShares: getSharesOwned(ticker, state),
+        numShares: getSharesOwned(state, ticker),
     }
 }
 

@@ -5,23 +5,24 @@ import StockAbout from "./about/stock_about";
 import {connect} from "react-redux";
 import {tickerIsOwned} from "../../../util/dashboard_calcs";
 import CompanyNews from "./company_news";
+import {
+    getSharesOwned,
+    getCompanyName,
+} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = ({newEntities: {assetInformation}}, {ticker}) => {
-    const numShares = assetInformation.ownershipHistories.numShares;
-    return ({
-        ticker,
-        owned: tickerIsOwned(ticker, numShares[ticker]),
-        companyName: assetInformation.companyOverviews[ticker].Name,
-    });
-}
+const mapStateToProps = (state, {ticker}) => ({
+    ticker,
+    isOwned: tickerIsOwned(ticker, getSharesOwned(state, ticker)),
+    companyName: getCompanyName(state, ticker),
+});
 
-const StockContent = ({companyName, ticker, owned}) => (
+const StockContent = ({companyName, ticker, isOwned}) => (
     <div className="post-auth-main-content">
         <h1 className="post-auth-title">{companyName}</h1>
 
         <StockSummaryChartContainer ticker={ticker}/>
 
-        {owned ? <StockOwnershipInfo ticker={ticker} /> : <></>}
+        {isOwned ? <StockOwnershipInfo ticker={ticker} /> : <></>}
 
         <StockAbout ticker={ticker}/>
 

@@ -16,10 +16,10 @@ import {
 import StockOwnershipBox from "./stock_ownership_box";
 
 const mapStateToProps = (state, {ticker}) => {
-    const marketValue = getPosMarketValue(ticker, state);
-    const sharesOwned = getSharesOwned(ticker, state);
-    const positionCost = getPosCost(ticker, state);
-    const prevDayMarketValue = getPrevDayClose(ticker, state);
+    const marketValue = getPosMarketValue(state, ticker);
+    const sharesOwned = getSharesOwned(state, ticker);
+    const positionCost = getPosCost(state, ticker);
+    const prevDayMarketValue = getPrevDayClose(state, ticker);
     const portfolioValue = getPortfolioValue(state);
     
     const averageCost = formatToDollar(positionCost / sharesOwned);

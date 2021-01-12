@@ -103,18 +103,18 @@ const getCashTimes = state => getCashHistory(state).times;
 
 const getUI = state => state.ui;
 
-export const getPosMarketValue = (ticker, state) => (
-    getPosOneDayValuations(ticker, state).last()
+export const getPosMarketValue = (state, ticker) => (
+    getPosOneDayValuations(state, ticker).last()
 );
 
-export const getSharesOwned = (ticker, state) => (
-    getPosSharesHistory(ticker, state).last()
+export const getSharesOwned = (state, ticker) => (
+    getPosSharesHistory(state, ticker).last()
 );
 
 export const getPosCost = (ticker, state) => getPosCosts(state)[ticker];
 
-export const getPrevDayClose = (ticker, state) => (
-    getPreviousEndingValue(getPosOneYearValuations(ticker, state), ONE_DAY)
+export const getPrevDayClose = (state, ticker) => (
+    getPreviousEndingValue(getPosOneYearValuations(state, ticker), ONE_DAY)
 );
 
 export const getPortfolioValue = state => (
@@ -150,6 +150,10 @@ export const getUsername = state => getSession(state).username;
 const getCompanyOverviews = state=> getAssetInformation(state).companyOverviews;
 
 const getCompanyOverview = (state,ticker) => getCompanyOverviews(state)[ticker];
+
+export const getCompanyName = (state, ticker) => (
+    getCompanyOverview(state)[ticker].Name
+);
 
 export const getDescription = (state, ticker) => (
     getCompanyOverview(state, ticker).Description
