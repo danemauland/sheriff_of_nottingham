@@ -181,48 +181,44 @@ class Sidebar extends React.Component {
 
     render() {
         return (
-            <div className="dashboard-sidebar-spacer">
-                <div className="dashboard-sidebar-wrapper">
-                    <form className="order-form" onSubmit={this.handleSubmit}>
-                        <div className="buy-sell-sizer">
-                            <div className="buy-sell-container">
-                                <div className="buy-sell-wrapper">
-                                    <div className={"buy-sell-button-positioner " + this.generateClassName("Buy")}>
-                                        <button onClick={this.handleBuy}>Buy {this.props.ticker}</button>
-                                    </div>
-                                    <div className={"buy-sell-button-positioner " + this.generateClassName("Sell")}>
-                                        <button onClick={this.handleSell}>Sell {this.props.ticker}</button>
-                                    </div>
-                                </div>
+            <form className="order-form" onSubmit={this.handleSubmit}>
+                <div className="buy-sell-sizer">
+                    <div className="buy-sell-container">
+                        <div className="buy-sell-wrapper">
+                            <div className={"buy-sell-button-positioner " + this.generateClassName("Buy")}>
+                                <button onClick={this.handleBuy}>Buy {this.props.ticker}</button>
+                            </div>
+                            <div className={"buy-sell-button-positioner " + this.generateClassName("Sell")}>
+                                <button onClick={this.handleSell}>Sell {this.props.ticker}</button>
                             </div>
                         </div>
-                        <div className="order-info-positioner">
-                            <div>
-                                <span>Invest In</span>
-                                <select className="invest-in-select" onChange={this.handleSelect}>
-                                    <option value="Dollars" className={(this.props.investIn === "Dollars" ? "selected " : "") + (this.props.valueIncreased ? "green-background-selected" : "red-background-selected")}>Dollars</option>
-                                    <option value="Shares" className={(this.props.investIn === "Dollars" ? "selected " : "") + (this.props.valueIncreased ? "green-background-selected" : "red-background-selected")}>Shares</option>
-                                </select>
-                            </div>
-                            <div>
-                                <span>{this.state.investIn === "Dollars" ? "Amount" : "Shares"}</span>
-                                <input onChange={this.handleChange} className={(this.state.investIn === "Dollars" ? "dollar-input " : "share-input ") + (this.props.valueIncreased ? "dark-green-border-focus" : "red-border-focus")} value={((this.state.investIn === "Dollars") ? (this.state.amount === "" ? "" : formatToDollar(this.state.amount, this.state.numDecimals)) : this.state.numShares)} onBlur={this.handleBlur} placeholder={(this.state.investIn === "Dollars" ? "$0.00" : "0")} type="text"/>
-                            </div>
-                            <div>
-                                <span>Market Price (<button onClick={this.handleReset} className={this.props.valueIncreased ? "dark-green" : "red"}>reset</button>)</span>
-                                <span className="order-form-dollar">{formatToDollar(this.state.price)}</span>
-                            </div>
-                            <div>
-                                <span>{this.state.investIn === "Dollars" ? "Est. Quantity" : "Est. Proceeds"}</span>
-                                <span>{this.state.investIn === "Dollars" ? Math.floor(this.state.amount / this.state.price) : (this.state.numShares === "-" ? formatToDollar(0) : formatToDollar(this.state.numShares * this.state.price))}</span>
-                            </div>
-                        </div>
-                        <div className="order-button-wrapper">
-                            <button className={"order-button " + (this.props.valueIncreased ? "green-background light-green-background-hover" : "red-background light-red-background-hover")}>Place Order</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+                <div className="order-info-positioner">
+                    <div>
+                        <span>Invest In</span>
+                        <select className="invest-in-select" onChange={this.handleSelect}>
+                            <option value="Dollars" className={(this.props.investIn === "Dollars" ? "selected " : "") + (this.props.valueIncreased ? "green-background-selected" : "red-background-selected")}>Dollars</option>
+                            <option value="Shares" className={(this.props.investIn === "Dollars" ? "selected " : "") + (this.props.valueIncreased ? "green-background-selected" : "red-background-selected")}>Shares</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span>{this.state.investIn === "Dollars" ? "Amount" : "Shares"}</span>
+                        <input onChange={this.handleChange} className={(this.state.investIn === "Dollars" ? "dollar-input " : "share-input ") + (this.props.valueIncreased ? "dark-green-border-focus" : "red-border-focus")} value={((this.state.investIn === "Dollars") ? (this.state.amount === "" ? "" : formatToDollar(this.state.amount, this.state.numDecimals)) : this.state.numShares)} onBlur={this.handleBlur} placeholder={(this.state.investIn === "Dollars" ? "$0.00" : "0")} type="text"/>
+                    </div>
+                    <div>
+                        <span>Market Price (<button onClick={this.handleReset} className={this.props.valueIncreased ? "dark-green" : "red"}>reset</button>)</span>
+                        <span className="order-form-dollar">{formatToDollar(this.state.price)}</span>
+                    </div>
+                    <div>
+                        <span>{this.state.investIn === "Dollars" ? "Est. Quantity" : "Est. Proceeds"}</span>
+                        <span>{this.state.investIn === "Dollars" ? Math.floor(this.state.amount / this.state.price) : (this.state.numShares === "-" ? formatToDollar(0) : formatToDollar(this.state.numShares * this.state.price))}</span>
+                    </div>
+                </div>
+                <div className="order-button-wrapper">
+                    <button className={"order-button " + (this.props.valueIncreased ? "green-background light-green-background-hover" : "red-background light-red-background-hover")}>Place Order</button>
+                </div>
+            </form>
         )
     }
 }

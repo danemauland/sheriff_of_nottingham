@@ -5,6 +5,7 @@ import Loading from "../loading";
 import {isStockLoaded} from "../../../util/dashboard_calcs";
 import StockContent from "./stock_content";
 import StockSidebar from "./stock_sidebar";
+import SidebarWrapper from "../sidebar_wrapper";
 
 const mapStateToProps = (state, {ticker, assetInformation}) => ({
     isLoading: (!isStockLoaded(ticker, assetInformation)),
@@ -16,7 +17,7 @@ const mapDispatchToProps = (dispatch, {assetInformation}) => ({
         ),
 });
 
-class StockInitializer extends React.Component {
+class Stock extends React.Component {
 
     componentDidMount() {
         this.componentDidUpdate();
@@ -42,10 +43,12 @@ class StockInitializer extends React.Component {
         return (
             <>
                 <StockContent ticker={this.ticker}/>
-                <StockSidebar ticker={this.ticker}/>
+                <SidebarWrapper>
+                    <StockSidebar ticker={this.ticker}/>
+                </SidebarWrapper>
             </>
         )
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(StockInitializer);
+export default connect(mapStateToProps, mapDispatchToProps)(Stock);
