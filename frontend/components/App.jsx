@@ -5,10 +5,12 @@ import PostAuth from "./post-auth/post-auth";
 import PreAuth from "./pre-auth/pre-auth";
 import {
     getUsername,
+    getModal,
 } from "../util/extract_from_state_utils";
 
 const mapStateToProps = state => ({
     isLoggedIn: !!getUsername(state),
+    modalIsOpen: !!getModal(state),
 });
 
 class App extends React.Component {
@@ -44,7 +46,7 @@ class App extends React.Component {
 
     render() {
         return (<>
-            <Modal />
+            {this.props.modalIsOpen ? <Modal /> : <></>}
             {this.props.isLoggedIn ? <PostAuth /> : <PreAuth />}
         </>)
     }

@@ -247,3 +247,5 @@ export const getAboutItems = (state, ticker) => {
 }
 
 export const getAPIDebounceStartTime = state=>getUI(state).apiDebounceStartTime;
+
+export const getModal = state => getUI(state).modal;
