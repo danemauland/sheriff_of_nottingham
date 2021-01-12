@@ -26,10 +26,13 @@ const mapStateToProps = (state, {ticker}) => {
     const positionCostStr = formatToDollar(positionCost);
     const oneDayReturn = getStrChange(prevDayMarketValue, marketValue);
     const totalReturn = getStrChange(positionCost, marketValue);
-    const portfolioDiversity = (marketValue / portfolioValue * 100).toFixed(2) + "%";
     const marketValStr = formatToDollar(marketValue);
+
+    let portfolioDiversity = marketValue / portfolioValue;
+    portfolioDiversity = (portfolioDiversity * 100).toFixed(2) + "%";
+
     return ({
-        items: [
+        boxes: [
             {
                 title: "Your Market Value",
                 titleVal: marketValStr,
@@ -51,9 +54,9 @@ const mapStateToProps = (state, {ticker}) => {
     })
 }
 
-const StockOwnershipInfo = ({items}) => (
+const StockOwnershipInfo = ({boxes}) => (
     <div className="stock-ownership-positioner">
-        {items.map((item, i) => <StockOwnershipBox key={i} {...item} />)}
+        {boxes.map((box, i) => <StockOwnershipBox key={i} {...box} />)}
     </div>
 )
 
