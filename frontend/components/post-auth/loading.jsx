@@ -13,10 +13,12 @@ const mapStateToProps = state => ({
 class Loading extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             secondsUntilNextAPIPull: null,
             counting: false,
         }
+
         this.timeoutFunc = this.timeoutFunc.bind(this);
     }
 
@@ -24,6 +26,7 @@ class Loading extends React.Component {
         this.setState({
             secondsUntilNextAPIPull: this.state.secondsUntilNextAPIPull - 1,
         });
+
         if (this.state.secondsUntilNextAPIPull - 1 > 0) {
             this.countDown();
         } else {
@@ -62,14 +65,40 @@ class Loading extends React.Component {
         }
     }
 
+    renderCounter() {
+        if (this.state.counting) return (
+            <div>
+                Time to next API Pull: ${this.state.secondsUntilNextAPIPull}
+            </div>
+        );
+        return <></>;
+    }
+
     render() {
+        const color = (this.props.increase ? "dark-green" : "red");
+        const spinnerClasses = `lds-spinner lds-spinner-${color}`;
+
         return (
             <div className="center">
                 <div className="fill-vertically">
                     <div className="spinner-container">
                         <div>
-                            <div className={"lds-spinner " + (this.props.increase ? "lds-spinner-dark-green" : "lds-spinner-red")}><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                            <div>{this.state.counting ? `Time to next API Pull: ${this.state.secondsUntilNextAPIPull}` : ""}</div>
+                            <div className={spinnerClasses}>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+
+                            {this.renderCounter()}
                         </div>
                     </div>
                 </div>
