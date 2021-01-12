@@ -1,36 +1,23 @@
 import { updateValueIncreased } from "../../../actions/value_increased_actions";
 import DynamicChart from "../chart/dynamic_chart"
 import { connect } from "react-redux";
+import {
+    getStartingCashBal,
+    getValueIncreased,
+    getLastPrice,
+    getStartingCashTime,
+    getAllTickerPrices,
+    getAllTickerTimes,
+} from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = (
-    {
-        newEntities: {
-            assetInformation: {candlePrices, candleTimes},
-            portfolioHistory: {cashHistory},
-        },
-        ui: {valueIncreased},
-    },
-    {ticker},
-) => {
-    const values = {
-        oneDay: candlePrices.oneDay[ticker],
-        oneWeek: candlePrices.oneWeek[ticker],
-        oneYear: candlePrices.oneYear[ticker],
-    }
-    const times = {
-        oneDay: candleTimes.oneDay[ticker],
-        oneWeek: candleTimes.oneWeek[ticker],
-        oneYear: candleTimes.oneYear[ticker],
-    }
-    return ({
-        startingCashBal: cashHistory.balances[0],
-        startingCashTime: cashHistory.times[0],
-        mostRecentVal: values.oneDay.last(),
-        times,
-        values,
-        valueIncreased,
-    })
-}
+const mapStateToProps = (state, {ticker}) => ({
+    startingCashBal: getStartingCashBal(state),
+    startingCashTime: getStartingCashTime(state),
+    mostRecentVal: getLastPrice(state, ticker),
+    times: getAllTickerTimes(state, ticker),
+    values: getAllTickerPrices(state, ticker),
+    valueIncreased: getValueIncreased(state),
+})
 
 const mapDispatchToProps = dispatch => ({
     updateValueIncreased: bool => dispatch(updateValueIncreased(bool)),
