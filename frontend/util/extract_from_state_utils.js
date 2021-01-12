@@ -1,6 +1,10 @@
 import {
     getPreviousEndingValue,
-    ONE_DAY
+    ONE_DAY,
+    formatCityAndState,
+    formatLargeNumber,
+    formatToDollar,
+    formatDividendYield,
 } from "./dashboard_calcs";
 
 const getNewEntities = state => state.newEntities;
@@ -106,3 +110,73 @@ const getCompanyOverview = (state,ticker) => getCompanyOverviews(state)[ticker];
 export const getDescription = (state, ticker) => (
     getCompanyOverview(state, ticker).Description
 );
+
+const getTickerData = state => getAssetInformation(state).tickerData;
+
+const getAssetTickerData = (state, ticker) => getTickerData(state)[ticker];
+
+const getHistoricPrices = state => getAssetInformation(state).historicPrices;
+
+const getPrevVolume = state => getAssetInformation(state).prevVolume;
+
+const getPrevTickerVolume = (state, ticker) => getPrevVolume(state)[ticker];
+
+const getOneDayHighs = state => getHistoricPrices(state).oneDayHigh;
+
+const getOneDayHigh = (state, ticker) => getOneDayHighs(state)[ticker];
+
+const getOneDayLows = state => getHistoricPrices(state).oneDayLow;
+
+const getOneDayLow = (state, ticker) => getOneDayLows(state)[ticker];
+
+const getOneDayOpens = state => getHistoricPrices(state).oneDayOpen;
+
+const getOneDayOpen = (state, ticker) => getOneDayOpens(state)[ticker];
+
+const getCurVolumes = state => getAssetInformation(state).curVolume;
+
+const getCurVolume = (state, ticker) => getCurVolumes(state)[ticker];
+
+const getOneYearHighs = state => getHistoricPrices(state).oneYearHigh;
+
+const getOneYearHigh = (state, ticker) => getOneYearHighs(state)[ticker];
+
+const getOneYearLows = state => getHistoricPrices(state).oneYearLow;
+
+const getOneYearLow = (state, ticker) => getOneYearLows(state)[ticker];
+
+export const getAboutItems = (state, ticker) => {
+    const {
+        MarketCapitalization, Address, PERatio, DividendYield
+    } = getCompanyOverview(state, ticker);
+    const data = getAssetTickerData(state, ticker);
+    const items = [];
+
+    if (data) {
+        const {ceo, employees, listdate} = data;
+        items.push(["CEO", ceo]);
+        items.push(["Employees", parseInt(employees).toLocaleString()]);
+        items.push(["Listed", listdate.slice(0,4)]);
+    } else {
+        items.push(["CEO","Not Found"]);
+        items.push(["Employees", "Not Found"]);
+        items.push(["Listed", "Not Found"]);
+    }
+    
+    items.push(["Market Cap", formatLargeNumber(MarketCapitalization, 3)]);
+    items.push(["Headquarters", formatCityAndState(Address)]);
+    items.push(["Price-Earnings Ratio", parseFloat(PERatio).toFixed(2)]);
+    items.push(["Dividend Yield", formatDividendYield(DividendYield)]);
+    
+    const prevVol = getPrevTickerVolume(state, ticker);
+    items.push(["Prev. Day Volume", formatLargeNumber(prevVol)]);
+
+    items.push(["High Today", formatToDollar(getOneDayHigh(state, ticker))]);
+    items.push(["Low Today", formatToDollar(getOneDayLow(state, ticker))]);
+    items.push(["Open Price", formatToDollar(getOneDayOpen(state, ticker))]);
+    items.push(["Volume", formatLargeNumber(getCurVolume(state, ticker))]);
+    items.push(["52 Week High", formatToDollar(getOneYearHigh(state, ticker))]);
+    items.push(["52 Week Low", formatToDollar(getOneYearLow(state, ticker))]);
+
+    return items;
+}

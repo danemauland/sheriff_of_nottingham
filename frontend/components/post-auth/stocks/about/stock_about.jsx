@@ -1,13 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-    extractAboutItems,
     getCutoffDescription,
 } from "../../../../util/dashboard_calcs";
 import StockAboutItem from "./stock_about_item";
 import StockAboutHeader from "./stock_about_header";
 import StockAboutDescription from "./stock_about_description";
 import {
+    getAboutItems,
     getValueIncreased,
     getDescription,
 } from "../../../../util/extract_from_state_utils";
@@ -15,7 +15,7 @@ import {
 const mapStateToProps = (state, {ticker}) => ({
     valueIncreased: getValueIncreased(state),
     description: getDescription(state, ticker),
-    items: extractAboutItems(ticker, assetInformation),
+    items: getAboutItems(state, ticker),
 });
 
 class StockAbout extends React.Component {

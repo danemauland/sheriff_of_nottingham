@@ -46,7 +46,7 @@ export const isStockLoaded = (
     companyOverviews[ticker]
 );
 
-const getCityAndState = address => {
+export const formatCityAndState = address => {
     const firstComma = address.indexOf(",");
     const secondComma = address.slice(firstComma + 1).indexOf(",") + firstComma + 1;
     let state = address.slice(secondComma + 2, secondComma + 4);
@@ -54,7 +54,7 @@ const getCityAndState = address => {
     return address.slice(firstComma + 2, secondComma + 2) + state;
 }
 
-const formatLargeNumber = (num, numDecimals = 2) => {
+export const formatLargeNumber = (num, numDecimals = 2) => {
     num = parseInt(num)
     const suffixes = ["", "K", "M", "B", "T", "QD"]
     let i = 0;
@@ -65,36 +65,8 @@ const formatLargeNumber = (num, numDecimals = 2) => {
     return num.toFixed(numDecimals) + suffixes[i];
 }
 
-const formatDividendYield = dYield => {
+export const formatDividendYield = dYield => {
     return (dYield === "0" ? "–" : parseFloat(dYield).toFixed(2))
-}
-
-export const extractAboutItems = (ticker, assetInformation) => {
-    const historicPrices = assetInformation.historicPrices;
-    const desc = assetInformation.companyOverviews[ticker];
-    const data = assetInformation.tickerData[ticker];
-    const items = [];
-    if (data.length < 1) {
-        items.push(["CEO","Not Found"]);
-        items.push(["Employees", "Not Found"]);
-        items.push(["Listed", "Not Found"]);
-    } else {
-        items.push(["CEO",data.ceo]);
-        items.push(["Employees", parseInt(data.employees).toLocaleString()]);
-        items.push(["Listed", data.listdate.slice(0,4)]);items.push(["Market Cap", formatLargeNumber(desc.MarketCapitalization, 3)]);
-    }
-    items.push(["Headquarters", getCityAndState(desc.Address)]);
-    items.push(["Price-Earnings Ratio", parseFloat(desc.PERatio).toFixed(2)]);
-    items.push(["Dividend Yield", formatDividendYield(desc.DividendYield)]);
-    items.push(["Prev. Day Volume", formatLargeNumber(assetInformation.prevVolume[ticker])]);
-    items.push(["High Today", formatToDollar(historicPrices.oneDayHigh[ticker])]);
-    items.push(["Low Today", formatToDollar(historicPrices.oneDayLow[ticker])]);
-    items.push(["Open Price", formatToDollar(historicPrices.oneDayOpen[ticker])]);
-    items.push(["Volume", formatLargeNumber(assetInformation.curVolume[ticker])]);
-    items.push(["52 Week High", formatToDollar(historicPrices.oneYearHigh[ticker])]);
-    items.push(["52 Week Low", formatToDollar(historicPrices.oneYearLow[ticker])]);
-
-    return items;
 }
 
 export const pricesAreLoaded = (tickers, prices) => {
