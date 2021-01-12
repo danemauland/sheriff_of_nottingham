@@ -71,7 +71,7 @@ const getOwnershipHistories = state => (
 
 const getSharesHistory = state => getOwnershipHistories(state).numShares;
 
-const getPosSharesHistory = (ticker, state) => getSharesHistory(state)[ticker];
+const getPosSharesHistory = (state, ticker) => getSharesHistory(state)[ticker];
 
 const getOneDayPortfolioValuations = state => (
     getPortfolioValuations(state).oneDay
@@ -81,11 +81,11 @@ const getOneDayAssetValuations = state => getAssetValuations(state).oneDay;
 
 const getOneYearAssetValuations = state => getAssetValuations(state).oneYear;
 
-const getPosOneDayValuations = (ticker, state) => (
+const getPosOneDayValuations = (state, ticker) => (
     getOneDayAssetValuations(state)[ticker]
 );
 
-const getPosOneYearValuations = (ticker, state) => (
+const getPosOneYearValuations = (state, ticker) => (
     getOneYearAssetValuations(state)[ticker]
 );
 
@@ -111,7 +111,7 @@ export const getSharesOwned = (state, ticker) => (
     getPosSharesHistory(state, ticker).last()
 );
 
-export const getPosCost = (ticker, state) => getPosCosts(state)[ticker];
+export const getPosCost = (state, ticker) => getPosCosts(state)[ticker];
 
 export const getPrevDayClose = (state, ticker) => (
     getPreviousEndingValue(getPosOneYearValuations(state, ticker), ONE_DAY)
