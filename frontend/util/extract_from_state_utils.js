@@ -145,6 +145,10 @@ const getOneYearLows = state => getHistoricPrices(state).oneYearLow;
 
 const getOneYearLow = (state, ticker) => getOneYearLows(state)[ticker];
 
+const getAllCompanyNews = state => getAssetInformation(state);
+
+export const getCompanyNews = (state,ticker) =>getAllCompanyNews(state)[ticker];
+
 export const getAboutItems = (state, ticker) => {
     const {
         MarketCapitalization, Address, PERatio, DividendYield
