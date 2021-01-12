@@ -3,15 +3,14 @@ import StockSummaryChartContainer from "./stock_chart_container";
 import StockOwnershipInfo from "./ownership_info/stock_ownership_info";
 import StockAbout from "./about/stock_about";
 import {connect} from "react-redux";
-import {tickerIsOwned} from "../../../util/dashboard_calcs";
+import {tickerIsOwned} from "../../../util/extract_from_state_utils";
 import CompanyNews from "./company_news";
 import {
-    getPosSharesHistory,
     getCompanyName,
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
-    isOwned: tickerIsOwned(ticker, getPosSharesHistory(state, ticker)),
+    isOwned: tickerIsOwned(state, ticker),
     companyName: getCompanyName(state, ticker),
 });
 

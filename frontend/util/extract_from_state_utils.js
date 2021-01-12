@@ -5,7 +5,6 @@ import {
     formatLargeNumber,
     formatToDollar,
     formatDividendYield,
-    getOwnedTickersByTrades,
     formatPERatio,
 } from "./dashboard_calcs";
 
@@ -20,7 +19,7 @@ export const getTickers = state => getAssetInformation(state).tickers;
 const getTradesByAsset = state => getAssetInformation(state).trades;
 
 export const getOwnedTickers = state => (
-    getOwnedTickersByTrades(getTickers(state), getTradesByAsset(state))
+    Array.from(getTickers(state)).filter(ticker => tickerIsOwned(state, ticker))
 );
 
 const getCandlePrices = state => getAssetInformation(state).candlePrices;
@@ -83,9 +82,7 @@ const getOwnershipHistories = state => (
 
 const getSharesHistory = state => getOwnershipHistories(state).numShares;
 
-export const getPosSharesHistory = (state, ticker) => (
-    getSharesHistory(state)[ticker]
-);
+const getPosSharesHistory = (state, ticker) => getSharesHistory(state)[ticker];
 
 const getOneDayPortfolioValuations = state => (
     getPortfolioValuations(state).oneDay
@@ -260,3 +257,8 @@ export const getSecondsToNextAPIPull = state => {
 }
 
 export const getModal = state => getUI(state).modal;
+
+export const tickerIsOwned = (state, ticker) => {
+    const sharesHistory = getPosSharesHistory(state, ticker);
+    return sharesHistory && sharesHistory.last() !== 0;
+}

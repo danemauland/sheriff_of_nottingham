@@ -10,7 +10,7 @@ import {
 import Header from "./header/header";
 import Dashboard from "./dashboard/dashboard";
 import Stock from "./stocks/stock";
-import {ownedPricesAreLoaded} from "../../util/dashboard_calcs";
+import {tradedPricesAreLoaded} from "../../util/dashboard_calcs";
 import {
     getAssetInformation,
     getTickers,
@@ -22,7 +22,7 @@ const mapStateToProps = state => {
     return ({
         assetInformation,
         tickers: getTickers(state),
-        loading: !ownedPricesAreLoaded(assetInformation),
+        loading: !tradedPricesAreLoaded(assetInformation),
     }
 )};
 

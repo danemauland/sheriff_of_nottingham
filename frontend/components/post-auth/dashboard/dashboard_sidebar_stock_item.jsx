@@ -51,9 +51,9 @@ const mapStateToProps = (state, {ticker}) => {
 // }
 
 const DashboardSidebarStockItem = ({ticker, numShares, strChange}) => (
-    <Link to={"/dashboard/stocks/" + ticker} className="position-item">
+    <Link to={"/stocks/" + ticker} className="position-item">
         <h4>{ticker}</h4>
-        <span>{"" + numShares + " Share" + (numShares !== 1 ?" s" : "")}</span>
+        <span>{"" + numShares + " Share" + (numShares !== 1 ?"s" : "")}</span>
         <span className={strChange[0] === "+" ? "green" : "red"}>
             {strChange}
         </span>

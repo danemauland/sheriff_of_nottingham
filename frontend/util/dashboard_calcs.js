@@ -28,10 +28,6 @@ export const formatToDollar = (num, numDecimals = 2) => {
     return "$" + num;
 }
 
-export const tickerIsOwned = (ticker, ownershipHistoryShares) => (
-    ownershipHistoryShares && ownershipHistoryShares.last() !== 0
-)
-
 export const portfolioValue = state => {
     return state.newEntities.portfolioHistory.valuationHistory.valuations.oneDay.last();
 }
@@ -82,20 +78,20 @@ export const pricesAreLoaded = (tickers, prices) => {
     return tickers.every(ticker => prices.every(price => price[ticker]));
 }
 
-export const ownedPricesAreLoaded = (
+export const tradedPricesAreLoaded = (
     {tickers, trades, candlePrices}
 ) => {
     tickers = Array.convert(tickers);
-    const ownedTickers = getOwnedTickersByTrades(tickers, trades);
+    const ownedTickers = getTradedTickers(tickers, trades);
     return pricesAreLoaded(ownedTickers, candlePrices);
 }
 
-export const getOwnedTickersByTrades = (tickers, trades) => {
+const getTradedTickers = (tickers, trades) => {
     tickers = Array.convert(tickers);
-    return tickers.filter(ticker => tickerWasOwned(ticker, trades));
+    return tickers.filter(ticker => tickerWasTraded(ticker, trades));
 }
 
-const tickerWasOwned = (ticker, trades) => {
+const tickerWasTraded = (ticker, trades) => {
     return trades[ticker] && trades[ticker].length > 0;
 }
 
