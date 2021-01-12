@@ -37,14 +37,6 @@ class News extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        // if (prevProps.location !== this.props.location) {
-        //     this.setState({
-        //         itemsToShow: 3,
-        //     })
-        // } 
-    }
-
     newsItemsToRender() {
         return this.props.news.slice(0,this.state.itemsToShow);
     }
@@ -71,4 +63,4 @@ class News extends React.Component {
     }
 }
 
-export default withRouter((News));
+export default News;

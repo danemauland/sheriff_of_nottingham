@@ -98,5 +98,3 @@ export const getLastPrice = (state, ticker) => (
 const getSession = state => state.session;
 
 export const getUsername = state => getSession(state).username;
-
-export const getAssetTrades = state => getAssetInformation(state).trades;
