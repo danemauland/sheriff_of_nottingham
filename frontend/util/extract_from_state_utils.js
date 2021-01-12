@@ -230,7 +230,10 @@ export const getAboutItems = (state, ticker) => {
     
     items.push(["Market Cap", formatLargeNumber(MarketCapitalization, 3)]);
     items.push(["Headquarters", formatCityAndState(Address)]);
-    items.push(["Price-Earnings Ratio", parseFloat(PERatio).toFixed(2)]);
+
+    const PERatioStr = parseFloat(PERatio).toFixed(2) || "None";
+    items.push(["Price-Earnings Ratio", PERatioStr]);
+    
     items.push(["Dividend Yield", formatDividendYield(DividendYield)]);
     
     const prevVol = getPrevTickerVolume(state, ticker);
