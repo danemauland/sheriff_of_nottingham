@@ -9,11 +9,12 @@ import StockAboutHeader from "./stock_about_header";
 import StockAboutDescription from "./stock_about_description";
 import {
     getValueIncreased,
+    getDescription,
 } from "../../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
     valueIncreased: getValueIncreased(state),
-    description: assetInformation.companyOverviews[ticker].Description,
+    description: getDescription(state, ticker),
     items: extractAboutItems(ticker, assetInformation),
 });
 

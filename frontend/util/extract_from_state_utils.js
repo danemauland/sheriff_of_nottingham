@@ -98,3 +98,11 @@ export const getLastPrice = (state, ticker) => (
 const getSession = state => state.session;
 
 export const getUsername = state => getSession(state).username;
+
+const getCompanyOverviews = state=> getAssetInformation(state).companyOverviews;
+
+const getCompanyOverview = (state,ticker) => getCompanyOverviews(state)[ticker];
+
+export const getDescription = (state, ticker) => (
+    getCompanyOverview(state, ticker).Description
+);
