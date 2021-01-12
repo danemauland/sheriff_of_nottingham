@@ -9,32 +9,26 @@ import {
 
 const mapStateToProps = state => ({
         username: getUsername(state),
-        cashBal: getCashBalance(state),
-        portfolioVal: getPortfolioValue(state),
+        cashBal: formatToDollar(getCashBalance(state)),
+        portfolioVal: formatToDollar(getPortfolioValue(state)),
 });
 
-class HeaderDropdownHeader extends React.Component {
-    constructor(props) {
-        super(props)
-    }
+const HeaderDropdownHeader = ({username, portfolioVal, cashBal}) => (
+    <header className="account-dropdown-header">
+        <h3>{username}</h3>
 
-    render() {
-        return (
-            <header className="account-dropdown-header">
-                <h3>{this.props.username}</h3>
-                <div className="dropdown-header-account-summary">
-                    <div className="port-val-div">
-                        <h3>{formatToDollar(this.props.portfolioVal)}</h3>
-                        <p>Portfolio Value</p>
-                    </div>
-                    <div className="buying-power-div">
-                        <h3>{formatToDollar(this.props.cashBal)}</h3>
-                        <p>Buying power</p>
-                    </div>
-                </div>
-            </header>
-        )
-    }
-}
+        <div className="dropdown-header-account-summary">
+            <div className="port-val-div">
+                <h3>{portfolioVal}</h3>
+                <p>Portfolio Value</p>
+            </div>
+
+            <div className="buying-power-div">
+                <h3>{cashBal}</h3>
+                <p>Buying power</p>
+            </div>
+        </div>
+    </header>
+)
 
 export default connect(mapStateToProps, null)(HeaderDropdownHeader);

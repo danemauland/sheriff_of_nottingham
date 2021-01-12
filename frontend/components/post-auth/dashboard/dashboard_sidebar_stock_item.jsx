@@ -22,7 +22,6 @@ const DashboardSidebarStockItem = ({ticker,numShares,strChange,lastPrice}) => (
         <div>
             <h4>{ticker}</h4>
             <span>{`${numShares} Share${numShares !== 1 ? "s" : ""}`}</span>
-
         </div>
 
         <div className="CHART_PLACEHOLDER"></div>
