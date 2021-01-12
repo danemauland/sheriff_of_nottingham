@@ -65,6 +65,11 @@ export const formatLargeNumber = (num, numDecimals = 2) => {
     return num.toFixed(numDecimals) + suffixes[i];
 }
 
+export const formatPERatio = ratio => {
+    if (ratio === "None") return "–";
+    return parseFloat(ratio).toFixed(2);
+}
+
 export const formatDividendYield = dYield => {
     return (dYield === "0" ? "–" : parseFloat(dYield).toFixed(2))
 }

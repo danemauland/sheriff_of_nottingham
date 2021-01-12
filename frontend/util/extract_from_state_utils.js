@@ -6,6 +6,7 @@ import {
     formatToDollar,
     formatDividendYield,
     getOwnedTickersByTrades,
+    formatPERatio,
 } from "./dashboard_calcs";
 
 const getNewEntities = state => state.newEntities;
@@ -230,10 +231,7 @@ export const getAboutItems = (state, ticker) => {
     
     items.push(["Market Cap", formatLargeNumber(MarketCapitalization, 3)]);
     items.push(["Headquarters", formatCityAndState(Address)]);
-
-    const PERatioStr = parseFloat(PERatio).toFixed(2) || "None";
-    items.push(["Price-Earnings Ratio", PERatioStr]);
-    
+    items.push(["Price-Earnings Ratio", formatPERatio(PERatio)]);
     items.push(["Dividend Yield", formatDividendYield(DividendYield)]);
     
     const prevVol = getPrevTickerVolume(state, ticker);
