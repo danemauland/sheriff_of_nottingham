@@ -11,12 +11,19 @@ import Header from "./header/header";
 import Dashboard from "./dashboard/dashboard";
 import Stock from "./stocks/stock";
 import {ownedPricesAreLoaded} from "../../util/dashboard_calcs";
+import {
+    getAssetInformation,
+    getTickers,
+} from "../../util/extract_from_state_utils";
 
-const mapStateToProps = ({newEntities: {assetInformation}}) => ({
-    assetInformation,
-    tickers: assetInformation.tickers,
-    loading: !ownedPricesAreLoaded(assetInformation),
-})
+const mapStateToProps = state => {
+    const assetInformation = getAssetInformation(state);
+    return ({
+        assetInformation,
+        tickers: getTickers(state),
+        loading: !ownedPricesAreLoaded(assetInformation),
+    }
+)};
 
 const mapDispatchToProps = dispatch => ({
         fetchAllCandles: tickers => fetchAllCandles(tickers, dispatch),

@@ -9,7 +9,11 @@ import {
 
 const getNewEntities = state => state.newEntities;
 
-const getAssetInformation = state => getNewEntities(state).assetInformation;
+export const getAssetInformation = state => (
+    getNewEntities(state).assetInformation
+);
+
+export const getTickers = state => getAssetInformation(state).tickers;
 
 const getCandlePrices = state => getAssetInformation(state).candlePrices;
 
