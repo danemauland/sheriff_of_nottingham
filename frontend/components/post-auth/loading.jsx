@@ -1,13 +1,15 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-    getAPIDebounceStartTime,
+    getSecondsToNextAPIPull,
     getValueIncreased,
 } from "../../util/extract_from_state_utils";
 
+const DIVS = new Array(12).fill().map((n, i) => <div key={i}></div>)
+
 const mapStateToProps = state => ({
     increase: getValueIncreased(state),
-    apiDebounceStartTime: getAPIDebounceStartTime(state),
+    secondsToNextAPIPull: getSecondsToNextAPIPull(state),
 })
 
 class Loading extends React.Component {
@@ -15,8 +17,8 @@ class Loading extends React.Component {
         super(props);
 
         this.state = {
-            secondsUntilNextAPIPull: null,
-            counting: false,
+            secondsToNextAPIPull: null,
+            isCounting: false,
         }
 
         this.timeoutFunc = this.timeoutFunc.bind(this);
@@ -24,13 +26,13 @@ class Loading extends React.Component {
 
     timeoutFunc() {
         this.setState({
-            secondsUntilNextAPIPull: this.state.secondsUntilNextAPIPull - 1,
+            secondsToNextAPIPull: this.state.secondsToNextAPIPull - 1,
         });
 
-        if (this.state.secondsUntilNextAPIPull - 1 > 0) {
+        if (this.state.secondsToNextAPIPull - 1 > 0) {
             this.countDown();
         } else {
-            this.setState({ counting: false })
+            this.setState({ isCounting: false })
         }
     }
 
@@ -39,12 +41,10 @@ class Loading extends React.Component {
     }
 
     initiateCountDown() {
-        if (this.state.secondsUntilNextAPIPull !== 0) {
-            this.setState({
-                secondsUntilNextAPIPull: Math.ceil((this.props.apiDebounceStartTime.getTime() + 60000 - new Date().getTime()) / 1000),
-                counting: true,
-            }, this.countDown())
-        }
+        this.setState({
+            secondsToNextAPIPull: this.props.secondsToNextAPIPull,
+            isCounting: true,
+        }, this.countDown())
     }
 
     componentWillUnmount() {
@@ -52,25 +52,22 @@ class Loading extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.apiDebounceStartTime) {
+        this.componentDidUpdate();
+    }
+
+    componentDidUpdate() {
+        if (!this.state.isCounting && this.props.secondsToNextAPIPull) {
             this.initiateCountDown();
         }
     }
 
-    componentDidUpdate() {
-        if (!this.state.counting) {
-            if (this.props.apiDebounceStartTime) {
-                this.initiateCountDown();
-            }
-        }
-    }
-
     renderCounter() {
-        if (this.state.counting) return (
+        if (this.state.isCounting) return (
             <div>
-                Time to next API Pull: ${this.state.secondsUntilNextAPIPull}
+                Time to next API Pull: {this.state.secondsToNextAPIPull}
             </div>
         );
+
         return <></>;
     }
 
@@ -84,18 +81,7 @@ class Loading extends React.Component {
                     <div className="spinner-container">
                         <div>
                             <div className={spinnerClasses}>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
+                                {DIVS}
                             </div>
 
                             {this.renderCounter()}

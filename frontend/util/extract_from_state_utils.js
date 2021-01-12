@@ -249,4 +249,14 @@ export const getAboutItems = (state, ticker) => {
 
 export const getAPIDebounceStartTime = state=>getUI(state).apiDebounceStartTime;
 
+export const getSecondsToNextAPIPull = state => {
+    const startDateTime = getAPIDebounceStartTime(state);
+    if (!startDateTime) return;
+
+    const endTime = startDateTime.getTime() / 1000 + 60;
+    const now = (new Date().getTime()) / 1000;
+
+    return Math.ceil(endTime - now);
+}
+
 export const getModal = state => getUI(state).modal;
