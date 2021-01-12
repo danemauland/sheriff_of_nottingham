@@ -2,15 +2,19 @@ import React from "react";
 import {formatToDollar} from "../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 import {createTrade} from "../../../actions/trade_actions";
+import {
+    getLastPrice,
+    getValueIncreased,
+} from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
-    valueIncreased: state.ui.valueIncreased,
-    price: state.newEntities.assetInformation.candlePrices.oneDay[ticker].last(),
-})
+    valueIncreased: getValueIncreased(state, ticker),
+    price: getLastPrice(state, ticker),
+});
 
 const mapDispatchToProps = dispatch => ({
     createTrade: trade => dispatch(createTrade(trade))
-})
+});
 
 class Sidebar extends React.Component {
     constructor(props) {
