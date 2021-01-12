@@ -124,7 +124,7 @@ export const getSharesOwned = (state, ticker) => (
 
 export const getPosCost = (state, ticker) => getPosCosts(state)[ticker];
 
-export const getPrevDayClose = (state, ticker) => (
+export const getPrevDayValuation = (state, ticker) => (
     getPreviousEndingValue(getPosOneYearValuations(state, ticker), ONE_DAY)
 );
 
@@ -263,6 +263,10 @@ export const tickerIsOwned = (state, ticker) => {
     return sharesHistory && sharesHistory.last() !== 0;
 }
 
+const getPrevDayClose = (state, ticker) => (
+    getPreviousEndingValue(getTickerOneYearCandlePrices(state, ticker), ONE_DAY)
+);
+
 export const getDayPercentChange = (state, ticker) => (
     (getLastPrice(state, ticker) / getPrevDayClose(state, ticker)) - 1
-)
+);

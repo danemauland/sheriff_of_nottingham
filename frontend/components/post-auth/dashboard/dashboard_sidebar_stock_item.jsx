@@ -3,6 +3,7 @@ import React from "react";
 import {connect} from "react-redux";
 import {
     formatPercentage,
+    formatToDollar,
 } from "../../../util/dashboard_calcs";
 import {
     getSharesOwned,
@@ -10,16 +11,13 @@ import {
     getDayPercentChange,
 } from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = (state, {ticker}) => {
-    const lastPrice = getLastPrice(state, ticker);
-    return {
-        lastPrice,
-        strChange: formatPercentage(getDayPercentChange(state, ticker)),
-        numShares: getSharesOwned(state, ticker),
-    }
-}
+const mapStateToProps = (state, {ticker}) => ({
+    lastPrice: formatToDollar(getLastPrice(state, ticker)),
+    strChange: formatPercentage(getDayPercentChange(state, ticker)),
+    numShares: getSharesOwned(state, ticker),
+})
 
-const DashboardSidebarStockItem = ({ticker, numShares, strChange}) => (
+const DashboardSidebarStockItem = ({ticker,numShares,strChange,lastPrice}) => (
     <Link to={"/stocks/" + ticker} className="position-item">
         <div>
             <h4>{ticker}</h4>
@@ -30,6 +28,7 @@ const DashboardSidebarStockItem = ({ticker, numShares, strChange}) => (
         <div className="CHART_PLACEHOLDER"></div>
         
         <div>
+            <span>{lastPrice}</span>
             <span className={strChange[0] === "+" ? "green" : "red"}>
                 {strChange}
             </span>

@@ -7,7 +7,7 @@ import {
     getPosMarketValue,
     getSharesOwned,
     getPosCost,
-    getPrevDayClose,
+    getPrevDayValuation,
     getPortfolioValue,
 } from "../../../../util/extract_from_state_utils";
 import {
@@ -19,7 +19,7 @@ const mapStateToProps = (state, {ticker}) => {
     const marketValue = getPosMarketValue(state, ticker);
     const sharesOwned = getSharesOwned(state, ticker);
     const positionCost = getPosCost(state, ticker);
-    const prevDayMarketValue = getPrevDayClose(state, ticker);
+    const prevDayMarketValue = getPrevDayValuation(state, ticker);
     const portfolioValue = getPortfolioValue(state);
     
     const averageCost = formatToDollar(positionCost / sharesOwned);

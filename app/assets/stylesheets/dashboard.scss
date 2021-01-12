@@ -913,6 +913,7 @@
 
 .position-item {
     display: flex;
+    height: 60px;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
@@ -923,4 +924,18 @@
 
 .position-item:hover {
     background-color: $darkish-gray;
+}
+
+.position-item > div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    > h4 {
+        margin: 0;
+    }
+}
+
+.position-item > div:last-child {
+    align-items: flex-end;
 }
