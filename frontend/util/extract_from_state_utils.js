@@ -5,6 +5,7 @@ import {
     formatLargeNumber,
     formatToDollar,
     formatDividendYield,
+    getOwnedTickersByTrades,
 } from "./dashboard_calcs";
 
 const getNewEntities = state => state.newEntities;
@@ -14,6 +15,12 @@ export const getAssetInformation = state => (
 );
 
 export const getTickers = state => getAssetInformation(state).tickers;
+
+const getTradesByAsset = state => getAssetInformation(state).trades;
+
+export const getOwnedTickers = state => (
+    getOwnedTickersByTrades(getTickers(state), getTradesByAsset(state))
+);
 
 const getCandlePrices = state => getAssetInformation(state).candlePrices;
 

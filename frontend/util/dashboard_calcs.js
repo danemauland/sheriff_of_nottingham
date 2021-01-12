@@ -81,11 +81,11 @@ export const ownedPricesAreLoaded = (
     {tickers, trades, candlePrices}
 ) => {
     tickers = Array.convert(tickers);
-    const ownedTickers = getOwnedTickers(tickers, trades);
+    const ownedTickers = getOwnedTickersByTrades(tickers, trades);
     return pricesAreLoaded(ownedTickers, candlePrices);
 }
 
-const getOwnedTickers = (tickers, trades) => {
+export const getOwnedTickersByTrades = (tickers, trades) => {
     tickers = Array.convert(tickers);
     return tickers.filter(ticker => tickerWasOwned(ticker, trades));
 }
