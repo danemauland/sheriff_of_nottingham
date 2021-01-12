@@ -145,7 +145,7 @@ const getOneYearLows = state => getHistoricPrices(state).oneYearLow;
 
 const getOneYearLow = (state, ticker) => getOneYearLows(state)[ticker];
 
-const getAllCompanyNews = state => getAssetInformation(state);
+const getAllCompanyNews = state => getAssetInformation(state).companyNews;
 
 export const getCompanyNews = (state,ticker) =>getAllCompanyNews(state)[ticker];
 

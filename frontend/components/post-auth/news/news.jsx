@@ -1,5 +1,4 @@
 import React from "react";
-import {withRouter} from "react-router-dom";
 import NewsItem from "./news_item";
 import Loading from "../loading";
 
