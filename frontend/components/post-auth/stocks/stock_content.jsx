@@ -6,13 +6,12 @@ import {connect} from "react-redux";
 import {tickerIsOwned} from "../../../util/dashboard_calcs";
 import CompanyNews from "./company_news";
 import {
-    getSharesOwned,
+    getPosSharesHistory,
     getCompanyName,
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
-    ticker,
-    isOwned: tickerIsOwned(ticker, getSharesOwned(state, ticker)),
+    isOwned: tickerIsOwned(ticker, getPosSharesHistory(state, ticker)),
     companyName: getCompanyName(state, ticker),
 });
 

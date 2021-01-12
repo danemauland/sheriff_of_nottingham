@@ -71,7 +71,9 @@ const getOwnershipHistories = state => (
 
 const getSharesHistory = state => getOwnershipHistories(state).numShares;
 
-const getPosSharesHistory = (state, ticker) => getSharesHistory(state)[ticker];
+export const getPosSharesHistory = (state, ticker) => (
+    getSharesHistory(state)[ticker]
+);
 
 const getOneDayPortfolioValuations = state => (
     getPortfolioValuations(state).oneDay
@@ -152,7 +154,7 @@ const getCompanyOverviews = state=> getAssetInformation(state).companyOverviews;
 const getCompanyOverview = (state,ticker) => getCompanyOverviews(state)[ticker];
 
 export const getCompanyName = (state, ticker) => (
-    getCompanyOverview(state)[ticker].Name
+    getCompanyOverview(state, ticker).Name
 );
 
 export const getDescription = (state, ticker) => (
