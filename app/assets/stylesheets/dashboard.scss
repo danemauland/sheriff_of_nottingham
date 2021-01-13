@@ -877,6 +877,7 @@
 }
 
 .invest-in-select {
+    appearance: none;
     background-color: $darker-gray;
     border: 1px solid $darkish-gray;
     color: white;
@@ -889,14 +890,14 @@
     height: 36px;
     width: 136px;
     > option {
+        appearance: none;
         height: 36px;
         border-color: $darkish-gray;
     }
 }
 
-.invest-in-select:focus {
-    border-color: $darkish-gray;
-
+.invest-in-select:active, .invest-in-select:hover, .invest-in-select:focus {
+    outline: none;
 }
 
 .stocks-header {

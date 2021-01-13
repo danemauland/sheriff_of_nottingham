@@ -90,6 +90,14 @@
   color: rgb(255,80,0);
 }
 
+.green-background-selected:checked {
+  background-color: rgb(0,200,5);
+}
+
+.red-background-selected:checked {
+  color: rgb(255,80,0);
+}
+
 .red-hover.hovered{
   color: rgb(255,80,0);
 }
