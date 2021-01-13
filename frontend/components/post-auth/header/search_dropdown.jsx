@@ -2,7 +2,7 @@ import React from "react";
 import SearchResultItem from "./search_result_item";
 import tickers from "../../../util/all_tickers";
 
-// TODO: rework to use a trie
+// TODO: rework to use alphaVantage search
 
 let strBSearch = (arr, str) => {
     let startIndex = 0;

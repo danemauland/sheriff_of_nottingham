@@ -6,10 +6,12 @@ import {
     getValueIncreased,
 } from "../../../util/extract_from_state_utils";
 
-const mapStateToProps = state => ({valueIncreased: getValueIncreased(state)});
+const mapStateToProps = state => ({
+    color: getValueIncreased(state) ? "dark-green" : "red"
+});
 
-const Logo = props => (
-    <Link to="/dashboard" className={"dashboard-logo-link " + (props.valueIncreased ? "dark-green-hover" : "red-hover")}>
+const Logo = ({color}) => (
+    <Link to="/dashboard" className={`dashboard-logo-link ${color}-hover`}>
         <GiPoliceBadge />
     </Link>
 )

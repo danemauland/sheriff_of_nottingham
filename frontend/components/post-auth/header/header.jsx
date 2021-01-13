@@ -3,21 +3,14 @@ import Logo from "./logo";
 import SearchBar from "./search_bar";
 import NavLinks from "./nav_links";
 
-class Header extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+const Header = () => (
+    <header className="dashboard-header" onClick={e => e.stopPropagation()}>
+        <div className="dashboard-header-centering-div">
+            <Logo />
+            <SearchBar />
+            <NavLinks />
+        </div>
+    </header>    
+);
 
-    render() {
-        return (
-            <header className="dashboard-header" onClick={e => e.stopPropagation()}>
-                <div className="dashboard-header-centering-div">
-                    <Logo />
-                    <SearchBar />
-                    <NavLinks />
-                </div>
-            </header>    
-        )
-    }
-}
-export default Header
+export default Header;

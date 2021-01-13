@@ -6,6 +6,8 @@
 // fix chart to show new day at 8am
 // fix chart not showing out to 6pm after hours
 
+// rework search to use alphavantage search
+
 
 // ADD SEPARATE SIGNUP PAGE
 // Add in messages/trade confirms

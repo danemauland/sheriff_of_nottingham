@@ -16,71 +16,85 @@ class SearchBar extends React.Component {
         this.clickOffHandler = this.clickOffHandler.bind(this);
     }
 
-    handleKeyStroke(e) {
-        const results = $(".seach-result-item-wrapper a")
-        if (e.keyCode === 13) {
-            let selected = Math.max(this.state.selected, 0);
-            let result = results[selected]
-            if (result) {
-                result.click();
-                this.setState({ 
-                    focused: false,
-                    input: "",
-                    selected: -1
-             });
-                document.removeEventListener("click", this.clickOffHandler)
-                document.activeElement.blur();
-            }
-        } else if (e.keyCode === 38) {
-            let selected = this.state.selected - 1;
-            if (selected < 0) {selected = results.length - 1}
-            else if (selected === results.length) { selected = 0 }
-            this.setState({selected})
+    resetState() {
+        this.setState({ 
+            focused: false,
+            input: "",
+            selected: -1
+        });
+    }
+
+    handleEnter(results) {
+        const selected = Math.max(this.state.selected, 0);
+        const result = results[selected];
+
+        if (result) {
+            result.click();
+            this.resetState();
         }
-        else if (e.keyCode === 40) {
-            let selected = this.state.selected + 1;
-            if (selected < 0) { selected = results.length - 1 }
-            else if (selected >= results.length) { selected = 0 }
-            this.setState({ selected })
+    }
+
+    handleArrows(results, e, keyCode) {
+        const selected = this.state.selected + (keyCode < 39 ? -1 : 1);
+    
+        if (selected < 0) {selected = results.length - 1}
+        else if (selected === results.length) { selected = 0 }
+    
+        e.preventDefault();
+    
+        this.setState({selected});
+    }
+
+    handleKeyStroke(e) {
+        const results = $(".seach-result-item-wrapper a");
+        const keyCode = e.keyCode;
+
+        if (keyCode === 13) { this.handleEnter(results) }
+        else if (keyCode === 38 || keyCode === 40) {
+            this.handleArrows(results, e, keyCode)
         }
     }
 
     clickOffHandler() {
-        this.setState({ 
-            focused: false,
-            selected: -1,
-            input: ""
-        });
+        this.resetState();
         document.removeEventListener("click", this.clickOffHandler)
     }
 
     handleChange(e) {
-        this.setState({input: e.target.value})
+        this.setState({input: e.target.value});
     }
 
-    handleFocus(e) {
-        this.setState({focused: true})
-        document.addEventListener("click", this.clickOffHandler)
+    handleFocus() {
+        this.setState({focused: true});
+        document.addEventListener("click", this.clickOffHandler);
     }
 
     render() {
         return (
             <div className="search-bar-sizer">
-                <div className="search-bar-and-dropdown-container" onFocus={this.handleFocus}>
+                <div className="search-bar-and-dropdown-container"
+                    onFocus={this.handleFocus}
+                >
                     <div className="search-bar-icon-input-container">
                         <div className="search-icon-container">
                             <CgSearch className="search-icon"/>
                         </div>
-                            <input type="text"
-                                className="search"
-                                autoComplete="off"
-                                placeholder="Search"
-                                value={this.state.input}
-                                onChange={this.handleChange}
-                                onKeyDown={this.handleKeyStroke}
-                            />
+
+                        <input type="text"
+                            className="search"
+                            autoComplete="off"
+                            placeholder="Search"
+                            value={this.state.input}
+                            onChange={this.handleChange}
+                            onKeyDown={this.handleKeyStroke}
+                        />
                     </div>
-                    <SearchDropdown input={this.state.input} focused={this.state.focused} selected={this.state.selected}/>
+
+                    <SearchDropdown
+                        input={this.state.input}
+                        focused={this.state.focused}
+                        selected={this.state.selected}
+                    />
                 </div>
             </div>    
         )
