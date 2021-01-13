@@ -27,7 +27,7 @@ class Sidebar extends React.Component {
             isBuyOrder: true,
             isDollarOrder: true,
             amount: "",
-            numDecimals: 0,
+            numDecimals: -1,
             numShares: "",
             price: this.props.price,
             createdAt: 0,
@@ -64,7 +64,7 @@ class Sidebar extends React.Component {
             isBuyOrder: true,
             isDollarOrder: true,
             amount: "",
-            numDecimals: 0,
+            numDecimals: -1,
             numShares: "",
             price: this.props.price,
             createdAt: 0,
@@ -119,49 +119,50 @@ class Sidebar extends React.Component {
     handleDollarOrderChange(val) {
         let numDecimals = -1;
         let numStr = "";
-        for(let char of val) {
-            if (DIGIT_STRINGS.includes(char) || char === ".") {
-                if (numDecimals === -1 || char !== ".") {
-                    numStr += char;
 
-                    const numDecIs0or1 = (numDecimals > -1 && numDecimals < 2);
-                    if (numDecIs0or1 || char === ".") numDecimals++;
-                }
+        for(let char of val) {
+            const charIsDecimal = char === ".";
+
+            const charIsValid = DIGIT_STRINGS.includes(char) || charIsDecimal;
+            const digitIsValid = numDecimals === -1 || !charIsDecimal;
+
+            if (charIsValid && digitIsValid) {
+                numStr += char;
+
+                const numDecIs0or1 = (numDecimals > -1 && numDecimals < 2);
+                if (numDecIs0or1 || charIsDecimal) numDecimals++;
             }
         }
-        if (numStr === "$" || numStr === "") {
-            this.setState({amount: ""});
-            return;
-        }
-        
-        const amount = Math.floor(parseFloat(numStr) * 100);
-        this.setState({amount: amount, numDecimals})
+
+        let amount;
+        if (numStr === "$" || numStr === "") amount = "";
+        else amount = Math.floor(parseFloat(numStr) * 100);
+
+        const numShares = Math.floor(amount / this.state.price) || "";
+        this.setState({amount, numDecimals, numShares});
+    }
+
+    handleShareOrderChange(val) {
+        let numStr = "";
+
+        for(let char of val) if (DIGIT_STRINGS.includes(char)) numStr += char;;
+
+        const numShares = parseInt(numStr) || "";
+        this.setState({
+            numShares,
+            amount: this.state.price * numShares || "",
+        });
     }
 
     handleChange(e) {
-        let allowableChars;
         const val = e.target.value;
-        let numStr = "";
-        if (this.state.isDollarOrder) {
-            this.handleDollarOrderChange(val);
-        } else {
-            allowableChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-            for(let i = 0; i < val.length; i++) {
-                if (allowableChars.includes(val[i]) || (i === 0 && val[i] === "-")) {
-                    numStr += val[i]
-                }
-            }
-            if (numStr === "") {this.setState({numShares: ""}); return;}
-            if (numStr === "-") {this.setState({numShares: "-"}); return;}
-            const numShares = parseInt(numStr);
-            this.setState({numShares})
-        }
+        if (this.state.isDollarOrder) this.handleDollarOrderChange(val);
+        else this.handleShareOrderChange(val);
     }
 
     handleBlur(e) {
         const val = e.target.value;
-        if (val === "$" || val === "") return;
-        this.setState({numDecimals: 2})
+        if (val !== "$" && val !== "") this.setState({numDecimals: 2});
     }
 
     handleReset(e) {
@@ -169,24 +170,24 @@ class Sidebar extends React.Component {
         this.setState({
             price: this.props.price,
             createdAt: 0,
-        })
+        });
     }
 
     handleSubmit(e) {
         e.preventDefault();
+        const {ticker, createTrade} = this.props;
+        const {createdAt, numShares, isBuyOrder, price} = this.state;
+
         let trade = {};
-        trade.ticker = this.props.ticker;
-        trade.created_at = this.state.createdAt || new Date();
-        if (this.state.isDollarOrder) {
-            trade.num_shares = Math.floor(this.state.amount / this.state.price)
-        } else {
-            trade.num_shares = this.state.numShares;
-        }
-        if (!this.state.isBuyOrder) {
-            trade.num_shares *= -1;
-        }
-        trade.trade_price = this.state.price;
-        this.props.createTrade(trade);
+
+        trade.ticker = ticker;
+        trade.created_at = createdAt || new Date();
+        trade.trade_price = price;
+        
+        trade.num_shares = numShares;
+        if (!isBuyOrder) trade.num_shares *= -1;
+
+        createTrade(trade);
     }
 
     render() {
@@ -224,7 +225,7 @@ class Sidebar extends React.Component {
                     </div>
                     <div>
                         <span>{isDollarOrder ? "Est. Quantity" : "Est. Proceeds"}</span>
-                        <span>{isDollarOrder ? Math.floor(this.state.amount / this.state.price) : (this.state.numShares === "-" ? formatToDollar(0) : formatToDollar(this.state.numShares * this.state.price))}</span>
+                        <span>{isDollarOrder ? this.state.numShares || 0 : (this.state.numShares === "" ? formatToDollar(0) : formatToDollar(this.state.numShares * this.state.price))}</span>
                     </div>
                 </div>
                 <div className="order-button-wrapper">
