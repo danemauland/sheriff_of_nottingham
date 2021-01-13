@@ -69,6 +69,10 @@ class StockAbout extends React.Component {
         return this.state.expanded ? "Less" : "More";
     }
 
+    get descriptionToggleType() {
+        return this.state.descriptionExpanded ? "Less" : "More";
+    }
+
     render() {
         return (
             <div className="stock-about-positioner">
@@ -81,7 +85,7 @@ class StockAbout extends React.Component {
                 <StockAboutDescription 
                     className={this.className}
                     toggle={this.toggleDescriptionExpand}
-                    toggleType={this.toggleType}
+                    toggleType={this.descriptionToggleType}
                     desc={this.description}
                 />
 
