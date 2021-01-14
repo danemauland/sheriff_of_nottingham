@@ -236,7 +236,6 @@ class Sidebar extends React.Component {
     }
 
     render() {
-        const {color} = this.props;
         const {isDollarOrder, price} = this.state;
         return (
             <form className="order-form" onSubmit={this.handleSubmit}>
@@ -267,7 +266,7 @@ class Sidebar extends React.Component {
                     </div>
 
                 </div>
-                
+
                 <div className="order-button-wrapper">
                     <button className={this.orderButtonClassName}>
                         Place Order
