@@ -1,7 +1,7 @@
 import React from "react";
 
-export default ({color, type}) => (
-    <option value={type} className={`${color}-background-selected`}>
+export default ({type, classNames, handleSelect}) => (
+    <option value={type} className={classNames} onClick={handleSelect}>
         {type}
     </option>
 );

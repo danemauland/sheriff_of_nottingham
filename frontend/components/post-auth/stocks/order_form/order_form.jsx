@@ -7,6 +7,7 @@ import {
     getValueIncreased,
 } from "../../../../util/extract_from_state_utils";
 import OrderFormToggle from "./order_form_toggle";
+import InvestIn from "./invest_in";
 
 const DIGIT_STRINGS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -72,20 +73,6 @@ class Sidebar extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.location !== this.props.location) this.resetState();
-    }
-
-    generateClassName(field) {
-        let className = "";
-        const colorDark = this.props.colorDark;
-        const isBuyOrder = this.state.isBuyOrder;
-        
-        const isSelected = (field === "Buy") === isBuyOrder;
-
-        if (isSelected) className += `selected ${colorDark} `; 
-        
-        className += `${colorDark}-hover `;
-
-        return className;
     }
 
     handleSelect(e) {
@@ -174,43 +161,117 @@ class Sidebar extends React.Component {
         const {colorDark, ticker} = this.props;
         const {isBuyOrder} = this.state;
         
-        return ({
+        return {
             ticker,
             isBuyOrder,
             color: colorDark,
             setState: this.setState.bind(this),
-        })
+        };
+    }
+
+    get investInProps() {
+        return {
+            selected: this.state.isDollarOrder ? "Dollars" : "Shares",
+            color: this.props.color,
+            handleSelect: this.handleSelect,
+        }
+    }
+
+    get amountInputValue() {
+        const {isDollarOrder, amount, numDecimals, numShares} = this.state;
+
+        let val = numShares;
+        if (isDollarOrder) {
+            if (amount === "") val = "";
+            else val = formatToDollar(amount, numDecimals);
+        }
+
+        return val;
+    }
+
+    get amountInputProps() {
+        const isDollarOrder = this.state.isDollarOrder;
+
+        let className = (isDollarOrder ? "dollar" : "share") + "-input ";
+        className += this.props.colorDark + "-border-focus";
+
+        return {
+            onChange: this.handleChange,
+            className,
+            value: this.amountInputValue,
+            onBlur: this.handleBlur,
+            placeholder: isDollarOrder ? "$0.00" : "0",
+            type: "text",
+        }
+    }
+
+    get resetButton() {
+        return (
+            <button onClick={this.handleReset} className={this.props.colorDark}>
+                reset
+            </button>)
+    }
+
+    get orderTotalHeader() {
+        const {isDollarOrder, isBuyOrder} = this.state;
+        if (isDollarOrder) return "Shares";
+
+        if (isBuyOrder) return "Cost";
+        return "Credit";
+    }
+
+    get orderTotalAmount() {
+        const {numShares, price, isDollarOrder} = this.state;
+
+        if (isDollarOrder) return numShares || 0;
+
+        if (!numShares) return formatToDollar(0);
+
+        return formatToDollar(numShares * price);
+    }
+
+    get orderButtonClassName() {
+        const col = this.props.color;
+        return `order-button ${col}-background light-${col}-background-hover`;
     }
 
     render() {
-        const {colorDark, color} = this.props;
-        const {isDollarOrder} = this.state;
+        const {color} = this.props;
+        const {isDollarOrder, price} = this.state;
         return (
             <form className="order-form" onSubmit={this.handleSubmit}>
                 <OrderFormToggle {...this.orderFormToggleProps}/>
                 <div className="order-info-positioner">
-                    <div>
-                        <span>Invest In</span>
-                        <select className="invest-in-select" onChange={this.handleSelect} value={isDollarOrder ? "Dollars" : "Shares"}>
-                            <option value="Dollars" className={`${color}-background-selected`}>Dollars</option>
-                            <option value="Shares" className={`${color}-background-selected`}>Shares</option>
-                        </select>
-                    </div>
+                    <InvestIn {...this.investInProps}/>
+
                     <div>
                         <span>{isDollarOrder ? "Amount" : "Shares"}</span>
-                        <input onChange={this.handleChange} className={(isDollarOrder ? "dollar-input " : "share-input ") + `${colorDark}-border-focus`} value={(isDollarOrder ? (this.state.amount === "" ? "" : formatToDollar(this.state.amount, this.state.numDecimals)) : this.state.numShares)} onBlur={this.handleBlur} placeholder={(isDollarOrder ? "$0.00" : "0")} type="text"/>
+                        <input {...this.amountInputProps}/>
                     </div>
+
                     <div>
-                        <span>Market Price (<button onClick={this.handleReset} className={colorDark}>reset</button>)</span>
-                        <span className="order-form-dollar">{formatToDollar(this.state.price)}</span>
+                        <span>
+                            Market Price ({this.resetButton})
+                        </span>
+
+                        <span className="order-form-dollar">
+                            {formatToDollar(price)}
+                        </span>
                     </div>
+
                     <div>
-                        <span>{isDollarOrder ? "Est. Quantity" : "Est. Proceeds"}</span>
-                        <span>{isDollarOrder ? this.state.numShares || 0 : (this.state.numShares === "" ? formatToDollar(0) : formatToDollar(this.state.numShares * this.state.price))}</span>
+                        <span>
+                            {this.orderTotalHeader}
+                        </span>
+                        <span>{this.orderTotalAmount}</span>
                     </div>
+
                 </div>
+                
                 <div className="order-button-wrapper">
-                    <button className={`order-button ${color}-background light-${color}-background-hover`}>Place Order</button>
+                    <button className={this.orderButtonClassName}>
+                        Place Order
+                    </button>
                 </div>
             </form>
         )

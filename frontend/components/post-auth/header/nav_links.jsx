@@ -42,7 +42,7 @@ class NavLinks extends React.Component {
         }
 
         dropdown.toggleClass("hidden");
-        const wasHidden = !isHidden;
+        const wasHidden = isHidden;
 
         const wholeDocClickRemover = () => {
             removeClasses(tar);

@@ -7,6 +7,8 @@
 // fix chart not showing out to 6pm after hours
 
 // rework search to use alphavantage search
+// rework purchasing power
+// add errors to stock order form
 
 
 // ADD SEPARATE SIGNUP PAGE

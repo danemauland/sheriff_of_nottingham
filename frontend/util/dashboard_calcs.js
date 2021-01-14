@@ -8,13 +8,18 @@ export const THREE_MONTH_OFFSET = 91;
 
 export const formatToDollar = (num, numDecimals = 2) => {
     if ((typeof num) !== "number") return false;
+    
+    const fractionDigits = Math.max(0, numDecimals);
+    const localeOptions = {
+        minimumFractionDigits: fractionDigits,
+        maximimFractionDigits: fractionDigits,
+    }
 
     num /= 100;
-
-    if (numDecimals < 1) num = num.toFixed(0);
+    
+    num = num.toLocaleString(undefined, localeOptions);
 
     if (numDecimals === 0) num += ".";
-    else if (numDecimals > 0) num = num.toFixed(numDecimals);
     
     return "$" + num;
 }
