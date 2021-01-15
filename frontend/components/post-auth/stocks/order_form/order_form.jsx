@@ -1,5 +1,9 @@
 import React from "react";
-import {formatToDollar} from "../../../../util/dashboard_calcs";
+import {
+    formatToDollar,
+    parseDollarInput,
+    parseIntegerInput,
+} from "../../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 import {createTrade} from "../../../../actions/trade_actions";
 import {
@@ -8,8 +12,6 @@ import {
 } from "../../../../util/extract_from_state_utils";
 import OrderFormToggle from "./order_form_toggle";
 import InvestIn from "./invest_in";
-
-const DIGIT_STRINGS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 const mapStateToProps = (state, {ticker}) => ({
     colorDark: getValueIncreased(state, ticker) ? "dark-green" : "red",
@@ -83,38 +85,16 @@ class Sidebar extends React.Component {
     }
 
     handleDollarOrderChange(val) {
-        let numDecimals = -1;
-        let numStr = "";
-
-        for(let char of val) {
-            const charIsDecimal = char === ".";
-
-            const charIsValid = DIGIT_STRINGS.includes(char) || charIsDecimal;
-            const digitIsValid = numDecimals === -1 || !charIsDecimal;
-
-            if (charIsValid && digitIsValid) {
-                numStr += char;
-
-                const numDecIs0or1 = (numDecimals > -1 && numDecimals < 2);
-                if (numDecIs0or1 || charIsDecimal) numDecimals++;
-            }
-        }
-
-        let amount = "";
-        if (numStr !== "$" && numStr !== "") {
-            amount = Math.floor(parseFloat(numStr) * 100);
-        }
+        const {amount, numDecimals} = parseDollarInput(val);
 
         const numShares = Math.floor(amount / this.state.price) || "";
+
         this.setState({amount, numDecimals, numShares});
     }
 
     handleShareOrderChange(val) {
-        let numStr = "";
+        const numShares = parseIntegerInput(val);
 
-        for(let char of val) if (DIGIT_STRINGS.includes(char)) numStr += char;;
-
-        const numShares = parseInt(numStr) || "";
         this.setState({
             numShares,
             amount: this.state.price * numShares || "",

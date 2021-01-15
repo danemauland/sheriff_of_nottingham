@@ -5,6 +5,7 @@ export const THREE_MONTH = "THREE_MONTH";
 export const ONE_YEAR = "ONE_YEAR";
 export const ONE_MONTH_OFFSET = 31;
 export const THREE_MONTH_OFFSET = 91;
+const DIGIT_STRINGS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 export const formatToDollar = (num, numDecimals = 2) => {
     if ((typeof num) !== "number") return false;
@@ -187,4 +188,38 @@ export const getCutoffDescription = desc => {
 export const formatPercentage = num => {
     const sign = (num < 0 ? "-" : "+");
     return sign + Math.abs(num * 100).toFixed(2) + "%";
+}
+
+export const parseDollarInput = val => {
+    let numDecimals = -1;
+    let numStr = "";
+
+    for(let char of val) {
+        const charIsDecimal = char === ".";
+
+        const charIsValid = DIGIT_STRINGS.includes(char) || charIsDecimal;
+        const digitIsValid = numDecimals === -1 || !charIsDecimal;
+
+        if (charIsValid && digitIsValid) {
+            numStr += char;
+
+            const numDecIs0or1 = (numDecimals > -1 && numDecimals < 2);
+            if (numDecIs0or1 || charIsDecimal) numDecimals++;
+        }
+    }
+
+    let amount = "";
+    if (numStr !== "$" && numStr !== "") {
+        amount = Math.floor(parseFloat(numStr) * 100);
+    }
+
+    return {amount, numDecimals}
+}
+
+export const parseIntegerInput = val => {
+    let numStr = "";
+
+    for(let char of val) if (DIGIT_STRINGS.includes(char)) numStr += char;;
+
+    return parseInt(numStr) || "";
 }
