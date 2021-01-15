@@ -32,6 +32,8 @@ export default ({isDeposit, setState, expandedOptions}) => {
         $("#cash-options-toggle").trigger("click");
     }
 
+    const color = isDeposit ? "dark-green" : "red";
+
     return (
         <div className="cash-toggles-container">
             <Toggle
@@ -49,11 +51,7 @@ export default ({isDeposit, setState, expandedOptions}) => {
                 type="cash-options"
                 leftClick={clickOptionsToggle}
                 leftVal="Expanded Options"
-                leftClass={
-                    !expandedOptions ?
-                    "dark-green-hover red " :
-                    "red-hover dark-green"
-                }
+                leftClass={color + (expandedOptions ? "" : "-hover black")}
                 toggleClick={toggleExpandedOptions}
                 invertColors={true}
             />
