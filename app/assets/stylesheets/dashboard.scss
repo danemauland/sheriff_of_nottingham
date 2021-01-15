@@ -214,21 +214,24 @@
 
 .scroll-bar-correction {
     margin-left: calc(100vw - 100%);
+    height: 100%;
 }
 
-.dashboard-centering-div {
+.post-auth-centering-div {
     margin: 0 auto;
     width: 1024px;
     padding-top: 100px;
+    height: calc(100% - 100px);
 }
 
-.dashboard-main-div {
+.post-auth-main-div {
     margin: 0 -6px;
     display: flex;
     justify-content: space-between;
+    height: 100%;
 }
 
-.dashboard-main-content {
+.post-auth-main-content {
     width: auto;
     flex: 0 0 66.66667%;
     padding-left: 6px;
@@ -268,7 +271,7 @@
     height: 95px;
 }
 
-.dashboard-title {
+.post-auth-title {
     transition: color 0.3s;
     font-size: 32px;
     font-weight: 500;
@@ -329,7 +332,7 @@
     padding-left: 0px;
 }
 
-.chart-selector-link-selected-green > .chart-selector-link-text {
+.chart-selector-link-selected-dark-green > .chart-selector-link-text {
     color: $dark-green;
     border-bottom: 2px solid $green;
 }
@@ -365,10 +368,6 @@
     background-color: $darker-gray;
 }
 
-.cash-button-clicked {
-    background-color: $darkish-gray !important;
-}
-
 .cash-button-expanded {
     background-color: $darker-gray;
 }
@@ -394,7 +393,7 @@
     opacity: 1;
 }
 
-.cash-deposit-toggle-wrapper {
+.toggle-wrapper {
  margin: 0 6px;
 }
 
@@ -501,7 +500,7 @@
     background-color: $darker-gray;
 }
 
-.cash-form-time {
+.cash-option-time, .cash-option-date {
     background-color: $darkish-gray;
     border: 1px solid $darkish-gray;
     font-weight: 400;
@@ -511,38 +510,26 @@
     padding: 0 12px;
     transition: border-color 0.2s ease;
     height: 36px;
-    width: 120px;
-    cursor: text !important;
-}
-
-.cash-form-date {
-    background-color: $darkish-gray;
-    border: 1px solid $darkish-gray;
-    font-weight: 400;
-    text-align: right;
-    box-sizing: border-box;
-    border-radius: 4px;
-    padding: 0 12px;
-    transition: border-color 0.2s ease;
-    height: 36px;
-    width: 150px;
     cursor: text;
 }
 
-.cash-form-date:hover {
+.cash-option-time {
+    width: 120px;
+}
+
+.cash-option-date {
+    width: 150px;
+}
+
+.cash-option-date:hover .cash-option-time:hover {
     background-color: $darker-gray;
 }
 
-.cash-form-time:hover {
+.cash-option-date:focus-within, .cash-option-time:focus-within {
     background-color: $darker-gray;
 }
 
-
-.cash-form-date:focus-within, .cash-form-time:focus-within {
-    background-color: $darker-gray;
-}
-
-.rounded-button.cash-option-submit {
+#cash-option-submit {
     height: 36px;
     min-width: 121px;
     padding: 0 27px;
@@ -553,12 +540,12 @@
     border: 2px solid transparent;
 }
 
-.cash-option-submit:hover {
+#cash-option-submit:hover {
     transition: 0s;
     opacity: 0.8;
 }
 
-.cash-option-submit:active:hover {
+#cash-option-submit:active:hover {
     border: 2px solid black;
 }
 
@@ -668,6 +655,11 @@
         font-weight: 500;
         line-height: 32px;
     }
+}
+
+.stock-about-header  > span {
+    display: flex;
+    align-items: flex-end;
 }
 
 .stock-about-positioner {
@@ -870,25 +862,42 @@
 
 .invest-in-select {
     background-color: $darker-gray;
-    border: 1px solid $darkish-gray;
+    border: 1px solid $darkishish-gray;
     color: white;
     font-weight: 400;
     text-align: left;
     box-sizing: border-box;
     border-radius: 4px;
-    padding: 0 12px;
-    transition: border-color 0.2s ease;
-    height: 36px;
+    transition: box-shadow 0.3s linear;
     width: 136px;
-    > option {
+    position: absolute;
+    top: 0;
+    left: 0;
+    > button {
+        padding: 0 12px;
+        width: 100%;
         height: 36px;
-        border-color: $darkish-gray;
+        border-color: $darkishish-gray;
     }
 }
 
-.invest-in-select:focus {
-    border-color: $darkish-gray;
+.invest-in-options > * {
+    padding-left: 12px;
+    width: 100%;
+    height: 36px;
+    border-top: 1px solid $darkishish-gray;
+    display: flex;
+    align-items: center;
+}
 
+.invest-in-options > *:last-child {
+    border-radius: 0 0 4px 4px;
+}
+
+.invest-in-select-wrapper {
+    position: relative;
+    width: 136px;
+    height: 38px;
 }
 
 .stocks-header {
@@ -905,6 +914,7 @@
 
 .position-item {
     display: flex;
+    height: 60px;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
@@ -915,4 +925,18 @@
 
 .position-item:hover {
     background-color: $darkish-gray;
+}
+
+.position-item > div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    > h4 {
+        margin: 0;
+    }
+}
+
+.position-item > div:last-child {
+    align-items: flex-end;
 }

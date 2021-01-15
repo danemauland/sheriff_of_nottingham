@@ -1,3 +1,9 @@
+import {
+    pricesAreLoaded,
+    assetIsInitialized,
+    companyOverviewIsLoaded,
+    tickerDataIsLoaded,
+} from "../util/dashboard_calcs";
 import * as externalAPIUtil from "../util/external_api_util"
 import {
     setAPIDebounceStartTime,
@@ -14,17 +20,52 @@ export const RECEIVE_COMPANY_NEWS = "RECEIVE_COMPANY_NEWS";
 export const FETCH_MARKET_NEWS = "FETCH_MARKET_NEWS";
 export const RECEIVE_MARKET_NEWS = "RECEIVE_MARKET_NEWS";
 export const RECEIVE_COMPANY_OVERVIEW = "RECEIVE_COMPANY_OVERVIEW";
+export const RECEIVE_CANDLES = "RECEIVE_CANDLES";
 export const RECEIVE_DAILY_CANDLES = "RECEIVE_DAILY_CANDLES";
 export const RECEIVE_WEEKLY_CANDLES = "RECEIVE_WEEKLY_CANDLES";
 export const RECEIVE_ANNUAL_CANDLES = "RECEIVE_ANNUAL_CANDLES";
 export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
 export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
+export const INITIALIZE_ASSET = "INITIALIZE_ASSET";
+export const FLUSH_ASSET = "FLUSH_ASSET";
+export const DAILY_RESOLUTION = 5;
+export const WEEKLY_RESOLUTION = 30;
+const ANNUAL_RESOLUTION = "D";
 
-const receiveCandles = (ticker, candles, type) => ({
-    type,
+const initializeAsset = ticker => ({
+    type: INITIALIZE_ASSET,
     ticker,
-    candles,
 })
+
+const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
+    const assetInformation = getState().newEntities.assetInformation;
+    const ownershipHistories = assetInformation.ownershipHistories;
+    const tickers = assetInformation.tickers;
+    const candlePrices = assetInformation.candlePrices;
+    // dispatch({
+    //     type,
+    //     ticker,
+    //     tickers,
+    //     candles,
+    //     ownershipHistory: {
+    //         times: ownershipHistories.times[ticker],
+    //         numShares: ownershipHistories.numShares[ticker],
+    //     },
+    //     candlePrices,
+    // });
+    dispatch({
+        type: RECEIVE_CANDLES,
+        subtype: type,
+        ticker,
+        tickers,
+        candles,
+        ownershipHistory: {
+            times: ownershipHistories.times[ticker],
+            numShares: ownershipHistories.numShares[ticker],
+        },
+        candlePrices,
+    });
+}
 
 const receiveQuote = (ticker, quote) => ({
     type: RECEIVE_QUOTE,
@@ -55,39 +96,54 @@ const receiveMarketNews = marketNews => ({
     marketNews,
 })
 
+const flushAsset = ticker => ({
+    type: FLUSH_ASSET,
+    ticker,
+})
+
 
 const qFunc = action => {
+    const ticker = action.ticker;
+    const start = action.start;
+    const end = action.end;
     switch (action.type) {
         case FETCH_CANDLES:
-            externalAPIUtil.fetchCandles(action.ticker, action.resolution, action.start, action.end).then(
-                candles => action.dispatch(receiveCandles(action.ticker, candles, action.subtype)),
+            externalAPIUtil.fetchCandles(ticker, action.resolution, start, end).then(
+                candles => {
+                    if (candles.s === "no_data") {
+                        action.dispatch(flushAsset(ticker));
+                    } else {
+                        action.dispatch(receiveCandles(ticker, candles, action.subtype))
+                    }
+                },
                 error => console.log(error),
             );
             break;
         case FETCH_QUOTE:
-            // finnhubClient.quote(action.ticker, (error, data, response) => {
+            // finnhubClient.quote(ticker, (error, data, response) => {
             //     console.log(error);
-            //     action.dispatch(receiveQuote(action.ticker, data))
+            //     action.dispatch(receiveQuote(ticker, data))
             // })
             break;
         case FETCH_TICKER_DATA:
-            externalAPIUtil.fetchTickerData(action.ticker).then(
-                tickerData => action.dispatch(receiveTickerData(action.ticker, tickerData)),
-                error => console.log(error),
+            externalAPIUtil.fetchTickerData(ticker).then(
+                tickerData => action.dispatch(receiveTickerData(ticker, tickerData)),
+                () => action.dispatch(receiveTickerData(ticker, []))
             );
             break;
         case FETCH_COMPANY_OVERVIEW:
-            externalAPIUtil.fetchCompanyOverview(action.ticker).then(
-                companyOverview => action.dispatch(receiveCompanyOverview(action.ticker, companyOverview))
+            externalAPIUtil.fetchCompanyOverview(ticker).then(
+                companyOverview => action.dispatch(receiveCompanyOverview(ticker, companyOverview))
             );
             break;
         case FETCH_COMPANY_NEWS:
-            externalAPIUtil.fetchCompanyNews(action.ticker, action.start, action.end).then(
-                companyNews => action.dispatch(receiveCompanyNews(action.ticker, companyNews))
+            externalAPIUtil.fetchCompanyNews(ticker, start, end).then(
+                companyNews => action.dispatch(receiveCompanyNews(ticker, companyNews)),
+                () => action.dispatch(receiveCompanyNews(ticker, []))
             );
             break;
         case FETCH_MARKET_NEWS:
-            externalAPIUtil.fetchMarketNews(action.start, action.end).then(
+            externalAPIUtil.fetchMarketNews(start, end).then(
                 marketNews => action.dispatch(receiveMarketNews(marketNews))
             );
             break;
@@ -195,19 +251,20 @@ const getEndTime = () => {
 export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) => {
     let startTime = getStartTime();
     const endTime = getEndTime();
-    let resolution = 5;
+    let resolution;
     switch (subtype) {
         case RECEIVE_DAILY_CANDLES:
+            resolution = DAILY_RESOLUTION;
             break;
         case RECEIVE_WEEKLY_CANDLES:
             startTime.setUTCDate(startTime.getUTCDate() - 7);
-            resolution = 30;
+            resolution = WEEKLY_RESOLUTION;
             break;
         case RECEIVE_ANNUAL_CANDLES:
             startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
             startTime.setUTCHours(startTime.getUTCHours() + 1); // Needed because API provider will return prices for (only) some stocks for the previous day otherwise
             startTime.setMinutes(0);
-            resolution = "D";
+            resolution = ANNUAL_RESOLUTION;
             break;
         default:
             break;
@@ -233,10 +290,10 @@ export const fetchQuote = ticker => dispatch => {
     finnhubQ.push({...action});
 }
 
-export const initializeAssets = state => ({
+export const initializeAssets = (trades, cashTransactions) => ({
     type: INITIALIZE_ASSETS,
-    trades: state.entities.trades,
-    cashTransactions: state.entities.cashTransactions,
+    trades,
+    cashTransactions,
 })
 
 export const fetchCompanyOverview = (ticker, dispatch) => {
@@ -258,7 +315,10 @@ export const fetchTickerData = (ticker, dispatch) => {
 }
 
 function formatDate(date) {
-    return "" + date.getUTCFullYear() + "-" + (1 + date.getUTCMonth()) + "-" + date.getUTCDate()
+    const year = date.getUTCFullYear().toString();
+    const month = (1 + date.getUTCMonth()).toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");;
+    return `${year}-${month}-${day}`;
 }
 
 export const fetchCompanyNews = (ticker, dispatch) => {
@@ -280,5 +340,53 @@ export const fetchMarketNews = dispatch => {
         type: FETCH_MARKET_NEWS,
         dispatch,
     }
-    finnhubQ.push(action)
+    finnhubQ.push(action);
 }
+
+export const fetchAllCandles = (tickers, dispatch) => {
+    if (!isIterable(tickers)) tickers = [tickers];
+    for(let ticker of tickers) {
+        fetchCandles(ticker, dispatch);
+        fetchCandles(ticker, dispatch, RECEIVE_WEEKLY_CANDLES);
+        fetchCandles(ticker, dispatch, RECEIVE_ANNUAL_CANDLES);
+    }
+}
+
+export const fetchAllInfo = (tickers, dispatch) => {
+    if (typeof tickers === "string") tickers = [tickers];
+    fetchAllCandles(tickers, dispatch);
+    for(let ticker of tickers) {
+        fetchCompanyOverview(ticker, dispatch);
+        fetchTickerData(ticker, dispatch);
+    }
+}
+
+export const fetchNeededInfo = (
+    tickersToFetch,
+    {tickers, candlePrices, companyOverviews, tickerData},
+    dispatch
+) => {
+    tickers = Set.convert(tickers);
+    tickersToFetch = Array.convert(tickersToFetch);
+    for(let ticker of tickersToFetch) {
+        if (!assetIsInitialized(ticker, tickers)) {
+            dispatch(initializeAsset(ticker));
+            fetchAllInfo(ticker, dispatch);
+            continue;
+        }
+
+        if (!pricesAreLoaded(ticker, candlePrices)) {
+            fetchAllCandles(ticker, dispatch);
+        }
+        if (!companyOverviewIsLoaded(ticker, companyOverviews)) {
+            fetchCompanyOverview(ticker, dispatch);
+        }
+        if (!tickerDataIsLoaded(ticker, tickerData)) {
+            fetchTickerData(ticker, dispatch);
+        }
+    }
+}
+
+const isIterable = variable => (
+    typeof variable[Symbol.iterator] === "function"
+)

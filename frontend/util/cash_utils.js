@@ -1,0 +1,11 @@
+const ONE = "1";
+const TEN = "10";
+const HUNDRED = "100";
+const THOUSAND = "1,000";
+const TEN_THOUSAND = "10,000";
+const HUNDRED_THOUSAND = "100,000";
+const MILLION = "1,000,000";
+
+export const CASH_AMOUNTS = [
+    ONE, TEN, HUNDRED, THOUSAND, TEN_THOUSAND, HUNDRED_THOUSAND, MILLION
+]

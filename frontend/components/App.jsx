@@ -1,20 +1,55 @@
 import React from "react";
-import Splash from "./splash/splash";
-import SignupFormContainer from "./signup_form_container"
-import LoginFormContainer from "./login_form_container"
-import Dashboard from "./dashboard/dashboard"
-import Initialize from "./initialize"
-import { Route } from "react-router-dom";
-import {AuthRoute, ProtectedRoute} from "../util/route_util"
-import Modal from "./modal.jsx"
+import {connect} from "react-redux";
+import Modal from "./modal.jsx";
+import PostAuth from "./post-auth/post-auth";
+import PreAuth from "./pre-auth/pre-auth";
+import {
+    getUsername,
+    getModal,
+} from "../util/extract_from_state_utils";
 
-export default props => (
-    <>
-        <Modal />
-        <Route path="/" component={Initialize} />
-        <AuthRoute exact path="/" component={Splash} />
-        <AuthRoute exact path="/signup" component={SignupFormContainer} />
-        <AuthRoute exact path="/login" component={LoginFormContainer} />
-        <ProtectedRoute path="/dashboard" component={Dashboard} />
-    </>
-)
+const mapStateToProps = state => ({
+    isLoggedIn: !!getUsername(state),
+    modalIsOpen: !!getModal(state),
+});
+
+class App extends React.Component {
+
+    componentDidUpdate(prevProps) {
+        const isLoggedIn = this.props.isLoggedIn;
+
+        let wasLoggedIn;
+        if (!prevProps) {
+            wasLoggedIn = !isLoggedIn;
+            const meta = document.createElement("meta");
+            
+            meta.setAttribute("name", "color-scheme");
+
+            document.getElementsByTagName("head")[0].appendChild(meta);
+        } else wasLoggedIn = prevProps.isLoggedIn;
+
+        if (isLoggedIn !== wasLoggedIn) {
+            const tag = $('meta[name="color-scheme"]');
+            const body = $("body");
+
+            if (isLoggedIn) {
+                tag.attr("content", "dark");
+                body.addClass("dark");
+            } else {
+                tag.attr("content", "light"); 
+                body.removeClass("dark");
+            }
+        }
+    }
+
+    componentDidMount() { this.componentDidUpdate(); }
+
+    render() {
+        return (<>
+            {this.props.modalIsOpen ? <Modal /> : <></>}
+            {this.props.isLoggedIn ? <PostAuth /> : <PreAuth />}
+        </>)
+    }
+}
+
+export default connect(mapStateToProps, null)(App);

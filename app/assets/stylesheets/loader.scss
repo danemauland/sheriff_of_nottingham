@@ -1,12 +1,30 @@
 @import "variables";
 
+.center {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.fill-vertically {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+
+.fill-vertically > * {
+  flex: 1 1 auto;
+}
+
 .spinner-container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  // width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
   
 .lds-spinner {
     margin: auto;

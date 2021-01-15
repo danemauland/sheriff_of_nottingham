@@ -1,43 +1,43 @@
 import React from "react";
 import {closeModal} from "../actions/modal_actions.js";
 import { connect } from "react-redux";
-import CommissionPrompt from "./splash/commission_prompt";
+import CommissionPrompt from "./pre-auth/splash/commission/commission_prompt";
 import { GrClose } from "react-icons/gr";
-
-class Modal extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        if (!this.props.modal) {return null}
-        let component;
-        switch (this.props.modal) {
-            case "commission":
-                component = <CommissionPrompt />;
-                break;
-            default:
-                return null;
-        }
-        return (
-            <div className="modal-background" onClick={this.props.closeModal}>
-                <div className="modal-child" onClick={e => e.stopPropagation()}>
-                    <div className="x-container">
-                        <button onClick={this.props.closeModal}><GrClose /></button>
-                    </div>
-                    {component}
-                </div>
-            </div>
-        )
-    }
-}
+import {
+    getModal,
+} from "../util/extract_from_state_utils";
 
 const mapStateToProps = state => ({
-    modal: state.ui.modal,
+    component: getModalComponent(getModal(state)),
 });
 
 const mapDispatchToProps = dispatch => ({
-     closeModal: () => dispatch(closeModal()),
+    closeModal: () => dispatch(closeModal()),
 });
+
+const getModalComponent = modal => {
+    switch (modal) {
+        case "commission":
+            return <CommissionPrompt />;
+
+        default:
+            return null;
+    }
+}
+
+const Modal = ({component, closeModal}) => (
+    <div className="modal-background" onClick={closeModal}>
+        <div className="modal-child" onClick={e => e.stopPropagation()}>
+
+            <div className="x-container">
+                <button onClick={closeModal}>
+                    <GrClose />
+                </button>
+            </div>
+            
+            {component}
+        </div>
+    </div>
+)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Modal);

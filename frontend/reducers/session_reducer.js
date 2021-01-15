@@ -3,7 +3,7 @@ import {RECEIVE_CURRENT_USER,
     from "../actions/session_actions.js";
 
 const defaultSessionState = {
-    username: "",
+    username: null,
 }
 
 const sessionReducer = (state = {...defaultSessionState}, action) => {
