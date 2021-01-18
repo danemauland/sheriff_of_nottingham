@@ -231,10 +231,10 @@ const getStartTime = () => { //daylight savings adjustment made, but it will be 
     startTime.setMinutes(30);
     startTime.setSeconds(0);
     startTime.setMilliseconds(0);
+    startTime.setUTCDate(startTime.getUTCDate() - 1); // COMMENT IN ON MARKET CLOSE DAYS
     const day = startTime.getUTCDay();
     if (day === 6) {startTime.setUTCDate(startTime.getUTCDate() - 1)}
     else if (day === 0) { startTime.setUTCDate(startTime.getUTCDate() - 2)};
-    startTime.setUTCDate(startTime.getUTCDate() - 1); // COMMENT IN ON MARKET CLOSE DAYS
     return dstAdjustment(startTime);
 }
 
