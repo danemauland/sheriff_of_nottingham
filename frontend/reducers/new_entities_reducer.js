@@ -52,8 +52,11 @@ export default (state = defaultState, action) => {
         case FLUSH_ASSET:
             // TODO: ITERATE THROUGH OTHER AREAS AND REMOVE TICKER
             newState = merge({}, state);
-            newState.assetInformation.tickers.delete(action.ticker);
+        
+            // Needed since merge does not create new set objects
+            newState.assetInformation.tickers = new Set(newState.assetInformation.tickers);
 
+            newState.assetInformation.tickers.delete(action.ticker);
             return newState;
 
         case LOGOUT_CURRENT_USER:
