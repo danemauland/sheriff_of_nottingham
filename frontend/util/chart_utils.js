@@ -11,233 +11,154 @@ import {
     getPreviousEndingValue,
 } from "../util/dashboard_calcs";
 
-const PREMARKET_TIMESLOTS = 6;
-const MARKET_HOURS_TIMESLOTS = 79;
-const TOTAL_ONE_DAY_TIMESLOTS = 109;
-
 export const GRAPH_VIEWS = [ONE_DAY,ONE_WEEK,ONE_MONTH,THREE_MONTH,ONE_YEAR];
 
 Chart.defaults.global.animation.duration = 0;
 
 Chart.Tooltip.positioners.custom = (elements, position) => {
     if (elements.length === 0) return false;
+
     return {
         x: position.x,
         y: 9,
-    }
-}
+    };
+};
 
 export const getStrChange = function(startVal, currentVal) {
-    let sign;
-    let strChange = "";
-    let percentage;
     let delta = currentVal - startVal;
-    sign = (delta < 0 ? "-" : "+");
-    percentage = (startVal === 0 ? 0 : delta / startVal);
+    
+    const percentage = (startVal === 0 ? 0 : delta / startVal);
+
+    const sign = (delta < 0 ? "-" : "+");
+    
     delta = Math.abs(delta);
-    strChange += sign;
-    strChange += formatToDollar(delta);
-    strChange += ` (${formatPercentage(percentage)})`;
-    return strChange;
+    
+    return `${sign}${formatToDollar(delta)} (${formatPercentage(percentage)})`;
+}
+
+const camelCase = str => {
+    let prevCharWasDash = false;
+    let newStr;
+    for(let char of str) {
+        if (prevCharWasDash) char = char.toUpperCase();
+        else char = char.toLowerCase();
+
+        prevCharWasDash = char === "-";
+    }
 }
 
 const getTimesArray = function(times, type) {
-    let newTimes;
     const yearLength = times.oneYear.length;
     switch (type) {
         case ONE_DAY:
-            newTimes = [];
-            let startTime = times.oneDay[0];
-            for (let i = PREMARKET_TIMESLOTS; i > 0; i--) {
-                newTimes.push(startTime - (5 * 60 * i))
-            }
-            newTimes = newTimes.concat(times.oneDay)
-            while (newTimes.length < TOTAL_ONE_DAY_TIMESLOTS) {
-                const newTime = newTimes[newTimes.length - 1] + (5 * 60)
-                newTimes.push(newTime)
-            }
-            break;
+            return times.oneDay;
+
         case ONE_WEEK:
-            newTimes = times.oneWeek
-            break;
+            return times.oneWeek;
+
         case ONE_MONTH:
-            newTimes = times.oneYear.slice(yearLength - ONE_MONTH_OFFSET, yearLength)
-            break;
+            return times.oneYear.slice(yearLength - ONE_MONTH_OFFSET, yearLength);
+
         case THREE_MONTH:
-            newTimes = times.oneYear.slice(yearLength - THREE_MONTH_OFFSET, yearLength)
-            break;
+            return times.oneYear.slice(yearLength - THREE_MONTH_OFFSET, yearLength);
+
         case ONE_YEAR:
-            newTimes = times.oneYear;
-            break;
-        default:
-            break;
+            return times.oneYear;
     }
-    return newTimes;
 }
 
 const formatTime = function(date) {
     let hours = date.getHours();
     let minutes = date.getMinutes();
+
     const ampm = (hours > 11 ? "PM" : "AM")
+
     if (minutes < 10) minutes = `0${minutes}`;
     if (hours > 12) hours = hours % 12;
+
     return `${hours}:${minutes} ${ampm}`
 }
 
-export const parseMonth = function(date) {
-    switch (date.getMonth()) {
-        case 0:
-            return "JAN";
-        case 1:
-            return "FEB";
-        case 2:
-            return "MAR";
-        case 3:
-            return "APR";
-        case 4:
-            return "MAY";
-        case 5:
-            return "JUN";
-        case 6:
-            return "JUL";
-        case 7:
-            return "AUG";
-        case 8:
-            return "SEP";
-        case 9:
-            return "OCT";
-        case 10:
-            return "NOV";
-        case 11:
-            return "DEC";
-        default:
-            break;
-    }
-}
+const MONTHS = [
+    "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"
+];
+
+export const parseMonth = date => MONTHS[date.getMonth()];
 
 const formatDateTime = function (date, includeTime = true) {
     const month = parseMonth(date);
     const day = date.getDate();
+
     if (includeTime) return `${month} ${day}, ${formatTime(date)}`;
-    else return `${month} ${day}`
+    else return `${month} ${day}`;
 }
 
 const getLabelsArray = function(times, type) {
-    let labels;
+    const dates = times.map(time => new Date(time * 1000));
     switch (type) {
         case ONE_DAY:
-            labels = times.map(time => (
-                formatTime(new Date(time * 1000))
-            ))
-            break;
+            return dates.map(date => formatTime(date));
+            
         case ONE_WEEK:
-            labels = times.map(time => (
-                formatDateTime(new Date(time * 1000))
-            ))
-            break;
+            return dates.map(date => formatDateTime(date));
+            
         case ONE_MONTH:
-            labels = times.map(time => (
-                formatDateTime(new Date(time * 1000), false)
-            ))
-            break;
+            return dates.map(date => formatDateTime(date, false));
+            
         case THREE_MONTH:
-            labels = times.map(time => (
-                formatDateTime(new Date(time * 1000), false)
-            ))
-            break;
+            return dates.map(date => formatDateTime(date, false));
+            
         case ONE_YEAR:
-            labels = times.map(time => (
-                formatDateTime(new Date(time * 1000), false)
-            ))
-            break;
-        default:
-            break;
+            return dates.map(date => formatDateTime(date, false));
     }
-    return labels;
 }
 
 const getDatasets = function(values, type, times) {
-    const newValues = [ [], [], [], [], ];
-
-    let [
-        inMarketHoursVals,
-        outMarketHoursVals,
-        inMarketHoursPastVals,
-        outMarketHoursPastVals,
-    ] = newValues;
+    let vals;
+    let prevDayCloseArray = [];
 
     switch (type) {
         case ONE_DAY:
-            for (let i = 0; i < PREMARKET_TIMESLOTS; i++) {
-                outMarketHoursVals.push(values.oneDay[0] / 100);
-                inMarketHoursVals.push(undefined);
-            }
-            values.oneDay.forEach(val => {
-                outMarketHoursVals.push(undefined);
-                inMarketHoursVals.push(val / 100);
-            });
-            outMarketHoursVals.pop()
-            outMarketHoursVals[PREMARKET_TIMESLOTS] = values.oneDay[0] / 100;
-            if (inMarketHoursVals.length === 
-                PREMARKET_TIMESLOTS + MARKET_HOURS_TIMESLOTS
-            ) {
-                for (
-                    let i = PREMARKET_TIMESLOTS + MARKET_HOURS_TIMESLOTS - 1;
-                    i < TOTAL_ONE_DAY_TIMESLOTS; 
-                    i++
-                ){
-                    if (times[i] < new Date().getTime() / 1000) {
-                        outMarketHoursVals.push(inMarketHoursVals.last());
-                    }
-                }
-            }
-            const pastVal = values.oneYear[values.oneYear.length - 2] / 100;
-            for (let i = 0; i < TOTAL_ONE_DAY_TIMESLOTS; i++) {
-                if (
-                    i > PREMARKET_TIMESLOTS &&
-                    i < PREMARKET_TIMESLOTS + MARKET_HOURS_TIMESLOTS
-                ) {
-                    inMarketHoursPastVals.push(pastVal)
-                    outMarketHoursPastVals.push(undefined)
-                } else {
-                    inMarketHoursPastVals.push(undefined)
-                    outMarketHoursPastVals.push(pastVal)
-                }
-            }
+            vals = values.oneDay;
+            const prevClose = values.oneYear[values.oneYear.length - 2] / 100;
+            prevDayCloseArray = new Array(vals.length).fill(prevClose);
             break;
+
         case ONE_WEEK:
-            values.oneWeek.forEach(val => inMarketHoursVals.push(val / 100));
+            vals = values.oneWeek;
             break;
+
         case ONE_MONTH:
-            values.oneYear.slice(
+            vals = values.oneYear.slice(
                 values.oneYear.length - ONE_MONTH_OFFSET,
                 values.oneYear.length
-            ).forEach(val => inMarketHoursVals.push(val / 100));
+            );
             break;
+
         case THREE_MONTH:
-            values.oneYear.slice(
+            vals = values.oneYear.slice(
                 values.oneYear.length - THREE_MONTH_OFFSET,
                 values.oneYear.length
-            ).forEach(val => inMarketHoursVals.push(val / 100));
+            );
             break;
+
         case ONE_YEAR:
-            values.oneYear.forEach(val => inMarketHoursVals.push(val / 100));
-            break;
-        default:
+            vals = values.oneYear;
             break;
     }
-    newValues.push(times);
-    return newValues;
+    return [vals.map(val => val / 100), prevDayCloseArray, times];
 }
 
 const generateCustomTooltip = function(boundSetState) {
     return function (tooltipModel) {
         if (tooltipModel.dataPoints === undefined) return;
         if (tooltipModel.dataPoints[0] === undefined) return;
+
         let tooltipEl = document.getElementById("chartjs-tooltip");
         let tooltipTitle = document.getElementById("chartjs-tooltip-title");
         let tooltipLine = document.getElementById("chartjs-tooltip-line");
         let tooltipCircle = document.getElementById("chartjs-tooltip-circle");
+        
         if (!tooltipEl) {
             tooltipEl = document.createElement("div");
             tooltipEl.id = "chartjs-tooltip";
@@ -257,6 +178,7 @@ const generateCustomTooltip = function(boundSetState) {
             tooltipEl.style.opacity = 0;
             return;
         }
+
         if (tooltipModel.dataPoints[0]) {
             boundSetState({
                 displayVal: Math.floor(tooltipModel.dataPoints[0].yLabel * 100),
@@ -271,7 +193,7 @@ const generateCustomTooltip = function(boundSetState) {
         tooltipLine.style.width = 0 + "px";
         tooltipLine.style.borderRight = "1px solid rgba(121,133,139,1)";
         tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - (tooltipTitle.offsetWidth / 2) + 'px';
-        tooltipEl.style.top = position.top - 20 + 'px';
+        tooltipEl.style.top = position.top - 20 + $(window).scrollTop() + 'px';
         tooltipLine.style.position = "absolute";
         tooltipLine.style.top = "20px"
         tooltipCircle.style.position = "absolute";
@@ -299,12 +221,6 @@ export const chartOptions = function(valueIncreased, boundSetState) {
                 },
                 {
                     data: [],
-                    borderColor: (valueIncreased ? "rgba(0,200,5,0.5)" : "rgba(255,80,0,0.5)"),
-                    backgroundColor: "transparent",
-                    borderWidth: 2,
-                },
-                {
-                    data: [],
                     borderColor: "transparent",
                     backgroundColor: "transparent",
                     pointStyle: "line",
@@ -318,19 +234,9 @@ export const chartOptions = function(valueIncreased, boundSetState) {
                     borderColor: "transparent",
                     backgroundColor: "transparent",
                     pointStyle: "line",
-                    pointRotation: 90,
-                    pointRadius: 2,
-                    pointHoverRadius: 2,
-                    pointBorderColor: "rgba(121,133,139,0.5)",
-                },
-                {
-                    data: [],
-                    borderColor: "transparent",
-                    backgroundColor: "transparent",
-                    pointStyle: "line",
                     pointRadius: 0,
                     pointHoverRadius: 0,
-                }
+                },
             ],
         },
         options: {
@@ -455,7 +361,7 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
     const newTimes = getTimesArray(times, chartSelected);
     const newLabels = getLabelsArray(newTimes, chartSelected);
     const newDatasets = getDatasets(values, chartSelected, newTimes);
-
+    
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
@@ -467,19 +373,8 @@ export const removeToolTip = () => {
 
 export const updateLineColor = (chart, valInc) => {
     const datasets = chart.data.datasets;
-    let darkColor;
-    let brightColor;
 
-    if (valInc) {
-        darkColor = "rgba(0,200,5,0.5)";
-        brightColor = "rgba(0,200,5,1)";
-    } else {
-        darkColor = "rgba(255,80,0,0.5)";
-        brightColor = "rgba(255,80,0,1)";
-    }
-
-    datasets[0].borderColor = brightColor;
-    datasets[1].borderColor = darkColor;
+    datasets[0].borderColor = valInc ? "rgba(0,200,5,1)" : "rgba(255,80,0,1)";
     
     chart.update();
 }

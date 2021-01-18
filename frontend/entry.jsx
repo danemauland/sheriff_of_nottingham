@@ -1,10 +1,6 @@
 // TODO
-// refactor cash form
 // autofill stock trade menu from clicking graph
 // Change free stocks to random stocks
-// fix chart tooltip when scrolled
-// fix chart to show new day at 8am
-// fix chart not showing out to 6pm after hours
 
 // rework search to use alphavantage search
 // rework purchasing power
@@ -15,7 +11,6 @@
 // Add in messages/trade confirms
 // history
 // reflect changes in cash balance outside market hours for the day
-// toggle to sandbox api key
 // error handler for APIs
 
 import React from "react";
