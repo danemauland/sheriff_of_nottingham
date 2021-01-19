@@ -10,6 +10,13 @@ Date.prototype.isDSTObserved = function () {
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
 }
 
+Date.prototype.adjustForDST = () => {
+    if (new Date().isDSTObserved()) {
+        this.setUTCHours(this.getUTCHours() - 1)
+    }
+    return this;
+}
+
 Array.prototype.last = function() {
     return this[this.length - 1];
 }

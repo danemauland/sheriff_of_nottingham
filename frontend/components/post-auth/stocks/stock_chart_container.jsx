@@ -7,14 +7,14 @@ import {
     getLastPrice,
     getStartingCashTime,
     getAllTickerPrices,
-    getAllTickerTimes,
+    getTimes
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
     startingCashBal: getStartingCashBal(state),
     startingCashTime: getStartingCashTime(state),
     mostRecentVal: getLastPrice(state, ticker),
-    times: getAllTickerTimes(state, ticker),
+    times: getTimes(state),
     values: getAllTickerPrices(state, ticker),
     valueIncreased: getValueIncreased(state),
 })

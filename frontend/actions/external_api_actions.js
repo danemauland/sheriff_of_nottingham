@@ -3,12 +3,20 @@ import {
     assetIsInitialized,
     companyOverviewIsLoaded,
     tickerDataIsLoaded,
+    ONE_WEEK,
+    ONE_MONTH,
+    ONE_YEAR,
+    getStartTime,
+    inMarketHours,
+    convertToCents,
+    getEndTime,
 } from "../util/dashboard_calcs";
 import * as externalAPIUtil from "../util/external_api_util"
 import {
     setAPIDebounceStartTime,
     removeAPIDebounceStartTime,
 } from "./api_debounce_start_time_actions";
+import {DateTime} from "luxon";
 
 export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
@@ -29,13 +37,20 @@ export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
 export const INITIALIZE_ASSET = "INITIALIZE_ASSET";
 export const FLUSH_ASSET = "FLUSH_ASSET";
 export const DAILY_RESOLUTION = 5;
-export const WEEKLY_RESOLUTION = 30;
+export const WEEKLY_RESOLUTION = 15;
+export const MONTHLY_RESOLUTION = 60;
+export const RECEIVE_INTRADAY_PRICES = "RECEIVE_INTRADAY_PRICES";
+export const RECEIVE_ONE_DAY_PRICES = "RECEIVE_ONE_DAY_PRICES";
+export const RECEIVE_DAILY_PRICES = "RECEIVE_DAILY_PRICES";
+const FETCH_INTRADAY_PRICES = "FETCH_INTRADAY_PRICES";
+const FETCH_DAILY_PRICES = "FETCH_DAILY_PRICES";
 const ANNUAL_RESOLUTION = "D";
+const FETCH_ONE_DAY_PRICES = "FETCH_ONE_DAY_PRICES";
 
 const initializeAsset = ticker => ({
     type: INITIALIZE_ASSET,
     ticker,
-})
+});
 
 const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
     const assetInformation = getState().newEntities.assetInformation;
@@ -65,41 +80,111 @@ const receiveCandles = (ticker, candles, type) => (dispatch, getState) => {
         },
         candlePrices,
     });
-}
+};
+
+const convertStrToCents = str => {
+    const n = parseFloat(str);
+    return convertToCents(n);
+};
+
+const receiveIntradayPrices = (data, ticker) => {
+    let test = data.split("\n");
+    let timeSeries = [];
+    test.forEach((val, i) => {
+        if (i) {
+            const arr = val.split(",").map((value, i) => {
+                // if value is the volume
+                if (i === 5) return parseInt(value);
+
+                // if value is not the timestamp
+                if (i) return convertStrToCents(value);
+
+                return value;
+            });
+            const time = DateTime.fromSQL(arr[0], {zone: "America/New_York"}).toSeconds();
+            arr[0] = time;
+            if (inMarketHours(time)) timeSeries.push(arr);
+        }
+    })
+    timeSeries.sort((a, b) => a[0] - b[0]);
+    // let timeSeries = Object.entries(data[`Time Series (${interval})`]);
+    // for(let entry of timeSeries) {
+    //     const time = entry[0];
+    //     entry[0] =  DateTime.fromSQL(time, {zone: "America/New_York"}).toSeconds();
+    // }
+    // const times = Object.keys(timeSeries).map(time => DateTime.fromSQL(time, {zone: "America/New_York"}).toSeconds());
+    // const prices = Object.values(timeSeries);
+    return ({
+        type: RECEIVE_INTRADAY_PRICES,
+        timeSeries,
+        ticker,
+    });
+};
+
+const receiveOneDayPrices = (data, ticker) => {
+    return ({
+        type: RECEIVE_ONE_DAY_PRICES,
+        timeSeries: data,
+        ticker,
+    })
+};
+
+const receiveDailyPrices = (data, ticker) => {
+    let timeSeries = [];
+    const oneYearStartTime = Date.parse(getStartTime(ONE_YEAR)) / 1000;
+    for(let pair of Object.entries(data["Time Series (Daily)"])) {
+        const [key, vals] = pair;
+        const time = DateTime.fromSQL(key, {zone: "America/New_York"}).toSeconds();
+        
+        // DATES MAY BE OUT OF ORDER, CANNOT JUST BSEARCH FOR ONE YEAR START
+        if (time < oneYearStartTime) continue;
+        const series = [];
+        series.push(time);
+        series.push(convertStrToCents(vals["5. adjusted close"]));
+        series.push(parseInt(vals["6. volume"]));
+        timeSeries.push(series);
+    }
+    timeSeries.sort((a, b) => a[0] - b[0]);
+    return ({
+        type: RECEIVE_DAILY_PRICES,
+        timeSeries,
+        ticker,
+    });
+};
 
 const receiveQuote = (ticker, quote) => ({
     type: RECEIVE_QUOTE,
     ticker,
     quote
-})
+});
 
 const receiveCompanyOverview = (ticker, companyOverview) => ({
     type: RECEIVE_COMPANY_OVERVIEW,
     ticker,
     companyOverview,
-})
+});
 
 const receiveTickerData = (ticker, tickerData) => ({
     type: RECEIVE_TICKER_DATA,
     ticker,
     tickerData,
-})
+});
 
 const receiveCompanyNews = (ticker, companyNews) => ({
     type: RECEIVE_COMPANY_NEWS,
     ticker,
     companyNews,
-})
+});
 
 const receiveMarketNews = marketNews => ({
     type: RECEIVE_MARKET_NEWS,
     marketNews,
-})
+});
 
 const flushAsset = ticker => ({
     type: FLUSH_ASSET,
     ticker,
-})
+});
 
 
 const qFunc = action => {
@@ -107,6 +192,27 @@ const qFunc = action => {
     const start = action.start;
     const end = action.end;
     switch (action.type) {
+        case FETCH_INTRADAY_PRICES:
+            externalAPIUtil.fetchIntradayPrices(ticker).then(
+                data => action.dispatch(receiveIntradayPrices(data, ticker)),
+                err => console.log(err)
+            );
+            break;
+
+        case FETCH_ONE_DAY_PRICES:
+            externalAPIUtil.fetchOneDayPrices(ticker).then(
+                data => action.dispatch(receiveOneDayPrices(data, ticker)),
+                err => console.log(err)
+            );
+            break;
+
+        case FETCH_DAILY_PRICES:
+            externalAPIUtil.fetchDailyPrices(ticker).then(
+                data => action.dispatch(receiveDailyPrices(data, ticker)),
+                err => console.log(err)
+            );
+            break;
+
         case FETCH_CANDLES:
             externalAPIUtil.fetchCandles(ticker, action.resolution, start, end).then(
                 candles => {
@@ -150,7 +256,7 @@ const qFunc = action => {
         default:
             break;
     }
-}
+};
 
 function Queue(func, time, maxPerMin, provider) {
     this.func = func;
@@ -206,76 +312,65 @@ Queue.prototype.run = function () {
     }  
 }
 
-export const finnhubQ = new Queue(qFunc, 50, 25, "finn")
-export const alphaQ = new Queue(qFunc, 50, 25, "alpha")
-export const polygonQ = new Queue(qFunc, 50, 5, "polygon")
+export const finnhubQ = new Queue(qFunc, 50, 25, "finn");
+export const alphaQ = new Queue(qFunc, 50, 25, "alpha");
+export const polygonQ = new Queue(qFunc, 50, 5, "polygon");
 
-//Date prototype functions added in entry file
-export const dstAdjustment = time => {
-    if (new Date().isDSTObserved()) {
-        time.setUTCHours(time.getUTCHours() - 1)
+const fetchIntradayPrices = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_INTRADAY_PRICES,
+        dispatch,
+        ticker,
     }
-    return time;
+    alphaQ.push(action);
 }
 
-const getStartTime = () => { //daylight savings adjustment made, but it will be wrong for
-                             //the weekly candles if DST changed in the last week
-    const startTime = new Date();
-    const dst = startTime.isDSTObserved();
-    const minutes = startTime.getUTCMinutes();
-    const hours = startTime.getUTCHours();
-    if (hours < (dst ? 13 : 14) || ((hours < (dst ? 14 : 15) && minutes < 30))) {
-        startTime.setUTCDate(startTime.getUTCDate() - 1);
-    }
-    startTime.setUTCHours((dst ? 13 : 14));
-    startTime.setMinutes(30);
-    startTime.setSeconds(0);
-    startTime.setMilliseconds(0);
-    startTime.setUTCDate(startTime.getUTCDate() - 1); // COMMENT IN ON MARKET CLOSE DAYS
-    const day = startTime.getUTCDay();
-    if (day === 6) {startTime.setUTCDate(startTime.getUTCDate() - 1)}
-    else if (day === 0) { startTime.setUTCDate(startTime.getUTCDate() - 2)};
-    return dstAdjustment(startTime);
+const fetchOneDayPrices = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_ONE_DAY_PRICES,
+        dispatch,
+        ticker,
+    };
+    finnhubQ.push(action);
 }
 
-const getEndTime = () => {
-    const startTime = getStartTime();
-    const now = new Date();
-    if (now - startTime > (6.5 * 60 * 60 * 1000)) {
-        startTime.setUTCHours(startTime.getUTCHours() + 7);
-        startTime.setMinutes(0);
-        return startTime;
-    }
-    return now;
+const fetchDailyPrices = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_DAILY_PRICES,
+        dispatch,
+        ticker,
+    };
+    finnhubQ.push(action);
 }
 
-export const fetchCandles = (ticker, dispatch, subtype = RECEIVE_DAILY_CANDLES) => {
-    let startTime = getStartTime();
+export const fetchCandles = (ticker, dispatch, subtype = ONE_DAY) => {
     const endTime = getEndTime();
+    let timeframe;
     let resolution;
+
     switch (subtype) {
-        case RECEIVE_DAILY_CANDLES:
+        case ONE_WEEK:
+            timeframe = ONE_WEEK;
             resolution = DAILY_RESOLUTION;
             break;
-        case RECEIVE_WEEKLY_CANDLES:
-            startTime.setUTCDate(startTime.getUTCDate() - 7);
-            resolution = WEEKLY_RESOLUTION;
+        case ONE_MONTH:
+            timeframe = ONE_MONTH;
+            resolution = MONTHLY_RESOLUTION;
             break;
-        case RECEIVE_ANNUAL_CANDLES:
-            startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
-            startTime.setUTCHours(startTime.getUTCHours() + 1); // Needed because API provider will return prices for (only) some stocks for the previous day otherwise
-            startTime.setMinutes(0);
+        case ONE_YEAR:
+            timeframe = ONE_YEAR;
             resolution = ANNUAL_RESOLUTION;
             break;
         default:
             break;
     }
+
     const action = {
         type: FETCH_CANDLES,
         subtype,
         ticker,
         resolution,
-        start: Date.parse(startTime) / 1000,
+        start: Date.parse(getStartTime(timeframe)) / 1000,
         end: Date.parse(endTime) / 1000,
         dispatch,
     }
@@ -347,9 +442,11 @@ export const fetchMarketNews = dispatch => {
 export const fetchAllCandles = (tickers, dispatch) => {
     if (!isIterable(tickers)) tickers = [tickers];
     for(let ticker of tickers) {
-        fetchCandles(ticker, dispatch);
-        fetchCandles(ticker, dispatch, RECEIVE_WEEKLY_CANDLES);
-        fetchCandles(ticker, dispatch, RECEIVE_ANNUAL_CANDLES);
+        fetchIntradayPrices(ticker, dispatch);
+        fetchOneDayPrices(ticker, dispatch);
+        fetchDailyPrices(ticker, dispatch);
+        // fetchCandles(ticker, dispatch, ONE_MONTH);
+        // fetchCandles(ticker, dispatch, ONE_YEAR);
     }
 }
 
@@ -364,7 +461,7 @@ export const fetchAllInfo = (tickers, dispatch) => {
 
 export const fetchNeededInfo = (
     tickersToFetch,
-    {tickers, candlePrices, companyOverviews, tickerData},
+    {tickers, prices, companyOverviews, tickerData},
     dispatch
 ) => {
     tickers = Set.convert(tickers);
@@ -376,7 +473,7 @@ export const fetchNeededInfo = (
             continue;
         }
 
-        if (!pricesAreLoaded(ticker, candlePrices)) {
+        if (!pricesAreLoaded(ticker, prices)) {
             fetchAllCandles(ticker, dispatch);
         }
         if (!companyOverviewIsLoaded(ticker, companyOverviews)) {
@@ -390,4 +487,4 @@ export const fetchNeededInfo = (
 
 const isIterable = variable => (
     typeof variable[Symbol.iterator] === "function"
-)
+);

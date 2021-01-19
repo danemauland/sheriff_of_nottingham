@@ -31,10 +31,10 @@ export const portfolioValue = state => {
 
 export const isStockLoaded = (
     ticker,
-    {tickers, candlePrices, tickerData, companyOverviews}
+    {tickers, prices, tickerData, companyOverviews}
 ) => (
     tickers.has(ticker) &&
-    Object.values(candlePrices).every(prices => prices[ticker]) &&
+    Object.values(prices).every(prices => prices[ticker]) &&
     tickerData[ticker] &&
     companyOverviews[ticker]
 );
@@ -76,11 +76,11 @@ export const pricesAreLoaded = (tickers, prices) => {
 }
 
 export const tradedPricesAreLoaded = (
-    {tickers, trades, candlePrices}
+    {tickers, trades, prices}
 ) => {
     tickers = Array.convert(tickers);
-    const ownedTickers = getTradedTickers(tickers, trades);
-    return pricesAreLoaded(ownedTickers, candlePrices);
+    const tradedTickers = getTradedTickers(tickers, trades);
+    return pricesAreLoaded(tradedTickers, prices);
 }
 
 const getTradedTickers = (tickers, trades) => {
@@ -223,3 +223,111 @@ export const parseIntegerInput = val => {
 
     return parseInt(numStr) || "";
 }
+
+const beforeMarketHours = time => {
+    if (typeof time === "number") time = new Date(time * 1000);
+    const minutes = time.getUTCHours() * 60 + time.getUTCMinutes();
+    const marketOpenHour = (time.isDSTObserved() ? 13 : 14);
+    const marketOpenMinutes = marketOpenHour * 60 + 30;
+    
+    // timeSeries data timestamped at exactly 9:30am is for pre-market
+    // trading
+    return marketOpenMinutes >= minutes;
+}
+
+// daylight savings adjustment made, but it will be wrong for the weekly candles
+// if DST changed in the last week
+export const getStartTime = timeframe => { 
+    const startTime = new Date();
+    
+    if (beforeMarketHours(startTime)) {
+        startTime.setUTCDate(startTime.getUTCDate() - 1);
+    }
+
+    const dst = startTime.isDSTObserved();
+    startTime.setUTCHours((dst ? 13 : 14));
+    
+    startTime.setMinutes(30);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+
+    // startTime.setUTCDate(startTime.getUTCDate() - 1); // COMMENT IN ON MARKET CLOSE DAYS
+
+    const day = startTime.getUTCDay();
+    if (day === 6) {startTime.setUTCDate(startTime.getUTCDate() - 1)}
+    else if (day === 0) { startTime.setUTCDate(startTime.getUTCDate() - 2)};
+
+    switch (timeframe) {
+        case ONE_WEEK:
+            startTime.setUTCDate(startTime.getUTCDate() - 7);
+            break;
+    
+        case ONE_MONTH:
+            startTime.setUTCMonth(startTime.getUTCMonth() - 1);
+            break;
+
+        case THREE_MONTH:
+            startTime.setUTCMonth(startTime.getUTCMonth() - 3);
+            break;
+
+        case ONE_YEAR:
+            startTime.setUTCFullYear(startTime.getUTCFullYear() - 1);
+            break;
+    }
+    
+    return startTime;
+};
+
+export const camelCase = str => {
+    let prevCharWasDash = false;
+    let newStr = "";
+    for(let char of str) {
+        if (char === "-" || char === "_") {
+            prevCharWasDash = true;
+            continue;
+        }
+
+        if (prevCharWasDash) char = char.toUpperCase();
+        else char = char.toLowerCase();
+
+        newStr += char;
+
+        prevCharWasDash = false;
+    }
+
+    return newStr;
+}
+
+export const inMarketHours = time => {
+    return !(beforeMarketHours(time) || afterMarketHours(time));
+}
+
+const afterMarketHours = time => {
+    const date = new Date(time * 1000);
+    const hours = date.getUTCHours();
+    const marketCloseHour = getMarketCloseHour(time);
+
+    return hours >= marketCloseHour;
+}
+
+export const getMarketCloseHour = time => {
+    const date = new Date(time * 1000);
+    const dst = date.isDSTObserved();
+    
+    return (dst ? 20 : 21);
+}
+
+export const convertToCents = n => {
+    return Math.floor(n * 100)
+}
+
+export const getEndTime = () => {
+    const startTime = getStartTime();
+    const now = new Date();
+    if (now - startTime > (6.5 * 60 * 60 * 1000)) {
+        startTime.setUTCHours(startTime.getUTCHours() + 7);
+        startTime.setMinutes(0);
+        return startTime;
+    }
+    return now;
+};

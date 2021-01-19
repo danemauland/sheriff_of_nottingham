@@ -9,6 +9,7 @@ import {
     ONE_MONTH_OFFSET,
     formatPercentage,
     getPreviousEndingValue,
+    camelCase,
 } from "../util/dashboard_calcs";
 
 export const GRAPH_VIEWS = [ONE_DAY,ONE_WEEK,ONE_MONTH,THREE_MONTH,ONE_YEAR];
@@ -34,37 +35,6 @@ export const getStrChange = function(startVal, currentVal) {
     delta = Math.abs(delta);
     
     return `${sign}${formatToDollar(delta)} (${formatPercentage(percentage)})`;
-}
-
-const camelCase = str => {
-    let prevCharWasDash = false;
-    let newStr;
-    for(let char of str) {
-        if (prevCharWasDash) char = char.toUpperCase();
-        else char = char.toLowerCase();
-
-        prevCharWasDash = char === "-";
-    }
-}
-
-const getTimesArray = function(times, type) {
-    const yearLength = times.oneYear.length;
-    switch (type) {
-        case ONE_DAY:
-            return times.oneDay;
-
-        case ONE_WEEK:
-            return times.oneWeek;
-
-        case ONE_MONTH:
-            return times.oneYear.slice(yearLength - ONE_MONTH_OFFSET, yearLength);
-
-        case THREE_MONTH:
-            return times.oneYear.slice(yearLength - THREE_MONTH_OFFSET, yearLength);
-
-        case ONE_YEAR:
-            return times.oneYear;
-    }
 }
 
 const formatTime = function(date) {
@@ -114,7 +84,7 @@ const getLabelsArray = function(times, type) {
 }
 
 const getDatasets = function(values, type, times) {
-    let vals;
+    let vals = [];
     let prevDayCloseArray = [];
 
     switch (type) {
@@ -351,25 +321,25 @@ const updateScale = (chart, newDatasets) => {
     const ticks = chart.options.scales.yAxes[0].ticks;
     ticks.max = max;
     ticks.min = min;
-}
+};
 
 export const refreshChartData = (chart, times, values, chartSelected)=>{
     const data = chart.data;
 
     resetChartData(data);
 
-    const newTimes = getTimesArray(times, chartSelected);
+    const newTimes = times[camelCase(chartSelected)];
     const newLabels = getLabelsArray(newTimes, chartSelected);
     const newDatasets = getDatasets(values, chartSelected, newTimes);
-    
+
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
-}
+};
 
 export const removeToolTip = () => {
     $("#chartjs-tooltip").remove();
-}
+};
 
 export const updateLineColor = (chart, valInc) => {
     const datasets = chart.data.datasets;
