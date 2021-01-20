@@ -142,7 +142,6 @@ const receiveIntradayPrices = (data, ticker) => {
     const times = {oneWeek: oneWeekTimes, oneMonth: oneMonthTimes};
     const prices = {oneWeek: {[ticker]: oneWeekPrices}, oneMonth: {[ticker]: oneMonthPrices}};
     const startPrices = {oneWeek: {[ticker]: oneWeek[0][1]}, oneMonth: {[ticker]: oneMonth[0][1]}};
-    debugger;
     return ({
         type: RECEIVE_INTRADAY_PRICES,
         times,

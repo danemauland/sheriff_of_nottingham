@@ -91,7 +91,10 @@ const getDatasets = function(values, type, times) {
         case ONE_DAY:
             vals = values.oneDay;
             const prevClose = values.oneYear[values.oneYear.length - 2] / 100;
-            prevDayCloseArray = new Array(vals.length).fill(prevClose);
+            prevDayCloseArray = new Array(79).fill(prevClose);
+            while (times.length < prevDayCloseArray.length) {
+                times.push(times.last() + 5 * 60);
+            }
             break;
 
         case ONE_WEEK:
@@ -322,9 +325,9 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
 
     resetChartData(data);
 
-    const newTimes = times[camelCase(chartSelected)];
-    const newLabels = getLabelsArray(newTimes, chartSelected);
+    const newTimes = [...times[camelCase(chartSelected)]];
     const newDatasets = getDatasets(values, chartSelected, newTimes);
+    const newLabels = getLabelsArray(newTimes, chartSelected);
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
