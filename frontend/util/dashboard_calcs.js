@@ -259,7 +259,7 @@ export const getStartTime = timeframe => {
 
     switch (timeframe) {
         case ONE_WEEK:
-            startTime.setUTCDate(startTime.getUTCDate() - 7);
+            startTime.setUTCDate(startTime.getUTCDate() - 6);
             break;
     
         case ONE_MONTH:
@@ -268,6 +268,7 @@ export const getStartTime = timeframe => {
 
         case THREE_MONTH:
             startTime.setUTCMonth(startTime.getUTCMonth() - 3);
+            startTime.setUTCDate(startTime.getUTCDate() - 1);
             break;
 
         case ONE_YEAR:

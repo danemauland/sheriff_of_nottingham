@@ -3,8 +3,10 @@ import {
     assetIsInitialized,
     companyOverviewIsLoaded,
     tickerDataIsLoaded,
+    ONE_DAY,
     ONE_WEEK,
     ONE_MONTH,
+    THREE_MONTH,
     ONE_YEAR,
     getStartTime,
     inMarketHours,
@@ -107,26 +109,64 @@ const receiveIntradayPrices = (data, ticker) => {
         }
     })
     timeSeries.sort((a, b) => a[0] - b[0]);
-    // let timeSeries = Object.entries(data[`Time Series (${interval})`]);
-    // for(let entry of timeSeries) {
-    //     const time = entry[0];
-    //     entry[0] =  DateTime.fromSQL(time, {zone: "America/New_York"}).toSeconds();
-    // }
-    // const times = Object.keys(timeSeries).map(time => DateTime.fromSQL(time, {zone: "America/New_York"}).toSeconds());
-    // const prices = Object.values(timeSeries);
+
+    const oneWeekStartTime = Date.parse(getStartTime(ONE_WEEK)) / 1000;
+    const oneWeek = timeSeries.filter(series => series[0] >= oneWeekStartTime && series[0] % (WEEKLY_RESOLUTION * 60) === 0);
+    const oneWeekTimes = [];
+    const oneWeekPrices = [];
+    for(let i = 0; i < oneWeek.length; i++) {
+        let isFirstPeriod = i === 0;
+        const curPeriod = new Date(oneWeek[i][0] * 1000);
+        if (!isFirstPeriod) {
+            const prevPeriod = new Date(oneWeek[i - 1][0] * 1000);
+            isFirstPeriod = prevPeriod.getUTCDay() !== curPeriod.getUTCDay();
+        }
+        if (isFirstPeriod) {
+            curPeriod.setUTCMinutes(30);
+            oneWeekTimes.push(Date.parse(curPeriod) / 1000);
+            oneWeekPrices.push(oneWeek[i][1]);
+        }
+        oneWeekTimes.push(oneWeek[i][0]);
+        oneWeekPrices.push(oneWeek[i][4]);
+    }
+    
+    const oneMonthStartTime = Date.parse(getStartTime(ONE_MONTH)) / 1000;
+    const oneMonth = timeSeries.filter(series => series[0] >= oneMonthStartTime && series[0] % (MONTHLY_RESOLUTION * 60) === 0);
+    const oneMonthTimes = [];
+    const oneMonthPrices = [];
+    
+    for(let i = 0; i < oneMonth.length; i++) {
+        oneMonthTimes.push(oneMonth[i][0]);
+        oneMonthPrices.push(oneMonth[i][4]);
+    }
+    const times = {oneWeek: oneWeekTimes, oneMonth: oneMonthTimes};
+    const prices = {oneWeek: {[ticker]: oneWeekPrices}, oneMonth: {[ticker]: oneMonthPrices}};
+    const startPrices = {oneWeek: {[ticker]: oneWeek[0][1]}, oneMonth: {[ticker]: oneMonth[0][1]}};
+    debugger;
     return ({
         type: RECEIVE_INTRADAY_PRICES,
-        timeSeries,
+        times,
+        prices,
         ticker,
+        startPrices,
     });
 };
 
-const receiveOneDayPrices = (data, ticker) => {
+const receiveOneDayPrices = (timeSeries, ticker) => {
+    const oneDayTimes = [];
+    const oneDayPrices = [];
+    for(let i = 0; i < timeSeries.t.length; i++) {
+        oneDayTimes.push(timeSeries.t[i]);
+        oneDayPrices.push(convertToCents(timeSeries.o[i]));
+    }
+    const times = {oneDay: oneDayTimes};
+    const prices = {oneDay: {[ticker]: oneDayPrices}};
     return ({
         type: RECEIVE_ONE_DAY_PRICES,
-        timeSeries: data,
         ticker,
-    })
+        times,
+        prices,
+    });
 };
 
 const receiveDailyPrices = (data, ticker) => {
@@ -138,19 +178,58 @@ const receiveDailyPrices = (data, ticker) => {
         
         // DATES MAY BE OUT OF ORDER, CANNOT JUST BSEARCH FOR ONE YEAR START
         if (time < oneYearStartTime) continue;
-        const series = [];
-        series.push(time);
-        series.push(convertStrToCents(vals["5. adjusted close"]));
-        series.push(parseInt(vals["6. volume"]));
-        timeSeries.push(series);
+        // const series = [];
+        // series.push();
+        // series.push(convertStrToCents(vals["4. close"]));
+        // series.push(parseInt(vals["5. volume"]));
+        // series.push(vals);
+        timeSeries.push([time, ...Object.values(vals)]);
     }
     timeSeries.sort((a, b) => a[0] - b[0]);
+    
+    let threeMonthStartTime = Date.parse(getStartTime(THREE_MONTH)) / 1000;
+    const threeMonth = timeSeries.filter(series => series[0] >= threeMonthStartTime);
+    const threeMonthTimes = [];
+    const threeMonthPrices = [];
+    for(let i = 0; i < threeMonth.length; i++) {
+        threeMonthTimes.push(threeMonth[i][0]);
+        threeMonthPrices.push(convertStrToCents(threeMonth[i][4]));
+    }
+    const oneYearTimes = [];
+    const oneYearPrices = [];
+    
+    for(let i = 0; i < timeSeries.length; i++) {
+        oneYearTimes.push(timeSeries[i][0]);
+        oneYearPrices.push(convertStrToCents(timeSeries[i][4]));
+    }
+    
+    const times = {};
+    const prices = {threeMonth: {}, oneYear: {}};
+    
+    times.threeMonth = threeMonthTimes;
+    times.oneYear = oneYearTimes;
+    prices.threeMonth[ticker] = threeMonthPrices;
+    prices.oneYear[ticker] = oneYearPrices;
+    const startPrices = {
+        oneDay: {[ticker]: oneYearPrices.last()},
+        oneYear: {[ticker]: convertStrToCents(timeSeries[0][1])},
+        threeMonth: {[ticker]: convertStrToCents(threeMonth[0][1])},
+    };
     return ({
         type: RECEIVE_DAILY_PRICES,
-        timeSeries,
+        times,
+        prices,
         ticker,
+        startPrices,
     });
 };
+
+const leftPad = (str, num) => {
+    while (str.length < num) {
+        str = "0" + str;
+    }
+    return str;
+}
 
 const receiveQuote = (ticker, quote) => ({
     type: RECEIVE_QUOTE,

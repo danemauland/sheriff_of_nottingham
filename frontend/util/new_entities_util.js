@@ -3,6 +3,9 @@ import {
     DAILY_RESOLUTION,
     WEEKLY_RESOLUTION,
     MONTHLY_RESOLUTION,
+    RECEIVE_INTRADAY_PRICES,
+    RECEIVE_ONE_DAY_PRICES,
+    RECEIVE_DAILY_PRICES,
 } from "../actions/external_api_actions";
 
 import {
@@ -25,6 +28,13 @@ export const defaultState = Object.freeze({
             numShares: {},
         },
         prices: {
+            oneDay: {},
+            oneWeek: {},
+            oneMonth: {},
+            threeMonth: {},
+            oneYear: {},
+        },
+        startPrices: {
             oneDay: {},
             oneWeek: {},
             oneMonth: {},
@@ -305,152 +315,152 @@ const pullTimesAndPrices = (candles, interval, start, check = () => true, typeOv
     return [newTimes, newPrices];
 };
 
-export const setIntradayTimesAndPrices = (
-    {ticker, timeSeries},
-    {prices: allPrices, prevVolume, curVolume, historicPrices},
-    datetimes
-) => {
-    const oneWeekStartTime = Date.parse(getStartTime(ONE_WEEK)) / 1000;
-    const oneWeek = timeSeries.filter(series => series[0] >= oneWeekStartTime && series[0] % (WEEKLY_RESOLUTION * 60) === 0);
-    const oneWeekTimes = [];
-    const oneWeekPrices = [];
-    for(let i = 0; i < oneWeek.length; i++) {
-        let isFirstPeriod = i === 0;
-        const curPeriod = new Date(oneWeek[i][0] * 1000);
-        if (!isFirstPeriod) {
-            const prevPeriod = new Date(oneWeek[i - 1][0] * 1000);
-            isFirstPeriod = prevPeriod.getUTCDay() !== curPeriod.getUTCDay();
-        }
-        if (isFirstPeriod) {
-            curPeriod.setUTCMinutes(30);
-            oneWeekTimes.push(Date.parse(curPeriod) / 1000);
-            oneWeekPrices.push(oneWeek[i][1]);
-        }
-        oneWeekTimes.push(oneWeek[i][0]);
-        oneWeekPrices.push(oneWeek[i][4]);
-    }
+// export const setIntradayTimesAndPrices = (
+//     {ticker, timeSeries},
+//     {prices: allPrices, prevVolume, curVolume, historicPrices},
+//     datetimes
+// ) => {
+//     const oneWeekStartTime = Date.parse(getStartTime(ONE_WEEK)) / 1000;
+//     const oneWeek = timeSeries.filter(series => series[0] >= oneWeekStartTime && series[0] % (WEEKLY_RESOLUTION * 60) === 0);
+//     const oneWeekTimes = [];
+//     const oneWeekPrices = [];
+//     for(let i = 0; i < oneWeek.length; i++) {
+//         let isFirstPeriod = i === 0;
+//         const curPeriod = new Date(oneWeek[i][0] * 1000);
+//         if (!isFirstPeriod) {
+//             const prevPeriod = new Date(oneWeek[i - 1][0] * 1000);
+//             isFirstPeriod = prevPeriod.getUTCDay() !== curPeriod.getUTCDay();
+//         }
+//         if (isFirstPeriod) {
+//             curPeriod.setUTCMinutes(30);
+//             oneWeekTimes.push(Date.parse(curPeriod) / 1000);
+//             oneWeekPrices.push(oneWeek[i][1]);
+//         }
+//         oneWeekTimes.push(oneWeek[i][0]);
+//         oneWeekPrices.push(oneWeek[i][4]);
+//     }
 
-    const oneMonthStartTime = Date.parse(getStartTime(ONE_MONTH)) / 1000;
-    const oneMonth = timeSeries.filter(series => series[0] >= oneMonthStartTime && series[0] % (MONTHLY_RESOLUTION * 60) === 0);
-    const oneMonthTimes = [];
-    const oneMonthPrices = [];
+//     const oneMonthStartTime = Date.parse(getStartTime(ONE_MONTH)) / 1000;
+//     const oneMonth = timeSeries.filter(series => series[0] >= oneMonthStartTime && series[0] % (MONTHLY_RESOLUTION * 60) === 0);
+//     const oneMonthTimes = [];
+//     const oneMonthPrices = [];
 
-    for(let i = 0; i < oneMonth.length; i++) {
-        oneMonthTimes.push(oneMonth[i][0]);
-        oneMonthPrices.push(oneMonth[i][4]);
-    }
-    // const oneMonthTimes = [];
-    // const oneMonthPrices = [];
-    // const oneWeekTimes = [];
-    // const oneWeekPrices = [];
-    // let i = -1;
-    // while(seriesTimes[++i] >= oneMonthStartTime) {
-    //     let time = seriesTimes[i];
-    //     if (!inMarketHours(time)) continue;
-    //     let price = seriesPrices[i];
-    //     if (time % (MONTHLY_RESOLUTION * 60) === 0) {
-    //         oneMonthTimes.push(time);
-    //         oneMonthPrices.push(price);
-    //     }
-    //     if (time >= oneWeekStartTime && time % (WEEKLY_RESOLUTION * 60) === 0) {
-    //         oneWeekTimes.push(time);
-    //         oneWeekPrices.push(price);
-    //     }
-    // }
-    datetimes.oneWeek = oneWeekTimes;
-    datetimes.oneMonth = oneMonthTimes;
-    allPrices.oneWeek[ticker] = oneWeekPrices;
-    allPrices.oneMonth[ticker] = oneMonthPrices;
-}
+//     for(let i = 0; i < oneMonth.length; i++) {
+//         oneMonthTimes.push(oneMonth[i][0]);
+//         oneMonthPrices.push(oneMonth[i][4]);
+//     }
+//     // const oneMonthTimes = [];
+//     // const oneMonthPrices = [];
+//     // const oneWeekTimes = [];
+//     // const oneWeekPrices = [];
+//     // let i = -1;
+//     // while(seriesTimes[++i] >= oneMonthStartTime) {
+//     //     let time = seriesTimes[i];
+//     //     if (!inMarketHours(time)) continue;
+//     //     let price = seriesPrices[i];
+//     //     if (time % (MONTHLY_RESOLUTION * 60) === 0) {
+//     //         oneMonthTimes.push(time);
+//     //         oneMonthPrices.push(price);
+//     //     }
+//     //     if (time >= oneWeekStartTime && time % (WEEKLY_RESOLUTION * 60) === 0) {
+//     //         oneWeekTimes.push(time);
+//     //         oneWeekPrices.push(price);
+//     //     }
+//     // }
+//     datetimes.oneWeek = oneWeekTimes;
+//     datetimes.oneMonth = oneMonthTimes;
+//     allPrices.oneWeek[ticker] = oneWeekPrices;
+//     allPrices.oneMonth[ticker] = oneMonthPrices;
+// }
 
-export const setDailyTimesAndPrices = (
-    {ticker, timeSeries},
-    {prices: allPrices, prevVolume, curVolume, historicPrices},
-    datetimes
-) => {
-    const threeMonthStartTime = Date.parse(getStartTime(THREE_MONTH)) / 1000;
-    const threeMonth = timeSeries.filter(series => series[0] >= threeMonthStartTime);
-    const threeMonthTimes = [];
-    const threeMonthPrices = [];
-    for(let i = 0; i < threeMonth.length; i++) {
-        threeMonthTimes.push(threeMonth[i][0]);
-        threeMonthPrices.push(threeMonth[i][1]);
-    }
+// export const setDailyTimesAndPrices = (
+//     {ticker, timeSeries},
+//     {prices: allPrices, prevVolume, curVolume, historicPrices},
+//     datetimes
+// ) => {
+//     const threeMonthStartTime = Date.parse(getStartTime(THREE_MONTH)) / 1000;
+//     const threeMonth = timeSeries.filter(series => series[0] >= threeMonthStartTime);
+//     const threeMonthTimes = [];
+//     const threeMonthPrices = [];
+//     for(let i = 0; i < threeMonth.length; i++) {
+//         threeMonthTimes.push(threeMonth[i][0]);
+//         threeMonthPrices.push(threeMonth[i][1]);
+//     }
 
-    const oneYearTimes = [];
-    const oneYearPrices = [];
+//     const oneYearTimes = [];
+//     const oneYearPrices = [];
 
-    for(let i = 0; i < timeSeries.length; i++) {
-        oneYearTimes.push(timeSeries[i][0]);
-        oneYearPrices.push(timeSeries[i][1]);
-    }
-    datetimes.threeMonth = threeMonthTimes;
-    datetimes.oneYear = oneYearTimes;
-    allPrices.threeMonth[ticker] = threeMonthPrices;
-    allPrices.oneYear[ticker] = oneYearPrices;
-}
+//     for(let i = 0; i < timeSeries.length; i++) {
+//         oneYearTimes.push(timeSeries[i][0]);
+//         oneYearPrices.push(timeSeries[i][1]);
+//     }
+//     datetimes.threeMonth = threeMonthTimes;
+//     datetimes.oneYear = oneYearTimes;
+//     allPrices.threeMonth[ticker] = threeMonthPrices;
+//     allPrices.oneYear[ticker] = oneYearPrices;
+// }
 
-export const setOneDayTimesAndPrices = (
-    {ticker, timeSeries},
-    {prices: allPrices, prevVolume, curVolume, historicPrices},
-    datetimes
-) => {
-    const oneDayTimes = [];
-    const oneDayPrices = [];
-    for(let i = 0; i < timeSeries.t.length; i++) {
-        oneDayTimes.push(timeSeries.t[i]);
-        oneDayPrices.push(convertToCents(timeSeries.o[i]));
-    }
-    datetimes.oneDay = oneDayTimes;
-    allPrices.oneDay[ticker] = oneDayPrices;
-}
+// export const setOneDayTimesAndPrices = (
+//     {ticker, timeSeries},
+//     {prices: allPrices, prevVolume, curVolume, historicPrices},
+//     datetimes
+// ) => {
+//     const oneDayTimes = [];
+//     const oneDayPrices = [];
+//     for(let i = 0; i < timeSeries.t.length; i++) {
+//         oneDayTimes.push(timeSeries.t[i]);
+//         oneDayPrices.push(convertToCents(timeSeries.o[i]));
+//     }
+//     datetimes.oneDay = oneDayTimes;
+//     allPrices.oneDay[ticker] = oneDayPrices;
+// }
 
-export const setTimesAndPrices = (
-    {subtype, ticker, candles},
-    {prices, prevVolume, curVolume, historicPrices},
-    times
-) => {
-    let newTimes, newPrices, minPrice, maxPrice;
+// export const setTimesAndPrices = (
+//     {subtype, ticker, candles},
+//     {prices, prevVolume, curVolume, historicPrices},
+//     times
+// ) => {
+//     let newTimes, newPrices, minPrice, maxPrice;
 
-    switch (subtype) {
-        // case ONE_WEEK:
-        //     [newTimes, newPrices] = pullTimesAndPrices(candles, DAILY_RESOLUTION, getStartTime(ONE_DAY), inMarketHours);
-        //     times.oneDay = newTimes;
-        //     prices.oneDay[ticker] = newPrices;
-        //     [newTimes, newPrices] = pullTimesAndPrices(candles, WEEKLY_RESOLUTION, getStartTime(ONE_WEEK), inMarketHours);
-        //     times.oneWeek = newTimes;
-        //     prices.oneWeek[ticker] = newPrices;
-        //     historicPrices.oneDayOpen[ticker] = convertToCents(candles.o[0]);
-        //     [newTimes, newPrices] = pullTimesAndPrices(candles, DAILY_RESOLUTION, getStartTime(ONE_DAY), inMarketHours, "l");
-        //     minPrice = Math.min(...newPrices);
-        //     [newTimes, newPrices] = pullTimesAndPrices(candles, DAILY_RESOLUTION, getStartTime(ONE_DAY), inMarketHours, "h");
-        //     maxPrice = Math.max(...newPrices);
-        //     historicPrices["oneDayLow"][ticker] = convertToCents(minPrice);
-        //     historicPrices["oneDayHigh"][ticker] = convertToCents(maxPrice);
-        //     break;
+//     switch (subtype) {
+//         // case ONE_WEEK:
+//         //     [newTimes, newPrices] = pullTimesAndPrices(candles, DAILY_RESOLUTION, getStartTime(ONE_DAY), inMarketHours);
+//         //     times.oneDay = newTimes;
+//         //     prices.oneDay[ticker] = newPrices;
+//         //     [newTimes, newPrices] = pullTimesAndPrices(candles, WEEKLY_RESOLUTION, getStartTime(ONE_WEEK), inMarketHours);
+//         //     times.oneWeek = newTimes;
+//         //     prices.oneWeek[ticker] = newPrices;
+//         //     historicPrices.oneDayOpen[ticker] = convertToCents(candles.o[0]);
+//         //     [newTimes, newPrices] = pullTimesAndPrices(candles, DAILY_RESOLUTION, getStartTime(ONE_DAY), inMarketHours, "l");
+//         //     minPrice = Math.min(...newPrices);
+//         //     [newTimes, newPrices] = pullTimesAndPrices(candles, DAILY_RESOLUTION, getStartTime(ONE_DAY), inMarketHours, "h");
+//         //     maxPrice = Math.max(...newPrices);
+//         //     historicPrices["oneDayLow"][ticker] = convertToCents(minPrice);
+//         //     historicPrices["oneDayHigh"][ticker] = convertToCents(maxPrice);
+//         //     break;
 
-        // case ONE_MONTH:
-        //     [newTimes, newPrices] = pullTimesAndPrices(candles, MONTHLY_RESOLUTION, getStartTime(ONE_MONTH), inMarketHours);
-        //     times.oneMonth = newTimes;
-        //     prices.oneMonth[ticker] = newPrices;
-        //     break;
+//         // case ONE_MONTH:
+//         //     [newTimes, newPrices] = pullTimesAndPrices(candles, MONTHLY_RESOLUTION, getStartTime(ONE_MONTH), inMarketHours);
+//         //     times.oneMonth = newTimes;
+//         //     prices.oneMonth[ticker] = newPrices;
+//         //     break;
 
-        case ONE_YEAR:
-            [newTimes, newPrices] = pullTimesAndPrices(candles, MONTHLY_RESOLUTION, getStartTime(THREE_MONTH), isTradingDay, "c");
-            times.threeMonth = newTimes;
-            prices.threeMonth[ticker] = newPrices;
-            [newTimes, newPrices] = pullTimesAndPrices(candles, MONTHLY_RESOLUTION, getStartTime(ONE_YEAR), isTradingDay, "c");
-            times.oneYear = newTimes;
-            prices.oneYear[ticker] = newPrices;
-            prevVolume[ticker] = candles.v[candles.v.length - 2];
-            curVolume[ticker] = candles.v.last();
-            minPrice = Math.min(...candles.l);
-            maxPrice = Math.max(...candles.h);
-            historicPrices["oneYearLow"][ticker] = convertToCents(minPrice);
-            historicPrices["oneYearHigh"][ticker] = convertToCents(maxPrice);
-            break;
-    }
-}
+//         case ONE_YEAR:
+//             [newTimes, newPrices] = pullTimesAndPrices(candles, MONTHLY_RESOLUTION, getStartTime(THREE_MONTH), isTradingDay, "c");
+//             times.threeMonth = newTimes;
+//             prices.threeMonth[ticker] = newPrices;
+//             [newTimes, newPrices] = pullTimesAndPrices(candles, MONTHLY_RESOLUTION, getStartTime(ONE_YEAR), isTradingDay, "c");
+//             times.oneYear = newTimes;
+//             prices.oneYear[ticker] = newPrices;
+//             prevVolume[ticker] = candles.v[candles.v.length - 2];
+//             curVolume[ticker] = candles.v.last();
+//             minPrice = Math.min(...candles.l);
+//             maxPrice = Math.max(...candles.h);
+//             historicPrices["oneYearLow"][ticker] = convertToCents(minPrice);
+//             historicPrices["oneYearHigh"][ticker] = convertToCents(maxPrice);
+//             break;
+//     }
+// }
 
 const isTradingDay = time => {
     const date = new Date(time * 1000);
@@ -469,8 +479,7 @@ export const getKey = type => {
 }
 
 export const updatePortfolioValuations = (
-    {tickers},
-    {prices, valuations: assetValuations},
+    {prices, valuations: assetValuations, tickers},
     {cashHistory, valuations},
     times,
 ) => {
@@ -570,7 +579,7 @@ const calcTimeFrameTotals = (times, valuations, aggValues, tickers) => {
 }
 
 export const updateStockValuations = (
-    {ticker, subtype},
+    {ticker, type},
     {ownershipHistories, prices, valuations},
     times,
 ) => {
@@ -581,23 +590,23 @@ export const updateStockValuations = (
 
     const ownershipTimes = ownershipHistories.times[ticker];
 
-    switch (subtype) {
-        case ONE_WEEK:
+    switch (type) {
+        case RECEIVE_ONE_DAY_PRICES:
             valuations.oneDay[ticker] = calcValuations(
                 times.oneDay,
                 prices.oneDay[ticker],
                 ownershipTimes,
                 ownershipShares,
             );
+            break;
+            
+        case RECEIVE_INTRADAY_PRICES:
             valuations.oneWeek[ticker] = calcValuations(
                 times.oneWeek,
                 prices.oneWeek[ticker],
                 ownershipTimes,
                 ownershipShares,
             );
-            break;
-
-        case ONE_MONTH:
             valuations.oneMonth[ticker] = calcValuations(
                 times.oneMonth,
                 prices.oneMonth[ticker],
@@ -606,7 +615,7 @@ export const updateStockValuations = (
             );
             break;
     
-        case ONE_YEAR:
+        case RECEIVE_DAILY_PRICES:
             valuations.threeMonth[ticker] = calcValuations(
                 times.threeMonth,
                 prices.threeMonth[ticker],
@@ -624,17 +633,17 @@ export const updateStockValuations = (
         default:
             break;
     }
-    {
-        const key = camelCase(subtype);
-        const tickerPrices = prices[key][ticker];
+    // {
+    //     const key = camelCase(type);
+    //     const tickerPrices = prices[key][ticker];
 
-        valuations[key][ticker] = calcValuations(
-            times[key],
-            tickerPrices,
-            ownershipTimes,
-            ownershipShares,
-        );
-    }
+    //     valuations[key][ticker] = calcValuations(
+    //         times[key],
+    //         tickerPrices,
+    //         ownershipTimes,
+    //         ownershipShares,
+    //     );
+    // }
 
 }
 

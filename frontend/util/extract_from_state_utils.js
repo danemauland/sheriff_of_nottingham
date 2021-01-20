@@ -32,8 +32,20 @@ const getTickerOneDayPrices = (state, ticker) => (
 
 const getOneWeekPrices = state => getPrices(state).oneWeek;
 
+const getOneMonthPrices = state => getPrices(state).oneMonth;
+
+const getThreeMonthPrices = state => getPrices(state).threeMonth;
+
 const getTickerOneWeekPrices = (state, ticker) => (
     getOneWeekPrices(state)[ticker]
+);
+
+const getTickerOneMonthPrices = (state, ticker) => (
+    getOneMonthPrices(state)[ticker]
+);
+
+const getTickerThreeMonthPrices = (state, ticker) => (
+    getThreeMonthPrices(state)[ticker]
 );
 
 const getOneYearPrices = state => getPrices(state).oneYear;
@@ -45,6 +57,8 @@ const getTickerOneYearPrices = (state, ticker) => (
 export const getAllTickerPrices = (state, ticker) => ({
     oneDay: getTickerOneDayPrices(state, ticker),
     oneWeek: getTickerOneWeekPrices(state, ticker),
+    oneMonth: getTickerOneMonthPrices(state, ticker),
+    threeMonth: getTickerThreeMonthPrices(state, ticker),
     oneYear: getTickerOneYearPrices(state, ticker),
 })
 

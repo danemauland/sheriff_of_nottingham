@@ -55,12 +55,12 @@ const MONTHS = [
 
 export const parseMonth = date => MONTHS[date.getMonth()];
 
-const formatDateTime = function (date, includeTime = true) {
+const formatDateTime = function (date, toggleYear) {
     const month = parseMonth(date);
     const day = date.getDate();
 
-    if (includeTime) return `${month} ${day}, ${formatTime(date)}`;
-    else return `${month} ${day}`;
+    if (toggleYear) return `${month} ${day}, ${date.getFullYear()}`;
+    return `${month} ${day}, ${formatTime(date)}`;
 }
 
 const getLabelsArray = function(times, type) {
@@ -73,13 +73,13 @@ const getLabelsArray = function(times, type) {
             return dates.map(date => formatDateTime(date));
             
         case ONE_MONTH:
-            return dates.map(date => formatDateTime(date, false));
+            return dates.map(date => formatDateTime(date));
             
         case THREE_MONTH:
-            return dates.map(date => formatDateTime(date, false));
+            return dates.map(date => formatDateTime(date, true));
             
         case ONE_YEAR:
-            return dates.map(date => formatDateTime(date, false));
+            return dates.map(date => formatDateTime(date, true));
     }
 }
 
@@ -99,17 +99,11 @@ const getDatasets = function(values, type, times) {
             break;
 
         case ONE_MONTH:
-            vals = values.oneYear.slice(
-                values.oneYear.length - ONE_MONTH_OFFSET,
-                values.oneYear.length
-            );
+            vals = values.oneMonth;
             break;
 
         case THREE_MONTH:
-            vals = values.oneYear.slice(
-                values.oneYear.length - THREE_MONTH_OFFSET,
-                values.oneYear.length
-            );
+            vals = values.threeMonth;
             break;
 
         case ONE_YEAR:
@@ -331,7 +325,6 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
     const newTimes = times[camelCase(chartSelected)];
     const newLabels = getLabelsArray(newTimes, chartSelected);
     const newDatasets = getDatasets(values, chartSelected, newTimes);
-
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
