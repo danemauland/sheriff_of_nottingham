@@ -67,7 +67,9 @@ const getLabelsArray = function(times, type) {
     const dates = times.map(time => new Date(time * 1000));
     switch (type) {
         case ONE_DAY:
-            return dates.map(date => formatTime(date));
+                const labels = dates.map(date => formatTime(date));
+                while (labels.length < 79) labels.push(undefined);
+            return labels;
             
         case ONE_WEEK:
             return dates.map(date => formatDateTime(date));
@@ -237,7 +239,7 @@ export const chartOptions = function(valueIncreased, boundSetState) {
                 intersect: false,
                 titleFontColor: "rgba(121,133,139,1)",
                 filter: function (tooltipItem) {
-                    return tooltipItem.datasetIndex < 2;
+                    return tooltipItem.datasetIndex === 0;
                 }
             },
             hover: {
@@ -326,8 +328,9 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
     resetChartData(data);
 
     const newTimes = [...times[camelCase(chartSelected)]];
-    const newDatasets = getDatasets(values, chartSelected, newTimes);
     const newLabels = getLabelsArray(newTimes, chartSelected);
+    const newDatasets = getDatasets(values, chartSelected, newTimes);
+    debugger;
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
