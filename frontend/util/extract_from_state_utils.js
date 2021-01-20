@@ -254,3 +254,16 @@ export const getDayPercentChange = (state, ticker) => (
 export const getTimes = state => (
     getNewEntities(state).times
 );
+
+export const getStartPrices = (state, ticker) => {
+    const allStartPrices = getAllStartPrices(state);
+    return {
+        oneDay: allStartPrices.oneDay[ticker],
+        oneWeek: allStartPrices.oneWeek[ticker],
+        oneMonth: allStartPrices.oneMonth[ticker],
+        threeMonth: allStartPrices.threeMonth[ticker],
+        oneYear: allStartPrices.oneYear[ticker],
+    }
+}
+
+const getAllStartPrices = state => getAssetInformation(state).startPrices;

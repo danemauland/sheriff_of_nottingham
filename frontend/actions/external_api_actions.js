@@ -214,7 +214,7 @@ const receiveDailyPrices = (data, ticker) => {
     prices.threeMonth[ticker] = threeMonthPrices;
     prices.oneYear[ticker] = oneYearPrices;
     const startPrices = {
-        oneDay: {[ticker]: oneYearPrices.last()},
+        oneDay: {[ticker]: oneYearPrices[oneYearPrices.length - 2]},
         oneYear: {[ticker]: convertStrToCents(timeSeries[0][1])},
         threeMonth: {[ticker]: convertStrToCents(threeMonth[0][1])},
     };

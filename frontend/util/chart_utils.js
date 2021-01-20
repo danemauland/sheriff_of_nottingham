@@ -10,6 +10,7 @@ import {
     formatPercentage,
     getPreviousEndingValue,
     camelCase,
+    inMarketHours,
 } from "../util/dashboard_calcs";
 
 export const GRAPH_VIEWS = [ONE_DAY,ONE_WEEK,ONE_MONTH,THREE_MONTH,ONE_YEAR];
@@ -86,14 +87,12 @@ const getLabelsArray = function(times, type) {
 }
 
 const getDatasets = function(values, type, times) {
-    let vals = [];
-    let newTimes = [];
+    const vals = values[camelCase(type)];
+    const newTimes = [...times[camelCase(type)]];
     let prevDayCloseArray = [];
-    newTimes = [...times[camelCase(type)]];
 
     switch (type) {
         case ONE_DAY:
-            vals = values.oneDay;
             const prevClose = values.oneYear[values.oneYear.length - 2] / 100;
             prevDayCloseArray = new Array(79).fill(prevClose);
             while (newTimes.length < prevDayCloseArray.length) {
@@ -102,7 +101,6 @@ const getDatasets = function(values, type, times) {
             break;
 
         case ONE_WEEK:
-            vals = values.oneWeek;
             for(let i = 0; i < values.oneDay.length; i = i + 3) {
                 vals.push(values.oneDay[i]);
                 newTimes.push(times.oneDay[i]);
@@ -110,7 +108,6 @@ const getDatasets = function(values, type, times) {
             break;
 
         case ONE_MONTH:
-            vals = values.oneMonth;
             for(let i = 6; i < values.oneDay.length; i = i + 12) {
                 vals.push(values.oneDay[i]);
                 newTimes.push(times.oneDay[i]);
@@ -118,15 +115,11 @@ const getDatasets = function(values, type, times) {
             break;
 
         case THREE_MONTH:
-            vals = values.threeMonth;
-            vals.push(values.oneDay.last());
-            newTimes.push(times.oneDay.last());
-            break;
-
         case ONE_YEAR:
-            vals = values.oneYear;
-            vals.push(values.oneDay.last());
-            newTimes.push(times.oneDay.last());
+            if (inMarketHours(Date.parse(new Date) / 1000)) {
+                vals.push(values.oneDay.last());
+                newTimes.push(times.oneDay.last());
+            }
             break;
     }
     return [vals.map(val => val / 100), prevDayCloseArray, newTimes];
@@ -343,6 +336,7 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
 
     const newDatasets = getDatasets(values, chartSelected, times);
     const newLabels = getLabelsArray(newDatasets.last(), chartSelected);
+    debugger;
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
@@ -385,11 +379,11 @@ export const getViewName = view => {
 }
 
 export const calcStrChange = (
-    {values, startingCashTime, startingCashBal},
+    {startingCashTime, startingCashBal, startValues},
     {chartSelected, displayVal, dataPointIndex},
     timesDataset,
 ) => {
-    let startVal = getPreviousEndingValue(values.oneYear, chartSelected);
+    let startVal = startValues[camelCase(chartSelected)];
     let endVal = displayVal;
 
     if (startVal === 0) {

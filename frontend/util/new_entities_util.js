@@ -48,6 +48,13 @@ export const defaultState = Object.freeze({
             threeMonth: {},
             oneYear: {},
         },
+        startValuations: {
+            oneDay: {},
+            oneWeek: {},
+            oneMonth: {},
+            threeMonth: {},
+            oneYear: {},
+        },
         historicPrices: {
             oneDayHigh: {},
             oneDayLow: {},
@@ -579,7 +586,7 @@ const calcTimeFrameTotals = (times, valuations, aggValues, tickers) => {
 
 export const updateStockValuations = (
     {ticker, type},
-    {ownershipHistories, prices, valuations},
+    {ownershipHistories, prices, valuations, startValuations},
     times,
 ) => {
 
@@ -627,6 +634,12 @@ export const updateStockValuations = (
                 ownershipTimes,
                 ownershipShares,
             );
+            const {oneDay, oneWeek, oneMonth, threeMonth, oneYear} = startValuations;
+            oneDay[ticker] = valuations.oneYear[ticker].last();
+            oneWeek[ticker] = valuations.oneYear[ticker][valuations.oneYear[ticker].length - 7];
+            oneMonth[ticker] = valuations.oneYear[ticker][valuations.oneYear[ticker].length - times.oneMonth.length];
+            threeMonth[ticker] = valuations.oneYear[ticker][valuations.oneYear[ticker].length - times.threeMonth.length];
+            oneYear[ticker] = valuations.oneYear[ticker][0];
             break;
     
         default:
