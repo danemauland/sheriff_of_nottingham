@@ -263,57 +263,57 @@ const isLastPeriod = (time, type) => {
 //     }
 // }
 
-const pullPrices = (candles, times) => {
-    const prices = [];
+// const pullPrices = (candles, times) => {
+//     const prices = [];
     
-    for(let i = 0; i < times.length; i++ ) {
+//     for(let i = 0; i < times.length; i++ ) {
         
-            prices.push(convertToCents(candles.o[i]));
+//             prices.push(convertToCents(candles.o[i]));
             
-            // times/prices are based on the opening times/prices of each
-            // candle. The below code adds the closing time/price
-            if (i === candles.t.length - 1) {
-                const secondsSinceEpoch = Date.parse(new Date()) / 1000
-                newTimes.push(secondsSinceEpoch);
-                prices.push(convertToCents(candles.c[i]));
-            } else if (isLastPeriod(candles.t[i], type)) {
-                // converts time to milliseconds since epoch
-                // then uses that to construct date object
-                let newTime = new Date(candles.t[i] * 1000);
+//             // times/prices are based on the opening times/prices of each
+//             // candle. The below code adds the closing time/price
+//             if (i === candles.t.length - 1) {
+//                 const secondsSinceEpoch = Date.parse(new Date()) / 1000
+//                 newTimes.push(secondsSinceEpoch);
+//                 prices.push(convertToCents(candles.c[i]));
+//             } else if (isLastPeriod(candles.t[i], type)) {
+//                 // converts time to milliseconds since epoch
+//                 // then uses that to construct date object
+//                 let newTime = new Date(candles.t[i] * 1000);
 
-                // sets time to market close
-                newTime.setUTCHours(newTime.getUTCHours() + 1);
-                newTime.setUTCMinutes(0);
+//                 // sets time to market close
+//                 newTime.setUTCHours(newTime.getUTCHours() + 1);
+//                 newTime.setUTCMinutes(0);
 
-                // converts back to seconds since epoch
-                newTimes.push(Date.parse(newTime) / 1000);
+//                 // converts back to seconds since epoch
+//                 newTimes.push(Date.parse(newTime) / 1000);
 
-                prices.push(convertToCents(candles.c[i]));
-            }
+//                 prices.push(convertToCents(candles.c[i]));
+//             }
 
         
-    }
-    return [newTimes, prices];
-}
+//     }
+//     return [newTimes, prices];
+// }
 
-const pullTimesAndPrices = (candles, interval, start, check = () => true, typeOverride) => {
-    const newTimes = [];
-    const newPrices = [];
-    const times = candles.t;
-    const prices = candles[typeOverride || "o"];
+// const pullTimesAndPrices = (candles, interval, start, check = () => true, typeOverride) => {
+//     const newTimes = [];
+//     const newPrices = [];
+//     const times = candles.t;
+//     const prices = candles[typeOverride || "o"];
 
-    interval *= 60;
-    start = Date.parse(start) / 1000;
-    for(let i = 0; i < times.length; i++) {
-        if (times[i] < start) continue;
-        if (times[i] % interval === 0 && check(times[i])) {
-            newTimes.push(times[i]);
-            newPrices.push(convertToCents(prices[i]));
-        }
-    }
+//     interval *= 60;
+//     start = Date.parse(start) / 1000;
+//     for(let i = 0; i < times.length; i++) {
+//         if (times[i] < start) continue;
+//         if (times[i] % interval === 0 && check(times[i])) {
+//             newTimes.push(times[i]);
+//             newPrices.push(convertToCents(prices[i]));
+//         }
+//     }
 
-    return [newTimes, newPrices];
-};
+//     return [newTimes, newPrices];
+// };
 
 // export const setIntradayTimesAndPrices = (
 //     {ticker, timeSeries},
@@ -462,10 +462,10 @@ const pullTimesAndPrices = (candles, interval, start, check = () => true, typeOv
 //     }
 // }
 
-const isTradingDay = time => {
-    const date = new Date(time * 1000);
-    return date.getUTCDay() !== 0 && date.getUTCDay() !== 6;
-}
+// const isTradingDay = time => {
+//     const date = new Date(time * 1000);
+//     return date.getUTCDay() !== 0 && date.getUTCDay() !== 6;
+// }
 
 export const getKey = type => {
     switch (type) {
@@ -503,12 +503,11 @@ export const updatePortfolioValuations = (
             times[key]
         )
     }
-
     // update with today's most recent price/valuation
-    times.oneWeek.push(times.oneDay.last());
-    times.oneYear.push(times.oneDay.last());
-    valuations.oneWeek.push(valuations.oneDay.last());
-    valuations.oneYear.push(valuations.oneDay.last());
+    // times.oneWeek.push(times.oneDay.last());
+    // times.oneYear.push(times.oneDay.last());
+    // valuations.oneWeek.push(valuations.oneDay.last());
+    // valuations.oneYear.push(valuations.oneDay.last());
 }
 
 const mergeHistories = (
@@ -539,7 +538,7 @@ const mergeHistories = (
         valuesPointer++;
     }
 
-    while (cashPointer < cashTimes.length) {
+    while (cashPointer < cashTimes.length - 1) {
         totals.push(values.last() + cashBalances[cashPointer]);
         cashPointer++;
     }

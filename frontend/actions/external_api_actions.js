@@ -158,6 +158,10 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
         oneDayTimes.push(timeSeries.t[i]);
         oneDayPrices.push(convertToCents(timeSeries.o[i]));
     }
+    if (oneDayTimes.length < 79) {
+        oneDayTimes.push(Date.parse(new Date) / 1000);
+        oneDayPrices.push(convertToCents(timeSeries.c.last()));
+    }
     const times = {oneDay: oneDayTimes};
     const prices = {oneDay: {[ticker]: oneDayPrices}};
     return ({

@@ -87,35 +87,49 @@ const getLabelsArray = function(times, type) {
 
 const getDatasets = function(values, type, times) {
     let vals = [];
+    let newTimes = [];
     let prevDayCloseArray = [];
+    newTimes = [...times[camelCase(type)]];
 
     switch (type) {
         case ONE_DAY:
             vals = values.oneDay;
             const prevClose = values.oneYear[values.oneYear.length - 2] / 100;
             prevDayCloseArray = new Array(79).fill(prevClose);
-            while (times.length < prevDayCloseArray.length) {
-                times.push(times.last() + 5 * 60);
+            while (newTimes.length < prevDayCloseArray.length) {
+                newTimes.push(newTimes.last() + 5 * 60);
             }
             break;
 
         case ONE_WEEK:
             vals = values.oneWeek;
+            for(let i = 0; i < values.oneDay.length; i = i + 3) {
+                vals.push(values.oneDay[i]);
+                newTimes.push(times.oneDay[i]);
+            }
             break;
 
         case ONE_MONTH:
             vals = values.oneMonth;
+            for(let i = 6; i < values.oneDay.length; i = i + 12) {
+                vals.push(values.oneDay[i]);
+                newTimes.push(times.oneDay[i]);
+            }
             break;
 
         case THREE_MONTH:
             vals = values.threeMonth;
+            vals.push(values.oneDay.last());
+            newTimes.push(times.oneDay.last());
             break;
 
         case ONE_YEAR:
             vals = values.oneYear;
+            vals.push(values.oneDay.last());
+            newTimes.push(times.oneDay.last());
             break;
     }
-    return [vals.map(val => val / 100), prevDayCloseArray, times];
+    return [vals.map(val => val / 100), prevDayCloseArray, newTimes];
 }
 
 const generateCustomTooltip = function(boundSetState) {
@@ -327,10 +341,8 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
 
     resetChartData(data);
 
-    const newTimes = [...times[camelCase(chartSelected)]];
-    const newLabels = getLabelsArray(newTimes, chartSelected);
-    const newDatasets = getDatasets(values, chartSelected, newTimes);
-    debugger;
+    const newDatasets = getDatasets(values, chartSelected, times);
+    const newLabels = getLabelsArray(newDatasets.last(), chartSelected);
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
