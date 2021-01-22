@@ -48,13 +48,6 @@ export const defaultState = Object.freeze({
             threeMonth: {},
             oneYear: {},
         },
-        startValuations: {
-            oneDay: {},
-            oneWeek: {},
-            oneMonth: {},
-            threeMonth: {},
-            oneYear: {},
-        },
         historicPrices: {
             oneDayHigh: {},
             oneDayLow: {},
@@ -91,6 +84,13 @@ export const defaultState = Object.freeze({
             oneMonth: [],
             threeMonth: [],
             oneYear: [],
+        },
+        startValuations: {
+            oneDay: {},
+            oneWeek: {},
+            oneMonth: {},
+            threeMonth: {},
+            oneYear: {},
         },
         trades: [],
     }
@@ -487,7 +487,7 @@ export const getKey = type => {
 
 export const updatePortfolioValuations = (
     {prices, valuations: assetValuations, tickers},
-    {cashHistory, valuations},
+    {cashHistory, valuations, startValuations},
     times,
 ) => {
 
@@ -515,6 +515,11 @@ export const updatePortfolioValuations = (
     // times.oneYear.push(times.oneDay.last());
     // valuations.oneWeek.push(valuations.oneDay.last());
     // valuations.oneYear.push(valuations.oneDay.last());
+    startValuations.oneDay = valuations.oneYear.last();
+    startValuations.oneWeek = valuations.oneYear[valuations.oneYear.length - 4];
+    startValuations.oneMonth = valuations.oneYear[valuations.oneYear.length - Math.floor(times.oneMonth.length / 6) - 2];
+    startValuations.threeMonth = valuations.oneYear[valuations.oneYear.length - times.threeMonth.length - 1];
+    startValuations.oneYear = valuations.oneYear[0];
 }
 
 const mergeHistories = (
@@ -586,7 +591,7 @@ const calcTimeFrameTotals = (times, valuations, aggValues, tickers) => {
 
 export const updateStockValuations = (
     {ticker, type},
-    {ownershipHistories, prices, valuations, startValuations},
+    {ownershipHistories, prices, valuations},
     times,
 ) => {
 
@@ -634,12 +639,6 @@ export const updateStockValuations = (
                 ownershipTimes,
                 ownershipShares,
             );
-            const {oneDay, oneWeek, oneMonth, threeMonth, oneYear} = startValuations;
-            oneDay[ticker] = valuations.oneYear[ticker].last();
-            oneWeek[ticker] = valuations.oneYear[ticker][valuations.oneYear[ticker].length - 7];
-            oneMonth[ticker] = valuations.oneYear[ticker][valuations.oneYear[ticker].length - times.oneMonth.length];
-            threeMonth[ticker] = valuations.oneYear[ticker][valuations.oneYear[ticker].length - times.threeMonth.length];
-            oneYear[ticker] = valuations.oneYear[ticker][0];
             break;
     
         default:

@@ -162,8 +162,10 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
         oneDayTimes.push(Date.parse(new Date) / 1000);
         oneDayPrices.push(convertToCents(timeSeries.c.last()));
     }
+    validateOneDayTimesAndPrices(oneDayTimes, oneDayPrices);
     const times = {oneDay: oneDayTimes};
     const prices = {oneDay: {[ticker]: oneDayPrices}};
+    // if (ticker==="GOOG") debugger;
     return ({
         type: RECEIVE_ONE_DAY_PRICES,
         ticker,
@@ -171,6 +173,24 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
         prices,
     });
 };
+
+
+// Yes, the below code "makes up" prices but I'm not willing to pay $100/month
+// for a more reliable API provider
+const validateOneDayTimesAndPrices = (times, prices) => {
+    const startTime = Date.parse(getStartTime(ONE_DAY)) / 1000;
+    if (startTime !== times[0]) {
+        times.unshift(startTime);
+        prices.unshift(prices[0]);
+    }
+    for(let i = 1; i < times.length - 1; i++) {
+        const newTime = times[i - 1] + DAILY_RESOLUTION * 60;
+        if (times[i] !== newTime) {
+            times.splice(i, 0, newTime);
+            prices.splice(i, 0, (prices[i - 1] + prices[i]) / 2);
+        }
+    }
+}
 
 const receiveDailyPrices = (data, ticker) => {
     let timeSeries = [];
@@ -196,14 +216,14 @@ const receiveDailyPrices = (data, ticker) => {
     const threeMonthPrices = [];
     for(let i = 0; i < threeMonth.length; i++) {
         threeMonthTimes.push(threeMonth[i][0]);
-        threeMonthPrices.push(convertStrToCents(threeMonth[i][4]));
+        threeMonthPrices.push(convertStrToCents(threeMonth[i][5]));
     }
     const oneYearTimes = [];
     const oneYearPrices = [];
     
     for(let i = 0; i < timeSeries.length; i++) {
         oneYearTimes.push(timeSeries[i][0]);
-        oneYearPrices.push(convertStrToCents(timeSeries[i][4]));
+        oneYearPrices.push(convertStrToCents(timeSeries[i][5]));
     }
     
     const times = {};

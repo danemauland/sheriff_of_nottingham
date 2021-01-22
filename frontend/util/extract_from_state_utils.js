@@ -267,3 +267,7 @@ export const getStartPrices = (state, ticker) => {
 }
 
 const getAllStartPrices = state => getAssetInformation(state).startPrices;
+
+export const getStartValuations = state => (
+    getPortfolioHistory(state).startValuations
+);

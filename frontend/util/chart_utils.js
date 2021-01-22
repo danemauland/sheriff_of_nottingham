@@ -90,6 +90,8 @@ const getDatasets = function(values, type, times) {
     const vals = values[camelCase(type)];
     const newTimes = [...times[camelCase(type)]];
     let prevDayCloseArray = [];
+    let lastIndex;
+    const isInMarketHours = inMarketHours(Date.parse(new Date) / 1000);
 
     switch (type) {
         case ONE_DAY:
@@ -104,6 +106,11 @@ const getDatasets = function(values, type, times) {
             for(let i = 0; i < values.oneDay.length; i = i + 3) {
                 vals.push(values.oneDay[i]);
                 newTimes.push(times.oneDay[i]);
+                lastIndex = i;
+            }
+            if (lastIndex !== values.oneDay.length - 1 && isInMarketHours) {
+                vals.push(values.oneDay.last());
+                newTimes.push(times.oneDay.last());
             }
             break;
 
@@ -112,11 +119,15 @@ const getDatasets = function(values, type, times) {
                 vals.push(values.oneDay[i]);
                 newTimes.push(times.oneDay[i]);
             }
+            if (lastIndex !== values.oneDay.length - 1 && isInMarketHours) {
+                vals.push(values.oneDay.last());
+                newTimes.push(times.oneDay.last());
+            }
             break;
 
         case THREE_MONTH:
         case ONE_YEAR:
-            if (inMarketHours(Date.parse(new Date) / 1000)) {
+            if (isInMarketHours) {
                 vals.push(values.oneDay.last());
                 newTimes.push(times.oneDay.last());
             }
@@ -336,7 +347,6 @@ export const refreshChartData = (chart, times, values, chartSelected)=>{
 
     const newDatasets = getDatasets(values, chartSelected, times);
     const newLabels = getLabelsArray(newDatasets.last(), chartSelected);
-    debugger;
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();

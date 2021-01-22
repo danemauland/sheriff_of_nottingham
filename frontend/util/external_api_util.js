@@ -88,7 +88,7 @@ export const fetchIntradayPrices = ticker => {
 
 export const fetchDailyPrices = ticker => {
     const params = {
-        function: "TIME_SERIES_DAILY",
+        function: "TIME_SERIES_DAILY_ADJUSTED",
         symbol: ticker,
         outputsize: "full",
     };
