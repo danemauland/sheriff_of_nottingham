@@ -1,5 +1,6 @@
 import React from "react";
 import {CgSearch} from "react-icons/cg";
+import { fetchSearchResults } from "../../../actions/external_api_actions.js";
 import SearchDropdown from "./search_dropdown.jsx";
 
 class SearchBar extends React.Component {
@@ -8,7 +9,8 @@ class SearchBar extends React.Component {
         this.state = {
             input: "",
             focused: false,
-            selected: -1
+            selected: -1,
+            results: null,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
@@ -20,7 +22,8 @@ class SearchBar extends React.Component {
         this.setState({ 
             focused: false,
             input: "",
-            selected: -1
+            selected: -1,
+            results: null,
         });
     }
 
@@ -62,6 +65,12 @@ class SearchBar extends React.Component {
 
     handleChange(e) {
         this.setState({input: e.target.value});
+        this.getSearchResults(e.target.value);
+    }
+
+    getSearchResults(keywords) {
+        if (keywords) fetchSearchResults(keywords, this.setState.bind(this));
+        else this.setState({results: null});
     }
 
     handleFocus() {
@@ -94,6 +103,7 @@ class SearchBar extends React.Component {
                         input={this.state.input}
                         focused={this.state.focused}
                         selected={this.state.selected}
+                        results={this.state.results}
                     />
                 </div>
             </div>    

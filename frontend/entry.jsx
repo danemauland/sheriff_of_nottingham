@@ -2,7 +2,6 @@
 // autofill stock trade menu from clicking graph
 // Change free stocks to random stocks
 
-// rework search to use alphavantage search
 // rework purchasing power
 // add errors to stock order form
 
