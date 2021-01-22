@@ -18,9 +18,8 @@ import ChartSelectors from "./chart_selectors";
 class DynamicChart extends React.Component {
     constructor(props) {
         super(props);
-        
         this.state = {
-            displayVal: this.props.mostRecentVal,
+            displayVal: props.mostRecentVal,
             strChange: "",
             dataPointIndex: -1,
             chartSelected: ONE_DAY,
@@ -67,7 +66,7 @@ class DynamicChart extends React.Component {
     }
 
     calcStrChange() {
-        const timesDataset = this.lineChart.data.datasets[4];
+        const timesDataset = this.lineChart.data.datasets[2];
         return calcStrChange(this.props, this.state, timesDataset);
     }
 

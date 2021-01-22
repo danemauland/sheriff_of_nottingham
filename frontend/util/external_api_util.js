@@ -1,3 +1,6 @@
+import { DAILY_RESOLUTION, WEEKLY_RESOLUTION } from "../actions/external_api_actions";
+import { getStartTime, getEndTime } from "./dashboard_calcs";
+
 const alphaAPIKey = window.alphavantageAPIKey;
 const finnAPIKey = window.finnhubAPIKey;
 const polygonAPIKey = window.polygonAPIKey;
@@ -35,6 +38,16 @@ export const fetchCandles = (ticker, resolution, from, to) => {
     return genAjax(getFinnUrl("stock/candle", params));
 }
 
+export const fetchOneDayPrices = ticker => {
+    const params = {
+        symbol: ticker,
+        resolution: DAILY_RESOLUTION,
+        from: Date.parse(getStartTime()) / 1000,
+        to: Date.parse(getEndTime()) / 1000,
+    };
+    return genAjax(getFinnUrl("stock/candle", params));
+}
+
 export const fetchCompanyNews = (ticker, from, to) => {
     const params = {
         symbol: ticker,
@@ -51,7 +64,7 @@ export const fetchMarketNews = (from, to) => {
         to,
     }
     return genAjax(getFinnUrl("news", params));
-}
+};
 
 export const fetchCompanyOverview = ticker => {
     const params = {
@@ -59,6 +72,25 @@ export const fetchCompanyOverview = ticker => {
         symbol: ticker,
     }
     return genAjax(getAVUrl(params));
-}
+};
 
 export const fetchTickerData = ticker => genAjax(getPolygonUrl(ticker));
+
+export const fetchIntradayPrices = ticker => {
+    const params = {
+        function: "TIME_SERIES_INTRADAY_EXTENDED",
+        symbol: ticker,
+        interval: `${WEEKLY_RESOLUTION}min`,
+        outputsize: "full",
+    };
+    return genAjax(getAVUrl(params));
+};
+
+export const fetchDailyPrices = ticker => {
+    const params = {
+        function: "TIME_SERIES_DAILY_ADJUSTED",
+        symbol: ticker,
+        outputsize: "full",
+    };
+    return genAjax(getAVUrl(params));
+};

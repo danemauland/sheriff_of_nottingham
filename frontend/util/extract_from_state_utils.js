@@ -22,56 +22,44 @@ export const getOwnedTickers = state => (
     Array.from(getTickers(state)).filter(ticker => tickerIsOwned(state, ticker))
 );
 
-const getCandlePrices = state => getAssetInformation(state).candlePrices;
+const getPrices = state => getAssetInformation(state).prices;
 
-const getOneDayCandlePrices = state => getCandlePrices(state).oneDay;
+const getOneDayPrices = state => getPrices(state).oneDay;
 
-const getTickerOneDayCandlePrices = (state, ticker) => (
-    getOneDayCandlePrices(state)[ticker]
+const getTickerOneDayPrices = (state, ticker) => (
+    getOneDayPrices(state)[ticker]
 );
 
-const getOneWeekCandlePrices = state => getCandlePrices(state).oneWeek;
+const getOneWeekPrices = state => getPrices(state).oneWeek;
 
-const getTickerOneWeekCandlePrices = (state, ticker) => (
-    getOneWeekCandlePrices(state)[ticker]
+const getOneMonthPrices = state => getPrices(state).oneMonth;
+
+const getThreeMonthPrices = state => getPrices(state).threeMonth;
+
+const getTickerOneWeekPrices = (state, ticker) => (
+    getOneWeekPrices(state)[ticker]
 );
 
-const getOneYearCandlePrices = state => getCandlePrices(state).oneYear;
+const getTickerOneMonthPrices = (state, ticker) => (
+    getOneMonthPrices(state)[ticker]
+);
 
-const getTickerOneYearCandlePrices = (state, ticker) => (
-    getOneYearCandlePrices(state)[ticker]
+const getTickerThreeMonthPrices = (state, ticker) => (
+    getThreeMonthPrices(state)[ticker]
+);
+
+const getOneYearPrices = state => getPrices(state).oneYear;
+
+const getTickerOneYearPrices = (state, ticker) => (
+    getOneYearPrices(state)[ticker]
 );
 
 export const getAllTickerPrices = (state, ticker) => ({
-    oneDay: getTickerOneDayCandlePrices(state, ticker),
-    oneWeek: getTickerOneWeekCandlePrices(state, ticker),
-    oneYear: getTickerOneYearCandlePrices(state, ticker),
-})
-
-const getCandleTimes = state => getAssetInformation(state).candleTimes;
-
-const getOneDayCandleTimes = state => getCandleTimes(state).oneDay;
-
-const getTickerOneDayCandleTimes = (state, ticker) => (
-    getOneDayCandleTimes(state)[ticker]
-);
-
-const getOneWeekCandleTimes = state => getCandleTimes(state).oneWeek;
-
-const getTickerOneWeekCandleTimes = (state, ticker) => (
-    getOneWeekCandleTimes(state)[ticker]
-);
-
-const getOneYearCandleTimes = state => getCandleTimes(state).oneYear;
-
-const getTickerOneYearCandleTimes = (state, ticker) => (
-    getOneYearCandleTimes(state)[ticker]
-);
-
-export const getAllTickerTimes = (state, ticker) => ({
-    oneDay: getTickerOneDayCandleTimes(state, ticker),
-    oneWeek: getTickerOneWeekCandleTimes(state, ticker),
-    oneYear: getTickerOneYearCandleTimes(state, ticker),
+    oneDay: getTickerOneDayPrices(state, ticker),
+    oneWeek: getTickerOneWeekPrices(state, ticker),
+    oneMonth: getTickerOneMonthPrices(state, ticker),
+    threeMonth: getTickerThreeMonthPrices(state, ticker),
+    oneYear: getTickerOneYearPrices(state, ticker),
 })
 
 const getAssetValuations = state => getAssetInformation(state).valuations;
@@ -106,7 +94,7 @@ const getPortfolioHistory = state => getNewEntities(state).portfolioHistory;
 
 const getCashHistory = state => getPortfolioHistory(state).cashHistory;
 
-const getValuationHistory = state =>getPortfolioHistory(state).valuationHistory;
+export const getPortfolioValuations = state =>getPortfolioHistory(state).valuations;
 
 const getCashBalances = state => getCashHistory(state).balances;
 
@@ -138,20 +126,12 @@ export const getStartingCashTime = state => getCashTimes(state)[0];
 
 export const getCashBalance = state => getCashBalances(state).last();
 
-export const getPortfolioValuations = state => (
-    getValuationHistory(state).valuations
-);
-
-export const getPortfolioValuationsTimes = state => (
-    getValuationHistory(state).times
-);
-
 export const getValueIncreased = state => getUI(state).valueIncreased;
 
 export const getMarketNews = state => getNewEntities(state).marketNews;
 
 export const getLastPrice = (state, ticker) => (
-    getTickerOneDayCandlePrices(state, ticker).last()
+    getTickerOneDayPrices(state, ticker).last()
 );
 
 const getSession = state => state.session;
@@ -264,9 +244,30 @@ export const tickerIsOwned = (state, ticker) => {
 }
 
 const getPrevDayClose = (state, ticker) => (
-    getPreviousEndingValue(getTickerOneYearCandlePrices(state, ticker), ONE_DAY)
+    getPreviousEndingValue(getTickerOneYearPrices(state, ticker), ONE_DAY)
 );
 
 export const getDayPercentChange = (state, ticker) => (
     (getLastPrice(state, ticker) / getPrevDayClose(state, ticker)) - 1
+);
+
+export const getTimes = state => (
+    getNewEntities(state).times
+);
+
+export const getStartPrices = (state, ticker) => {
+    const allStartPrices = getAllStartPrices(state);
+    return {
+        oneDay: allStartPrices.oneDay[ticker],
+        oneWeek: allStartPrices.oneWeek[ticker],
+        oneMonth: allStartPrices.oneMonth[ticker],
+        threeMonth: allStartPrices.threeMonth[ticker],
+        oneYear: allStartPrices.oneYear[ticker],
+    }
+}
+
+const getAllStartPrices = state => getAssetInformation(state).startPrices;
+
+export const getStartValuations = state => (
+    getPortfolioHistory(state).startValuations
 );
