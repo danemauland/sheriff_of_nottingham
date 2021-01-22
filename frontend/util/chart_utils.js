@@ -95,7 +95,7 @@ const getDatasets = function(values, type, times) {
 
     switch (type) {
         case ONE_DAY:
-            const prevClose = values.oneYear[values.oneYear.length - 2] / 100;
+            const prevClose = values.oneYear.last() / 100;
             prevDayCloseArray = new Array(79).fill(prevClose);
             while (newTimes.length < prevDayCloseArray.length) {
                 newTimes.push(newTimes.last() + 5 * 60);
