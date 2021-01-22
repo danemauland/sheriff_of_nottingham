@@ -7,20 +7,22 @@ import {
     getLastPrice,
     getStartingCashTime,
     getAllTickerPrices,
-    getAllTickerTimes,
+    getTimes,
+    getStartPrices,
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
     startingCashBal: getStartingCashBal(state),
     startingCashTime: getStartingCashTime(state),
     mostRecentVal: getLastPrice(state, ticker),
-    times: getAllTickerTimes(state, ticker),
+    times: getTimes(state),
     values: getAllTickerPrices(state, ticker),
     valueIncreased: getValueIncreased(state),
-})
+    startValues: getStartPrices(state, ticker),
+});
 
 const mapDispatchToProps = dispatch => ({
     updateValueIncreased: bool => dispatch(updateValueIncreased(bool)),
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(DynamicChart);
