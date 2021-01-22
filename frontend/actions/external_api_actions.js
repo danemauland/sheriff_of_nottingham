@@ -48,6 +48,14 @@ const FETCH_INTRADAY_PRICES = "FETCH_INTRADAY_PRICES";
 const FETCH_DAILY_PRICES = "FETCH_DAILY_PRICES";
 const ANNUAL_RESOLUTION = "D";
 const FETCH_ONE_DAY_PRICES = "FETCH_ONE_DAY_PRICES";
+const FETCH_SEARCH_RESULTS = "FETCH_SEARCH_RESULTS";
+export const RECEIVE_SEARCH_RESULTS = "RECEIVE_SEARCH_RESULTS";
+
+const receiveSearchResults = ({bestMatches: results}) => {
+    results = results.filter(result => result["4. region"] === "United States");
+    results = results.map(result => [result["1. symbol"], result["2. name"]]);
+    return {results};
+}
 
 const initializeAsset = ticker => ({
     type: INITIALIZE_ASSET,
@@ -294,6 +302,13 @@ const qFunc = action => {
     const start = action.start;
     const end = action.end;
     switch (action.type) {
+        case FETCH_SEARCH_RESULTS:
+            externalAPIUtil.fetchSearchResults(action.keywords).then(
+                results => action.setState(receiveSearchResults(results)),
+                err => console.log(err),
+            );
+            break;
+
         case FETCH_INTRADAY_PRICES:
             externalAPIUtil.fetchIntradayPrices(ticker).then(
                 data => action.dispatch(receiveIntradayPrices(data, ticker)),
@@ -417,6 +432,15 @@ Queue.prototype.run = function () {
 export const finnhubQ = new Queue(qFunc, 50, 25, "finn");
 export const alphaQ = new Queue(qFunc, 50, 25, "alpha");
 export const polygonQ = new Queue(qFunc, 50, 5, "polygon");
+
+export const fetchSearchResults = (keywords, setState) => {
+    const action = {
+        type: FETCH_SEARCH_RESULTS,
+        keywords,
+        setState
+    }
+    alphaQ.push(action);
+}
 
 const fetchIntradayPrices = (ticker, dispatch) => {
     const action = {

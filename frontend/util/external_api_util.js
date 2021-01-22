@@ -94,3 +94,11 @@ export const fetchDailyPrices = ticker => {
     };
     return genAjax(getAVUrl(params));
 };
+
+export const fetchSearchResults = keywords => {
+    const params = {
+        function: "SYMBOL_SEARCH",
+        keywords,
+    }
+    return genAjax(getAVUrl(params));
+}
