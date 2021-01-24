@@ -188,21 +188,24 @@ const getAllCompanyNews = state => getAssetInformation(state).companyNews;
 
 export const getCompanyNews = (state,ticker) =>getAllCompanyNews(state)[ticker];
 
+const getCEOs = state => getAssetInformation(state).ceos;
+
+const getCEO = (state, ticker) => getCEOs(state)[ticker];
+
 export const getAboutItems = (state, ticker) => {
     const {
-        MarketCapitalization, Address, PERatio, DividendYield
+        MarketCapitalization, Address, PERatio, DividendYield, FullTimeEmployees
     } = getCompanyOverview(state, ticker);
     const data = getAssetTickerData(state, ticker);
+    const ceo = getCEO(state, ticker);
     const items = [];
 
+    items.push(["CEO", ceo]);
+    items.push(["Employees", parseInt(FullTimeEmployees).toLocaleString()]);
     if (data) {
-        const {ceo, employees, listdate} = data;
-        items.push(["CEO", ceo]);
-        items.push(["Employees", parseInt(employees).toLocaleString()]);
+        const {listdate} = data;
         items.push(["Listed", listdate.slice(0,4)]);
     } else {
-        items.push(["CEO","Not Found"]);
-        items.push(["Employees", "Not Found"]);
         items.push(["Listed", "Not Found"]);
     }
     

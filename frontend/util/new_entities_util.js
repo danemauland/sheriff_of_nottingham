@@ -55,6 +55,9 @@ export const defaultState = Object.freeze({
             oneYearHigh: {},
             oneYearLow: {},
         },
+        aboutItems: {},
+        ceos: {},
+        ipoDates: {},
         currentPrices: {},
         companyOverviews: {},
         tickerData: {},
@@ -775,3 +778,14 @@ const calcPositionCost = (trades, sharesOwned) => {
     }
     return cost;
 };
+
+
+export const newDefaultAboutItems = () => {
+    const defaultAboutItems = new Map();
+    const keys = ["CEO", "Employees", "IPO Year", "Market Cap", "Headquarters",
+    "Price-Earnings Ratio", "Dividend Yield", "Average Volume", "High Today",
+    "Low Today", "Open Price", "Volume", "52 Week High", "52 Week Low"
+    ];
+    for (let title of keys) defaultAboutItems.set(title, null);
+    return defaultAboutItems;
+}

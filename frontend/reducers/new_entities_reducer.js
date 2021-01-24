@@ -10,6 +10,9 @@ import {
     RECEIVE_INTRADAY_PRICES,
     RECEIVE_ONE_DAY_PRICES,
     RECEIVE_DAILY_PRICES,
+    RECEIVE_CEO,
+    RECEIVE_IPO_DATE,
+    RECEIVE_ABOUT_ITEMS,
 } from "../actions/external_api_actions";
 import {
     LOGOUT_CURRENT_USER
@@ -22,6 +25,7 @@ import {
     // setIntradayTimesAndPrices,
     // setOneDayTimesAndPrices,
     // setDailyTimesAndPrices,
+    newDefaultAboutItems,
 } from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
@@ -29,6 +33,35 @@ export default (state = defaultState, action) => {
     Object.freeze(state);
     let newState, assetInformation, portfolioHistory, times;
     switch (action.type) {
+        case RECEIVE_ABOUT_ITEMS:
+            const ticker = action.ticker;
+            newState = merge({}, state);
+            newState.assetInformation.aboutItems[ticker] ||= newDefaultAboutItems();
+            const aboutItems = newState.assetInformation.aboutItems[ticker];
+            for(let item of action.items) {
+                if (item[0] === "High Today") {
+                    aboutItems.set("52 Week High", Math.max(item[1], aboutItems.get("52 Week High") ?? -Infinity));
+                } else if (item[0] === "Low Today") {
+                    aboutItems.set("52 Week Low", Math.min(item[1], aboutItems.get("52 Week Low") ?? Infinity));
+                } else if (item[0] === "52 Week High" && aboutItems.get("High Today")) {
+                    item[1] = Math.max(item[1], aboutItems.get("High Today"));
+                }  else if (item[0] === "52 Week Low" && aboutItems.get("Low Today")) {
+                    item[1] = Math.min(item[1], aboutItems.get("Low Today"));
+                }
+                newState.assetInformation.aboutItems[ticker].set(item[0], item[1]);
+            }
+            return newState;
+
+        case RECEIVE_IPO_DATE:
+            newState = merge({}, state);
+            newState.assetInformation.ipoDates[action.ticker] = action.ipoDate;
+            return newState;
+
+        case RECEIVE_CEO:
+            newState = merge({}, state);
+            newState.assetInformation.ceos[action.ticker] = action.ceo;
+            return newState;
+
         case RECEIVE_INTRADAY_PRICES:
             newState = merge({}, state);
             ({assetInformation, portfolioHistory, times} = newState);

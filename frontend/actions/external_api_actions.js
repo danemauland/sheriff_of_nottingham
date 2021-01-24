@@ -50,6 +50,10 @@ const ANNUAL_RESOLUTION = "D";
 const FETCH_ONE_DAY_PRICES = "FETCH_ONE_DAY_PRICES";
 const FETCH_SEARCH_RESULTS = "FETCH_SEARCH_RESULTS";
 export const RECEIVE_SEARCH_RESULTS = "RECEIVE_SEARCH_RESULTS";
+export const RECEIVE_CEO = "RECEIVE_CEO";
+const FETCH_IPO_DATE = "FETCH_IPO_DATE";
+export const RECEIVE_IPO_DATE = "RECEIVE_IPO_DATE";
+export const RECEIVE_ABOUT_ITEMS = "RECEIVE_ABOUT_ITEMS";
 
 const receiveSearchResults = ({bestMatches: results}) => {
     results = results.filter(result => result["4. region"] === "United States");
@@ -97,18 +101,18 @@ const convertStrToCents = str => {
     return convertToCents(n);
 };
 
-const receiveIntradayPrices = (data, ticker) => {
-    let test = data.split("\n");
+const formatFromCSV = data => {
+    let arr = data.split("\n");
     let timeSeries = [];
-    test.forEach((val, i) => {
+    arr.forEach((val, i) => {
         if (i) {
             const arr = val.split(",").map((value, i) => {
                 // if value is the volume
                 if (i === 5) return parseInt(value);
-
+    
                 // if value is not the timestamp
                 if (i) return convertStrToCents(value);
-
+    
                 return value;
             });
             const time = DateTime.fromSQL(arr[0], {zone: "America/New_York"}).toSeconds();
@@ -118,6 +122,40 @@ const receiveIntradayPrices = (data, ticker) => {
     })
     timeSeries.sort((a, b) => a[0] - b[0]);
 
+    return timeSeries;
+};
+
+const receiveOneDayAboutItems = (timeSeries, ticker) => {
+    const volumes = timeSeries.map(series => series[5]);
+    const items = [
+        ["Open Price", timeSeries[0][1]],
+        ["High Today", Math.max(...timeSeries.map(series => series[2]))],
+        ["Low Today", Math.min(...timeSeries.map(series => series[3]))],
+        ["Volume", volumes.reduce((total, num) => total += num)],
+    ];
+    return {
+        type: RECEIVE_ABOUT_ITEMS,
+        items,
+        ticker,
+    }
+};
+
+// const receiveIntradayAboutItems = (timeSeries, ticker) => {
+//     debugger
+//     const items = [
+//         ["Prev. Day Volume", timeSeries[timeSeries.length - 2][5]]
+//         ["Open Price", timeSeries[0][1]],
+//         ["High Today", Math.max(...timeSeries.map(series => series[2]))],
+//         ["Low Today", Math.min(...timeSeries.map(series => series[3]))],
+//     ];
+//     return {
+//         type: RECEIVE_ABOUT_ITEMS,
+//         items,
+//         ticker,
+//     }
+// };
+
+const receiveIntradayPrices = (timeSeries, ticker) => {
     const oneWeekStartTime = Date.parse(getStartTime(ONE_WEEK)) / 1000;
     const oneWeek = timeSeries.filter(series => series[0] >= oneWeekStartTime && series[0] % (WEEKLY_RESOLUTION * 60) === 0);
     const oneWeekTimes = [];
@@ -159,18 +197,41 @@ const receiveIntradayPrices = (data, ticker) => {
     });
 };
 
-const receiveOneDayPrices = (timeSeries, ticker) => {
-    const oneDayTimes = [];
-    const oneDayPrices = [];
-    for(let i = 0; i < timeSeries.t.length; i++) {
-        oneDayTimes.push(timeSeries.t[i]);
-        oneDayPrices.push(convertToCents(timeSeries.o[i]));
+const formatOneDayTimeSeries = data => {
+    // const oneDayTimes = [];
+    // const oneDayPrices = [];
+    const timeSeries = [];
+    for(let i = 0; i < data.t.length; i++) {
+        const newArr = [];
+        newArr.push(data.t[i]);
+        newArr.push(convertToCents(data.o[i]));
+        newArr.push(convertToCents(data.h[i]));
+        newArr.push(convertToCents(data.l[i]));
+        newArr.push(convertToCents(data.c[i]));
+        newArr.push(data.v[i]);
+        // oneDayTimes.push(data.t[i]);
+        // oneDayPrices.push(convertToCents(data.o[i]));
+        timeSeries.push(newArr);
     }
+    validateOneDayTimeSeries(timeSeries);
+
+    return timeSeries;
+    // if (oneDayTimes.length < 79) {
+    //     oneDayTimes.push(Date.parse(new Date) / 1000);
+    //     oneDayPrices.push(convertToCents(data.c.last()));
+    // }
+
+}
+
+const receiveOneDayPrices = (timeSeries, ticker) => {
+    const oneDayTimes = timeSeries.map(series => series[0]);
+    const oneDayPrices = timeSeries.map(series => series[1]);
+
     if (oneDayTimes.length < 79) {
         oneDayTimes.push(Date.parse(new Date) / 1000);
-        oneDayPrices.push(convertToCents(timeSeries.c.last()));
+        oneDayPrices.push(convertToCents(timeSeries.last()[4]));
     }
-    validateOneDayTimesAndPrices(oneDayTimes, oneDayPrices);
+
     const times = {oneDay: oneDayTimes};
     const prices = {oneDay: {[ticker]: oneDayPrices}};
     // if (ticker==="GOOG") debugger;
@@ -185,26 +246,30 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
 
 // Yes, the below code "makes up" prices but I'm not willing to pay $100/month
 // for a more reliable API provider
-const validateOneDayTimesAndPrices = (times, prices) => {
+const validateOneDayTimeSeries = timeSeries => {
     const startTime = Date.parse(getStartTime(ONE_DAY)) / 1000;
-    if (startTime !== times[0]) {
-        times.unshift(startTime);
-        prices.unshift(prices[0]);
+    if (startTime !== timeSeries[0][0]) {
+        timeSeries.unshift([...timeSeries[0]]);
+        timeSeries[0][0] = startTime;
     }
-    for(let i = 1; i < times.length - 1; i++) {
-        const newTime = times[i - 1] + DAILY_RESOLUTION * 60;
-        if (times[i] !== newTime) {
-            times.splice(i, 0, newTime);
-            prices.splice(i, 0, (prices[i - 1] + prices[i]) / 2);
+    for(let i = 1; i < timeSeries.length - 1; i++) {
+        const newTime = timeSeries[i - 1][0] + DAILY_RESOLUTION * 60;
+        if (timeSeries[i][0] !== newTime) {
+            const newSeries = [newTime];
+            for (let j = 1; j < timeSeries[i].length; j++) {
+                newSeries.push((timeSeries[i - 1][j] + timeSeries[i][j]) / 2);
+            }
+            timeSeries.splice(i, 0, newSeries);
         }
     }
 }
 
-const receiveDailyPrices = (data, ticker) => {
-    let timeSeries = [];
+const formatDailyTimeseries = data => {
+    const timeSeries = [];
     const oneYearStartTime = Date.parse(getStartTime(ONE_YEAR)) / 1000;
     for(let pair of Object.entries(data["Time Series (Daily)"])) {
-        const [key, vals] = pair;
+        const key = pair[0];
+        const vals = Object.values(pair[1]);
         const time = DateTime.fromSQL(key, {zone: "America/New_York"}).toSeconds();
         
         // DATES MAY BE OUT OF ORDER, CANNOT JUST BSEARCH FOR ONE YEAR START
@@ -214,9 +279,36 @@ const receiveDailyPrices = (data, ticker) => {
         // series.push(convertStrToCents(vals["4. close"]));
         // series.push(parseInt(vals["5. volume"]));
         // series.push(vals);
-        timeSeries.push([time, ...Object.values(vals)]);
+        const values = [];
+        const unadjustedClose = parseFloat(vals[3]);
+        const adjustedClose = parseFloat(vals[4]);
+        const adjustmentScalar = adjustedClose / unadjustedClose;
+        for(let i = 0; i < 4; i++) values.push(Math.round(convertStrToCents(vals[i]) * adjustmentScalar));
+        values.push(parseInt(vals[5]));
+        timeSeries.push([time, ...values]);
     }
     timeSeries.sort((a, b) => a[0] - b[0]);
+    return timeSeries;
+}
+
+const receiveDailyAboutItems = (timeSeries, ticker) => {
+    const volumes = timeSeries.map(series => series.last());
+    const highs = timeSeries.map(series => series[2]);
+    const lows = timeSeries.map(series => series[3]);
+    const avgVolume = Math.round(volumes.reduce((total, num) => total += num) / volumes.length);
+    const items = [
+        ["Average Volume", avgVolume],
+        ["52 Week High", Math.max(...highs)],
+        ["52 Week Low", Math.max(...lows)],
+    ];
+    return {
+        type: RECEIVE_ABOUT_ITEMS,
+        items,
+        ticker,
+    }
+}
+
+const receiveDailyPrices = (timeSeries, ticker) => {
     
     let threeMonthStartTime = Date.parse(getStartTime(THREE_MONTH)) / 1000;
     const threeMonth = timeSeries.filter(series => series[0] >= threeMonthStartTime);
@@ -224,14 +316,14 @@ const receiveDailyPrices = (data, ticker) => {
     const threeMonthPrices = [];
     for(let i = 0; i < threeMonth.length; i++) {
         threeMonthTimes.push(threeMonth[i][0]);
-        threeMonthPrices.push(convertStrToCents(threeMonth[i][5]));
+        threeMonthPrices.push(threeMonth[i][4]);
     }
     const oneYearTimes = [];
     const oneYearPrices = [];
     
     for(let i = 0; i < timeSeries.length; i++) {
         oneYearTimes.push(timeSeries[i][0]);
-        oneYearPrices.push(convertStrToCents(timeSeries[i][5]));
+        oneYearPrices.push(timeSeries[i][4]);
     }
     
     const times = {};
@@ -243,8 +335,8 @@ const receiveDailyPrices = (data, ticker) => {
     prices.oneYear[ticker] = oneYearPrices;
     const startPrices = {
         oneDay: {[ticker]: oneYearPrices[oneYearPrices.length - 2]},
-        oneYear: {[ticker]: convertStrToCents(timeSeries[0][1])},
-        threeMonth: {[ticker]: convertStrToCents(threeMonth[0][1])},
+        oneYear: {[ticker]: timeSeries[0][1]},
+        threeMonth: {[ticker]: threeMonth[0][1]},
     };
     return ({
         type: RECEIVE_DAILY_PRICES,
@@ -311,21 +403,33 @@ const qFunc = action => {
 
         case FETCH_INTRADAY_PRICES:
             externalAPIUtil.fetchIntradayPrices(ticker).then(
-                data => action.dispatch(receiveIntradayPrices(data, ticker)),
+                data => {
+                    const timeSeries = formatFromCSV(data);
+                    action.dispatch(receiveIntradayPrices(timeSeries, ticker));
+                    // action.dispatch(receiveIntradayAboutItems(timeSeries, ticker));
+                },
                 err => console.log(err)
             );
             break;
 
         case FETCH_ONE_DAY_PRICES:
             externalAPIUtil.fetchOneDayPrices(ticker).then(
-                data => action.dispatch(receiveOneDayPrices(data, ticker)),
+                data => {
+                    const timeSeries = formatOneDayTimeSeries(data);
+                    action.dispatch(receiveOneDayPrices(timeSeries, ticker));
+                    action.dispatch(receiveOneDayAboutItems(timeSeries, ticker));
+                },
                 err => console.log(err)
             );
             break;
 
         case FETCH_DAILY_PRICES:
             externalAPIUtil.fetchDailyPrices(ticker).then(
-                data => action.dispatch(receiveDailyPrices(data, ticker)),
+                data => {
+                    const timeSeries = formatDailyTimeseries(data);
+                    action.dispatch(receiveDailyPrices(timeSeries, ticker));
+                    action.dispatch(receiveDailyAboutItems(timeSeries, ticker));
+                },
                 err => console.log(err)
             );
             break;
@@ -342,6 +446,12 @@ const qFunc = action => {
                 error => console.log(error),
             );
             break;
+        case FETCH_IPO_DATE:
+            externalAPIUtil.fetchIPODate(ticker).then(
+                resp => action.dispatch(receiveIPODate(resp))
+            );
+            break;
+
         case FETCH_QUOTE:
             // finnhubClient.quote(ticker, (error, data, response) => {
             //     console.log(error);
@@ -576,18 +686,18 @@ export const fetchAllCandles = (tickers, dispatch) => {
     }
 }
 
-export const fetchAllInfo = (tickers, dispatch) => {
-    if (typeof tickers === "string") tickers = [tickers];
-    fetchAllCandles(tickers, dispatch);
-    for(let ticker of tickers) {
-        fetchCompanyOverview(ticker, dispatch);
-        fetchTickerData(ticker, dispatch);
-    }
-}
+// export const fetchAllInfo = (tickers, dispatch) => {
+//     if (typeof tickers === "string") tickers = [tickers];
+//     fetchAllCandles(tickers, dispatch);
+//     for(let ticker of tickers) {
+//         fetchCompanyOverview(ticker, dispatch);
+//         fetchTickerData(ticker, dispatch);
+//     }
+// }
 
 export const fetchNeededInfo = (
     tickersToFetch,
-    {tickers, prices, companyOverviews, tickerData},
+    {tickers, prices, companyOverviews, tickerData, ceos, ipoDates},
     dispatch
 ) => {
     tickers = Set.convert(tickers);
@@ -595,8 +705,8 @@ export const fetchNeededInfo = (
     for(let ticker of tickersToFetch) {
         if (!assetIsInitialized(ticker, tickers)) {
             dispatch(initializeAsset(ticker));
-            fetchAllInfo(ticker, dispatch);
-            continue;
+            // fetchAllInfo(ticker, dispatch);
+            // continue;
         }
 
         if (!pricesAreLoaded(ticker, prices)) {
@@ -608,9 +718,36 @@ export const fetchNeededInfo = (
         if (!tickerDataIsLoaded(ticker, tickerData)) {
             fetchTickerData(ticker, dispatch);
         }
+        if (!ceos[ticker]) fetchCEO(ticker, dispatch);
+        if (!ipoDates[ticker]) fetchIPODate(ticker, dispatch);
     }
 }
 
 const isIterable = variable => (
     typeof variable[Symbol.iterator] === "function"
 );
+
+const receiveCEO = ({symbol, CEO}) => ({
+    type: RECEIVE_CEO,
+    ceo: CEO,
+    ticker: symbol,
+});
+
+export const fetchCEO = (ticker, dispatch) => {
+    externalAPIUtil.fetchCEO(ticker).then(res => dispatch(receiveCEO(res)));
+};
+
+export const fetchIPODate = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_IPO_DATE,
+        ticker,
+        dispatch,
+    }
+    finnhubQ.push(action);
+};
+
+const receiveIPODate = ({ticker, ipo}) => ({
+    type: RECEIVE_IPO_DATE,
+    ticker,
+    ipoDate: ipo.slice(0,4),
+});

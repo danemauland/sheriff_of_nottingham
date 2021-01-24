@@ -24,6 +24,7 @@ import { finnhubQ, alphaQ, polygonQ} from "./actions/external_api_actions";
 import * as sessionAPIUtil from "./util/session_api_util";
 import {login} from "./actions/session_actions";
 import { fetchCandles, fetchQuote, fetchCompanyOverview} from "./actions/external_api_actions";
+import { fetchCEO } from "./util/external_api_util";
 const finnhub = require('finnhub');
 import {postCashTransaction} from "./util/cash_transactions_api_util";
 // END TESTING
@@ -51,5 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     api_key.apiKey = window.finnhubAPIKey;
     window.finnhubClient = new finnhub.DefaultApi();
     window.postCashTransaction = postCashTransaction;
+    window.fetchCEO = fetchCEO;
     //END TESTING
 });

@@ -4,6 +4,7 @@ import { getStartTime, getEndTime } from "./dashboard_calcs";
 const alphaAPIKey = window.alphavantageAPIKey;
 const finnAPIKey = window.finnhubAPIKey;
 const polygonAPIKey = window.polygonAPIKey;
+const iexAPIKey = window.iexAPIKey;
 
 const genAjax = (url, method = "GET") => $.ajax({url, method});
 
@@ -20,6 +21,12 @@ const getPolygonUrl = ticker => {
     const urlStart = "https://api.polygon.io/v1/meta/symbols/";
     const params = {apiKey: polygonAPIKey};
     return `${urlStart}${ticker}/company?${getParamStr(params)}`;
+}
+
+const getIEXUrl = ticker => {
+    const urlStart = "https://cloud.iexapis.com/stable/stock";
+    const params = {token: iexAPIKey};
+    return `${urlStart}/${ticker}/company?${getParamStr(params)}`;
 }
 
 const getFinnUrl = (type, params) => {
@@ -99,6 +106,14 @@ export const fetchSearchResults = keywords => {
     const params = {
         function: "SYMBOL_SEARCH",
         keywords,
-    }
+    };
     return genAjax(getAVUrl(params));
-}
+};
+
+export const fetchCEO = ticker => genAjax(getIEXUrl(ticker));
+
+export const fetchIPODate = ticker => {
+    const params = {symbol: ticker};
+    const url = getFinnUrl("stock/profile2", params);
+    return genAjax(url);
+};
