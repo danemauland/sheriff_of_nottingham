@@ -53,7 +53,7 @@ export default ({isDeposit, setState, expandedOptions}) => {
                 leftVal="Expanded Options"
                 leftClass={color + (expandedOptions ? "" : "-hover black")}
                 toggleClick={toggleExpandedOptions}
-                invertColors={true}
+                isGrayed={true}
             />
         </div>
     )

@@ -9,7 +9,7 @@ const mouseLeaveSiblings = e => {
 }
 
 export default ({type, leftClick, rightClick, leftVal, rightVal, leftClass,
-    rightClass, toggleClick, invertColors}
+    rightClass, toggleClick, isGrayed}
 ) => (
     <div className={`${type}-toggle-container`}>
         <button onClick={leftClick} className={leftClass}>{leftVal}</button>
@@ -21,7 +21,7 @@ export default ({type, leftClick, rightClick, leftVal, rightVal, leftClass,
             <label className="switch" id={`${type}-toggle`}>
                 <input type="checkbox" onClick={toggleClick}/>
                 <span
-                    className={`slider ${invertColors ? "invert-colors" : ""}`}
+                    className={`slider ${isGrayed ? `${leftClass}-grayed` : ""}`}
                 />
             </label>
         </span>

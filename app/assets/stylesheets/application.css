@@ -184,8 +184,8 @@
   bottom: 0;
 }
 
-.slider.invert-colors {
-  background-color:rgb(255,80,0);
+.slider.black-grayed {
+  background-color:rgb(111,120,126);
 }
 
 .slider:before {
@@ -204,8 +204,12 @@ input:checked + .slider {
   background-color: rgb(255,80,0);
 }
 
-input:checked + .slider.invert-colors {
+input:checked + .slider.dark-green-grayed {
   background-color: rgb(0,180,5);
+}
+
+input:checked + .slider.red-grayed {
+  background-color: rgb(255,80,0);
 }
 
 input:checked + .slider:before {
