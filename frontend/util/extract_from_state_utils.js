@@ -197,7 +197,7 @@ const getAllAboutItems = (state) => getAssetInformation(state).aboutItems;
 const getAboutItems = (state, ticker) => getAllAboutItems(state)[ticker];
 
 export const formatAboutItems = (state, ticker) => (
-    Array.from(getAboutItems(state, ticker).entries())
+    Array.from(getAboutItems(state, ticker)?.entries() || [[null, null]])
 );
 
 export const getAPIDebounceStartTime = state=>getUI(state).apiDebounceStartTime;

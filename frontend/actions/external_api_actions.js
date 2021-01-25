@@ -684,7 +684,7 @@ export const fetchMarketNews = dispatch => {
 }
 
 export const fetchAllCandles = (tickers, dispatch) => {
-    if (!isIterable(tickers)) tickers = [tickers];
+    tickers = Array.convert(tickers);
     for(let ticker of tickers) {
         fetchIntradayPrices(ticker, dispatch);
         fetchOneDayPrices(ticker, dispatch);
@@ -729,15 +729,13 @@ export const fetchNeededInfo = (
     }
 }
 
-const isIterable = variable => (
-    typeof variable[Symbol.iterator] === "function"
-);
-
 const receiveIEXAboutItems = ({CEO, city, state, symbol}) => {
-    const headquarters = city.split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ") + ", " + state;
+    let headquarters;
+    if (!city || !state) headquarters = "Not Found";
+    else headquarters = city.split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ") + ", " + state;
     const items = [
         ["Headquarters", headquarters],
-        ["CEO", CEO],
+        ["CEO", CEO || "Not Found"],
     ];
     return ({
         type: RECEIVE_ABOUT_ITEMS,
