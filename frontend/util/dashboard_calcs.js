@@ -299,7 +299,7 @@ export const camelCase = str => {
     return newStr;
 }
 
-export const inMarketHours = time => {
+export const inMarketHours = (time = Date.parse(new Date()) / 1000) => {
     return !(beforeMarketHours(time) || afterMarketHours(time));
 }
 

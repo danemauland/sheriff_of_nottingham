@@ -334,7 +334,7 @@ const receiveDailyPrices = (timeSeries, ticker) => {
     prices.threeMonth[ticker] = threeMonthPrices;
     prices.oneYear[ticker] = oneYearPrices;
     const startPrices = {
-        oneDay: {[ticker]: oneYearPrices[oneYearPrices.length - 2]},
+        oneDay: {[ticker]: oneYearPrices[oneYearPrices.length - (inMarketHours() ? 1 : 2)]},
         oneYear: {[ticker]: timeSeries[0][1]},
         threeMonth: {[ticker]: threeMonth[0][1]},
     };

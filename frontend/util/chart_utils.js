@@ -95,7 +95,7 @@ const getDatasets = function(values, type, times, oneDayStart) {
 
     switch (type) {
         case ONE_DAY:
-            prevDayCloseArray = new Array(79).fill(oneDayStart);
+            prevDayCloseArray = new Array(79).fill(oneDayStart / 100);
             while (newTimes.length < prevDayCloseArray.length) {
                 newTimes.push(newTimes.last() + 5 * 60);
             }
@@ -349,7 +349,6 @@ export const refreshChartData = (chart, times, values, chartSelected, oneDayStar
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
     chart.update();
-    debugger;
 };
 
 export const removeToolTip = () => {
