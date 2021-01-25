@@ -1,9 +1,7 @@
 import {
-    RECEIVE_CANDLES,
     RECEIVE_QUOTE,
     INITIALIZE_ASSET,
     RECEIVE_COMPANY_OVERVIEW,
-    RECEIVE_TICKER_DATA,
     RECEIVE_COMPANY_NEWS,
     FLUSH_ASSET,
     RECEIVE_MARKET_NEWS,
@@ -29,9 +27,6 @@ import {
     // setDailyTimesAndPrices,
     newDefaultAboutItems,
 } from "../util/new_entities_util";
-import {
-    formatToDollar,
-} from "../util/dashboard_calcs";
 var merge = require('lodash.merge');
 
 export default (state = defaultState, action) => {
@@ -44,19 +39,6 @@ export default (state = defaultState, action) => {
             newState.assetInformation.aboutItems[ticker] ||= newDefaultAboutItems();
             const aboutItems = newState.assetInformation.aboutItems[ticker];
             for(let item of action.items) {
-                // if (item[0] === "High Today" && aboutItems.get("52 Week High")) {
-                //     aboutItems.set("52 Week High", formatToDollar(Math.max(item[1], aboutItems.get("52 Week High"))));
-                //     item[1] = formatToDollar(item[1]);
-                // } else if (item[0] === "Low Today" && aboutItems.get("52 Week Low")) {
-                //     aboutItems.set("52 Week Low", formatToDollar(Math.min(item[1], aboutItems.get("52 Week Low"))));
-                //     item[1] = formatToDollar(item[1]);
-                // } else if (item[0] === "52 Week High" && aboutItems.get("High Today")) {
-                //     item[1] = formatToDollar(Math.max(item[1], aboutItems.get("High Today")));
-                //     aboutItems.set("High Today", formatToDollar(aboutItems.get("High Today")));
-                // }  else if (item[0] === "52 Week Low" && aboutItems.get("Low Today")) {
-                //     item[1] = formatToDollar(Math.min(item[1], aboutItems.get("Low Today")));
-                //     aboutItems.set("Low Today", formatToDollar(aboutItems.get("Low Today")));
-                // }
                 aboutItems.set(item[0], item[1]);
             }
             return newState;
@@ -69,16 +51,6 @@ export default (state = defaultState, action) => {
         case RECEIVE_COMPANY_DESCRIPTION:
             newState = merge({}, state);
             newState.assetInformation.descriptions[action.ticker] = action.description;
-            return newState;
-
-        case RECEIVE_IPO_DATE:
-            newState = merge({}, state);
-            newState.assetInformation.ipoDates[action.ticker] = action.ipoDate;
-            return newState;
-
-        case RECEIVE_CEO:
-            newState = merge({}, state);
-            newState.assetInformation.ceos[action.ticker] = action.ceo;
             return newState;
 
         case RECEIVE_INTRADAY_PRICES:
@@ -137,20 +109,6 @@ export default (state = defaultState, action) => {
 
             return newState;
 
-        case RECEIVE_CANDLES:
-            newState = merge({}, state);
-            ({assetInformation, portfolioHistory, times} = newState);
-            setTimesAndPrices(action, assetInformation, times);
-            updateStockValuations(action, assetInformation, times);
-            updatePortfolioValuations(
-                action,
-                assetInformation,
-                portfolioHistory,
-                times
-            );
-            
-            return newState;
-
         case FLUSH_ASSET:
             // TODO: ITERATE THROUGH OTHER AREAS AND REMOVE TICKER
             newState = merge({}, state);
@@ -168,20 +126,6 @@ export default (state = defaultState, action) => {
             newState = {...state};
 
             newState.assetInformation.currentPrices[action.ticker] = Math.floor(100*action.quote.c);
-
-            return newState;
-
-        case RECEIVE_COMPANY_OVERVIEW:
-            newState = {...state};
-
-            newState.assetInformation.companyOverviews[action.ticker] = action.companyOverview;
-
-            return newState;
-
-        case RECEIVE_TICKER_DATA:
-            newState = {...state};
-            
-            newState.assetInformation.tickerData[action.ticker] = action.tickerData;
 
             return newState;
 

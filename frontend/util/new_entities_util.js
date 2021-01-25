@@ -1,4 +1,3 @@
-import { times } from "async";
 import {
     DAILY_RESOLUTION,
     WEEKLY_RESOLUTION,
@@ -10,13 +9,8 @@ import {
 
 import {
     getMarketCloseHour,
-    getStartTime,
-    convertToCents,
-    camelCase,
     ONE_DAY,
     ONE_WEEK,
-    ONE_MONTH,
-    THREE_MONTH,
     ONE_YEAR,
 } from "./dashboard_calcs";
 
@@ -48,24 +42,10 @@ export const defaultState = Object.freeze({
             threeMonth: {},
             oneYear: {},
         },
-        historicPrices: {
-            oneDayHigh: {},
-            oneDayLow: {},
-            oneDayOpen: {},
-            oneYearHigh: {},
-            oneYearLow: {},
-        },
         names: {},
         descriptions: {},
         aboutItems: {},
-        ceos: {},
-        ipoDates: {},
-        currentPrices: {},
-        companyOverviews: {},
-        tickerData: {},
         companyNews: {},
-        prevVolume: {},
-        curVolume: {},
         trades: {},
         positionCosts: {},
     },

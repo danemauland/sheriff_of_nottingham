@@ -1,9 +1,7 @@
 import {
     pricesAreLoaded,
     assetIsInitialized,
-    companyOverviewIsLoaded,
     aboutItemsAreLoaded,
-    tickerDataIsLoaded,
     ONE_DAY,
     ONE_WEEK,
     ONE_MONTH,
@@ -28,8 +26,6 @@ import {DateTime} from "luxon";
 export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
 export const FETCH_COMPANY_OVERVIEW = "FETCH_COMPANY_OVERVIEW";
-export const FETCH_TICKER_DATA = "FETCH_TICKER_DATA";
-export const RECEIVE_TICKER_DATA = "RECEIVE_TICKER_DATA";
 export const FETCH_COMPANY_NEWS = "FETCH_COMPANY_NEWS";
 export const RECEIVE_COMPANY_NEWS = "RECEIVE_COMPANY_NEWS";
 export const FETCH_MARKET_NEWS = "FETCH_MARKET_NEWS";
@@ -377,12 +373,6 @@ const receiveCompanyOverview = companyOverview => {
     items,
 })};
 
-const receiveTickerData = (ticker, tickerData) => ({
-    type: RECEIVE_TICKER_DATA,
-    ticker,
-    tickerData,
-});
-
 const receiveCompanyNews = (ticker, companyNews) => ({
     type: RECEIVE_COMPANY_NEWS,
     ticker,
@@ -471,12 +461,6 @@ const qFunc = action => {
             //     console.log(error);
             //     action.dispatch(receiveQuote(ticker, data))
             // })
-            break;
-        case FETCH_TICKER_DATA:
-            externalAPIUtil.fetchTickerData(ticker).then(
-                tickerData => action.dispatch(receiveTickerData(ticker, tickerData)),
-                () => action.dispatch(receiveTickerData(ticker, []))
-            );
             break;
         case FETCH_COMPANY_OVERVIEW:
             externalAPIUtil.fetchCompanyOverview(ticker).then(
@@ -670,15 +654,6 @@ export const fetchCompanyOverview = (ticker, dispatch) => {
     alphaQ.push({...action});
 }
 
-export const fetchTickerData = (ticker, dispatch) => {
-    const action = {
-        type: FETCH_TICKER_DATA,
-        ticker,
-        dispatch,
-    }
-    polygonQ.push({ ...action });
-}
-
 function formatDate(date) {
     const year = date.getUTCFullYear().toString();
     const month = (1 + date.getUTCMonth()).toString().padStart(2, "0");
@@ -748,7 +723,6 @@ export const fetchNeededInfo = (
         }
         if (!aboutItemsAreLoaded({newEntities: {assetInformation}}, ticker)) {
             fetchCompanyOverview(ticker, dispatch);
-            fetchTickerData(ticker, dispatch);
             fetchIEXAboutItems(ticker, dispatch);
             fetchCompanyProfile(ticker, dispatch);
         }
