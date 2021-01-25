@@ -7,7 +7,7 @@ import StockAboutItem from "./stock_about_item";
 import StockAboutHeader from "./stock_about_header";
 import StockAboutDescription from "./stock_about_description";
 import {
-    getAboutItems,
+    formatAboutItems,
     getValueIncreased,
     getDescription,
 } from "../../../../util/extract_from_state_utils";
@@ -15,7 +15,7 @@ import {
 const mapStateToProps = (state, {ticker}) => ({
     valueIncreased: getValueIncreased(state),
     description: getDescription(state, ticker),
-    items: getAboutItems(state, ticker),
+    items: formatAboutItems(state, ticker),
 });
 
 class StockAbout extends React.Component {

@@ -6,17 +6,17 @@ import {connect} from "react-redux";
 import {tickerIsOwned} from "../../../util/extract_from_state_utils";
 import CompanyNews from "./company_news";
 import {
-    getCompanyName,
+    getName,
 } from "../../../util/extract_from_state_utils";
 
 const mapStateToProps = (state, {ticker}) => ({
     isOwned: tickerIsOwned(state, ticker),
-    companyName: getCompanyName(state, ticker),
+    name: getName(state, ticker),
 });
 
-const StockContent = ({companyName, ticker, isOwned}) => (
+const StockContent = ({name, ticker, isOwned}) => (
     <div className="post-auth-main-content">
-        <h1 className="post-auth-title">{companyName}</h1>
+        <h1 className="post-auth-title">{name}</h1>
 
         <StockSummaryChartContainer ticker={ticker}/>
 

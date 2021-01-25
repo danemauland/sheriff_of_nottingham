@@ -13,6 +13,8 @@ import {
     RECEIVE_CEO,
     RECEIVE_IPO_DATE,
     RECEIVE_ABOUT_ITEMS,
+    RECEIVE_COMPANY_NAME,
+    RECEIVE_COMPANY_DESCRIPTION,
 } from "../actions/external_api_actions";
 import {
     LOGOUT_CURRENT_USER
@@ -27,6 +29,9 @@ import {
     // setDailyTimesAndPrices,
     newDefaultAboutItems,
 } from "../util/new_entities_util";
+import {
+    formatToDollar,
+} from "../util/dashboard_calcs";
 var merge = require('lodash.merge');
 
 export default (state = defaultState, action) => {
@@ -39,17 +44,31 @@ export default (state = defaultState, action) => {
             newState.assetInformation.aboutItems[ticker] ||= newDefaultAboutItems();
             const aboutItems = newState.assetInformation.aboutItems[ticker];
             for(let item of action.items) {
-                if (item[0] === "High Today") {
-                    aboutItems.set("52 Week High", Math.max(item[1], aboutItems.get("52 Week High") ?? -Infinity));
-                } else if (item[0] === "Low Today") {
-                    aboutItems.set("52 Week Low", Math.min(item[1], aboutItems.get("52 Week Low") ?? Infinity));
-                } else if (item[0] === "52 Week High" && aboutItems.get("High Today")) {
-                    item[1] = Math.max(item[1], aboutItems.get("High Today"));
-                }  else if (item[0] === "52 Week Low" && aboutItems.get("Low Today")) {
-                    item[1] = Math.min(item[1], aboutItems.get("Low Today"));
-                }
-                newState.assetInformation.aboutItems[ticker].set(item[0], item[1]);
+                // if (item[0] === "High Today" && aboutItems.get("52 Week High")) {
+                //     aboutItems.set("52 Week High", formatToDollar(Math.max(item[1], aboutItems.get("52 Week High"))));
+                //     item[1] = formatToDollar(item[1]);
+                // } else if (item[0] === "Low Today" && aboutItems.get("52 Week Low")) {
+                //     aboutItems.set("52 Week Low", formatToDollar(Math.min(item[1], aboutItems.get("52 Week Low"))));
+                //     item[1] = formatToDollar(item[1]);
+                // } else if (item[0] === "52 Week High" && aboutItems.get("High Today")) {
+                //     item[1] = formatToDollar(Math.max(item[1], aboutItems.get("High Today")));
+                //     aboutItems.set("High Today", formatToDollar(aboutItems.get("High Today")));
+                // }  else if (item[0] === "52 Week Low" && aboutItems.get("Low Today")) {
+                //     item[1] = formatToDollar(Math.min(item[1], aboutItems.get("Low Today")));
+                //     aboutItems.set("Low Today", formatToDollar(aboutItems.get("Low Today")));
+                // }
+                aboutItems.set(item[0], item[1]);
             }
+            return newState;
+
+        case RECEIVE_COMPANY_NAME:
+            newState = merge({}, state);
+            newState.assetInformation.names[action.ticker] = action.name;
+            return newState;
+
+        case RECEIVE_COMPANY_DESCRIPTION:
+            newState = merge({}, state);
+            newState.assetInformation.descriptions[action.ticker] = action.description;
             return newState;
 
         case RECEIVE_IPO_DATE:

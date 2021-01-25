@@ -2,6 +2,7 @@ import {
     pricesAreLoaded,
     assetIsInitialized,
     companyOverviewIsLoaded,
+    aboutItemsAreLoaded,
     tickerDataIsLoaded,
     ONE_DAY,
     ONE_WEEK,
@@ -12,6 +13,10 @@ import {
     inMarketHours,
     convertToCents,
     getEndTime,
+    formatLargeNumber,
+    formatToDollar,
+    formatDividendYield,
+    formatPERatio,
 } from "../util/dashboard_calcs";
 import * as externalAPIUtil from "../util/external_api_util"
 import {
@@ -38,6 +43,8 @@ export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
 export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
 export const INITIALIZE_ASSET = "INITIALIZE_ASSET";
 export const FLUSH_ASSET = "FLUSH_ASSET";
+export const RECEIVE_COMPANY_NAME = "RECEIVE_COMPANY_NAME";
+export const RECEIVE_COMPANY_DESCRIPTION = "RECEIVE_COMPANY_DESCRIPTION";
 export const DAILY_RESOLUTION = 5;
 export const WEEKLY_RESOLUTION = 15;
 export const MONTHLY_RESOLUTION = 60;
@@ -51,7 +58,7 @@ const FETCH_ONE_DAY_PRICES = "FETCH_ONE_DAY_PRICES";
 const FETCH_SEARCH_RESULTS = "FETCH_SEARCH_RESULTS";
 export const RECEIVE_SEARCH_RESULTS = "RECEIVE_SEARCH_RESULTS";
 export const RECEIVE_CEO = "RECEIVE_CEO";
-const FETCH_IPO_DATE = "FETCH_IPO_DATE";
+const FETCH_COMPANY_PROFILE = "FETCH_COMPANY_PROFILE";
 export const RECEIVE_IPO_DATE = "RECEIVE_IPO_DATE";
 export const RECEIVE_ABOUT_ITEMS = "RECEIVE_ABOUT_ITEMS";
 
@@ -128,10 +135,10 @@ const formatFromCSV = data => {
 const receiveOneDayAboutItems = (timeSeries, ticker) => {
     const volumes = timeSeries.map(series => series[5]);
     const items = [
-        ["Open Price", timeSeries[0][1]],
-        ["High Today", Math.max(...timeSeries.map(series => series[2]))],
-        ["Low Today", Math.min(...timeSeries.map(series => series[3]))],
-        ["Volume", volumes.reduce((total, num) => total += num)],
+        ["Open Price", formatToDollar(timeSeries[0][1])],
+        ["High Today", formatToDollar(Math.max(...timeSeries.map(series => series[2])))],
+        ["Low Today", formatToDollar(Math.min(...timeSeries.map(series => series[3])))],
+        ["Volume", formatLargeNumber(volumes.reduce((total, num) => total += num))],
     ];
     return {
         type: RECEIVE_ABOUT_ITEMS,
@@ -141,7 +148,6 @@ const receiveOneDayAboutItems = (timeSeries, ticker) => {
 };
 
 // const receiveIntradayAboutItems = (timeSeries, ticker) => {
-//     debugger
 //     const items = [
 //         ["Prev. Day Volume", timeSeries[timeSeries.length - 2][5]]
 //         ["Open Price", timeSeries[0][1]],
@@ -234,7 +240,6 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
 
     const times = {oneDay: oneDayTimes};
     const prices = {oneDay: {[ticker]: oneDayPrices}};
-    // if (ticker==="GOOG") debugger;
     return ({
         type: RECEIVE_ONE_DAY_PRICES,
         ticker,
@@ -293,13 +298,9 @@ const formatDailyTimeseries = data => {
 
 const receiveDailyAboutItems = (timeSeries, ticker) => {
     const volumes = timeSeries.map(series => series.last());
-    const highs = timeSeries.map(series => series[2]);
-    const lows = timeSeries.map(series => series[3]);
     const avgVolume = Math.round(volumes.reduce((total, num) => total += num) / volumes.length);
     const items = [
-        ["Average Volume", avgVolume],
-        ["52 Week High", Math.max(...highs)],
-        ["52 Week Low", Math.max(...lows)],
+        ["Average Volume", formatLargeNumber(avgVolume)],
     ];
     return {
         type: RECEIVE_ABOUT_ITEMS,
@@ -360,11 +361,21 @@ const receiveQuote = (ticker, quote) => ({
     quote
 });
 
-const receiveCompanyOverview = (ticker, companyOverview) => ({
-    type: RECEIVE_COMPANY_OVERVIEW,
-    ticker,
-    companyOverview,
-});
+const receiveCompanyOverview = companyOverview => {
+    const {MarketCapitalization, PERatio, DividendYield, FullTimeEmployees, Symbol} = companyOverview;
+    const items = [
+        ["52 Week High", formatToDollar(convertStrToCents(companyOverview["52WeekHigh"]))],
+        ["52 Week Low", formatToDollar(convertStrToCents(companyOverview["52WeekLow"]))],
+        ["Market Cap", formatLargeNumber(MarketCapitalization)],
+        ["Price-Earnings Ratio", formatPERatio(PERatio)],
+        ["Dividend Yield", formatDividendYield(DividendYield)],
+        ["Employees", parseInt(FullTimeEmployees).toLocaleString()],
+    ];
+    return ({
+    type: RECEIVE_ABOUT_ITEMS,
+    ticker: Symbol,
+    items,
+})};
 
 const receiveTickerData = (ticker, tickerData) => ({
     type: RECEIVE_TICKER_DATA,
@@ -446,9 +457,12 @@ const qFunc = action => {
                 error => console.log(error),
             );
             break;
-        case FETCH_IPO_DATE:
-            externalAPIUtil.fetchIPODate(ticker).then(
-                resp => action.dispatch(receiveIPODate(resp))
+        case FETCH_COMPANY_PROFILE:
+            externalAPIUtil.fetchCompanyProfile(ticker).then(
+                resp => {
+                    action.dispatch(receiveCompanyProfile(resp));
+                    action.dispatch(receiveCompanyName(resp));
+                }
             );
             break;
 
@@ -466,7 +480,10 @@ const qFunc = action => {
             break;
         case FETCH_COMPANY_OVERVIEW:
             externalAPIUtil.fetchCompanyOverview(ticker).then(
-                companyOverview => action.dispatch(receiveCompanyOverview(ticker, companyOverview))
+                companyOverview => {
+                    action.dispatch(receiveCompanyOverview(companyOverview));
+                    action.dispatch(receiveCompanyDescription(companyOverview));
+                }
             );
             break;
         case FETCH_COMPANY_NEWS:
@@ -482,6 +499,22 @@ const qFunc = action => {
             break;
         default:
             break;
+    }
+};
+
+const receiveCompanyName = ({name, ticker}) => {
+    return {
+        type: RECEIVE_COMPANY_NAME,
+        name,
+        ticker,
+    }
+};
+
+const receiveCompanyDescription = ({Description, Symbol}) => {
+    return {
+        type: RECEIVE_COMPANY_DESCRIPTION,
+        description: Description,
+        ticker: Symbol,
     }
 };
 
@@ -697,9 +730,10 @@ export const fetchAllCandles = (tickers, dispatch) => {
 
 export const fetchNeededInfo = (
     tickersToFetch,
-    {tickers, prices, companyOverviews, tickerData, ceos, ipoDates},
+    assetInformation,
     dispatch
 ) => {
+    let {tickers, prices} = assetInformation;
     tickers = Set.convert(tickers);
     tickersToFetch = Array.convert(tickersToFetch);
     for(let ticker of tickersToFetch) {
@@ -712,14 +746,12 @@ export const fetchNeededInfo = (
         if (!pricesAreLoaded(ticker, prices)) {
             fetchAllCandles(ticker, dispatch);
         }
-        if (!companyOverviewIsLoaded(ticker, companyOverviews)) {
+        if (!aboutItemsAreLoaded({newEntities: {assetInformation}}, ticker)) {
             fetchCompanyOverview(ticker, dispatch);
-        }
-        if (!tickerDataIsLoaded(ticker, tickerData)) {
             fetchTickerData(ticker, dispatch);
+            fetchIEXAboutItems(ticker, dispatch);
+            fetchCompanyProfile(ticker, dispatch);
         }
-        if (!ceos[ticker]) fetchCEO(ticker, dispatch);
-        if (!ipoDates[ticker]) fetchIPODate(ticker, dispatch);
     }
 }
 
@@ -727,27 +759,34 @@ const isIterable = variable => (
     typeof variable[Symbol.iterator] === "function"
 );
 
-const receiveCEO = ({symbol, CEO}) => ({
-    type: RECEIVE_CEO,
-    ceo: CEO,
-    ticker: symbol,
-});
-
-export const fetchCEO = (ticker, dispatch) => {
-    externalAPIUtil.fetchCEO(ticker).then(res => dispatch(receiveCEO(res)));
+const receiveIEXAboutItems = ({CEO, city, state, symbol}) => {
+    const headquarters = city.split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ") + ", " + state;
+    const items = [
+        ["Headquarters", headquarters],
+        ["CEO", CEO],
+    ];
+    return ({
+        type: RECEIVE_ABOUT_ITEMS,
+        items,
+        ticker: symbol,
+    })
 };
 
-export const fetchIPODate = (ticker, dispatch) => {
+export const fetchIEXAboutItems = (ticker, dispatch) => {
+    externalAPIUtil.fetchIEXAboutItems(ticker).then(res => dispatch(receiveIEXAboutItems(res)));
+};
+
+export const fetchCompanyProfile = (ticker, dispatch) => {
     const action = {
-        type: FETCH_IPO_DATE,
+        type: FETCH_COMPANY_PROFILE,
         ticker,
         dispatch,
-    }
+    };
     finnhubQ.push(action);
 };
 
-const receiveIPODate = ({ticker, ipo}) => ({
-    type: RECEIVE_IPO_DATE,
+const receiveCompanyProfile = ({ticker, ipo}) => ({
+    type: RECEIVE_ABOUT_ITEMS,
     ticker,
-    ipoDate: ipo.slice(0,4),
+    items: [["IPO Year", ipo.slice(0,4)]],
 });

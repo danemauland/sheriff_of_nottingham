@@ -1,3 +1,5 @@
+import {formatAboutItems} from "./extract_from_state_utils";
+
 export const ONE_DAY = "ONE_DAY";
 export const ONE_WEEK = "ONE_WEEK";
 export const ONE_MONTH = "ONE_MONTH";
@@ -31,12 +33,12 @@ export const portfolioValue = state => {
 
 export const isStockLoaded = (
     ticker,
-    {tickers, prices, tickerData, companyOverviews}
+    state
 ) => (
-    tickers.has(ticker) &&
-    Object.values(prices).every(prices => prices[ticker]) &&
-    tickerData[ticker] &&
-    companyOverviews[ticker]
+    state.newEntities.assetInformation.tickers.has(ticker) &&
+    Object.values(state.newEntities.assetInformation.prices).every(prices => prices[ticker]) &&
+    aboutItemsAreLoaded(state, ticker) &&
+    state.newEntities.assetInformation.descriptions[ticker]
 );
 
 export const formatCityAndState = address => {
@@ -176,6 +178,11 @@ export const assetIsInitialized = (ticker, tickers) => tickers.has(ticker);
 export const companyOverviewIsLoaded = (ticker, companyOverviews) => (
     !!companyOverviews[ticker]
 );
+
+export const aboutItemsAreLoaded = (state, ticker) => {
+    const aboutItems = formatAboutItems(state, ticker);
+    return !aboutItems.some(item => item[1] === null);
+}
 
 export const tickerDataIsLoaded = (ticker, tickerData) => !!tickerData[ticker];
 
