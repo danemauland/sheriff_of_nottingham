@@ -1,19 +1,20 @@
 import {
     RECEIVE_QUOTE,
     INITIALIZE_ASSET,
-    RECEIVE_COMPANY_OVERVIEW,
     RECEIVE_COMPANY_NEWS,
     FLUSH_ASSET,
     RECEIVE_MARKET_NEWS,
     RECEIVE_INTRADAY_PRICES,
     RECEIVE_ONE_DAY_PRICES,
     RECEIVE_DAILY_PRICES,
-    RECEIVE_CEO,
-    RECEIVE_IPO_DATE,
     RECEIVE_ABOUT_ITEMS,
     RECEIVE_COMPANY_NAME,
     RECEIVE_COMPANY_DESCRIPTION,
 } from "../actions/external_api_actions";
+import {
+    REMOVE_CASH_TRANSACTIONS,
+    RECEIVE_CASH_TRANSACTION,
+} from "../actions/cash_transactions_actions";
 import {
     LOGOUT_CURRENT_USER
 } from "../actions/session_actions";
@@ -26,6 +27,8 @@ import {
     // setOneDayTimesAndPrices,
     // setDailyTimesAndPrices,
     newDefaultAboutItems,
+    getCashHistoy,
+    sortOrder,
 } from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
@@ -33,6 +36,31 @@ export default (state = defaultState, action) => {
     Object.freeze(state);
     let newState, assetInformation, portfolioHistory, times;
     switch (action.type) {
+        case REMOVE_CASH_TRANSACTIONS:
+            newState = merge({}, state);
+            ({assetInformation, portfolioHistory, times} = newState);
+            portfolioHistory.cashTransactions = [];
+            portfolioHistory.cashHistory = getCashHistoy([], portfolioHistory.trades);
+            updatePortfolioValuations(
+                assetInformation,
+                portfolioHistory,
+                times
+            );
+            return newState;
+
+        case RECEIVE_CASH_TRANSACTION:
+            newState = merge({}, state);
+            ({assetInformation, portfolioHistory, times} = newState);
+            portfolioHistory.cashTransactions.push(action.cashTransaction);
+            portfolioHistory.cashTransactions.sort(sortOrder);
+            portfolioHistory.cashHistory = getCashHistoy(portfolioHistory.cashTransactions, portfolioHistory.trades);
+            updatePortfolioValuations(
+                assetInformation,
+                portfolioHistory,
+                times
+            );
+            return newState;
+
         case RECEIVE_ABOUT_ITEMS:
             const ticker = action.ticker;
             newState = merge({}, state);

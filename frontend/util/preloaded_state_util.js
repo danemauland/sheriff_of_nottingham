@@ -5,6 +5,7 @@ import {
     convertTimestampsToSeconds,
     getTradesByTicker,
     calcPositionCosts,
+    sortOrder,
 } from "./new_entities_util";
 var merge = require('lodash.merge');
 
@@ -12,7 +13,6 @@ export default user => {
 
     if (!user) return undefined;
 
-    const sortOrder = (a, b) => a.createdAt - b.createdAt;
 
     // trades/cash transactions are received in the order they were added to
     // the database, so back-dated transactions will be out of order
