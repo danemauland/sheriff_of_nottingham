@@ -50,10 +50,9 @@ class DynamicChart extends React.Component {
     }
 
     handleChartChange() {
-        const {times, values} = this.props;
+        const {times, values, startValues: {oneDay: oneDayStart}} = this.props;
         const chartSelected = this.state.chartSelected;
-
-        refreshChartData(this.lineChart, times, values, chartSelected);
+        refreshChartData(this.lineChart, times, values, chartSelected, oneDayStart);
 
         this.checkValueIncreased();
     }

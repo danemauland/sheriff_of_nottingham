@@ -229,7 +229,7 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
 
     if (oneDayTimes.length < 79) {
         oneDayTimes.push(Date.parse(new Date) / 1000);
-        oneDayPrices.push(convertToCents(timeSeries.last()[4]));
+        oneDayPrices.push(timeSeries.last()[4]);
     }
 
     const times = {oneDay: oneDayTimes};
