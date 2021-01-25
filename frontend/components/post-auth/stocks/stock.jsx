@@ -7,8 +7,8 @@ import StockContent from "./stock_content";
 import OrderForm from "./order_form/order_form";
 import SidebarWrapper from "../sidebar_wrapper";
 
-const mapStateToProps = (state, {ticker, assetInformation}) => ({
-    isLoading: (!isStockLoaded(ticker, assetInformation)),
+const mapStateToProps = (state, {ticker}) => ({
+    isLoading: (!isStockLoaded(ticker, state)),
 })
 
 const mapDispatchToProps = (dispatch, {assetInformation}) => ({

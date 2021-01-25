@@ -142,13 +142,13 @@ const getCompanyOverviews = state=> getAssetInformation(state).companyOverviews;
 
 const getCompanyOverview = (state,ticker) => getCompanyOverviews(state)[ticker];
 
-export const getCompanyName = (state, ticker) => (
-    getCompanyOverview(state, ticker).Name
-);
+const getNames = state => getAssetInformation(state).names;
 
-export const getDescription = (state, ticker) => (
-    getCompanyOverview(state, ticker).Description
-);
+export const getName = (state, ticker) => getNames(state)[ticker];
+
+const getDescriptions = state => getAssetInformation(state).descriptions;
+
+export const getDescription = (state, ticker) => getDescriptions(state)[ticker];
 
 const getTickerData = state => getAssetInformation(state).tickerData;
 
@@ -188,41 +188,17 @@ const getAllCompanyNews = state => getAssetInformation(state).companyNews;
 
 export const getCompanyNews = (state,ticker) =>getAllCompanyNews(state)[ticker];
 
-export const getAboutItems = (state, ticker) => {
-    const {
-        MarketCapitalization, Address, PERatio, DividendYield
-    } = getCompanyOverview(state, ticker);
-    const data = getAssetTickerData(state, ticker);
-    const items = [];
+const getCEOs = state => getAssetInformation(state).ceos;
 
-    if (data) {
-        const {ceo, employees, listdate} = data;
-        items.push(["CEO", ceo]);
-        items.push(["Employees", parseInt(employees).toLocaleString()]);
-        items.push(["Listed", listdate.slice(0,4)]);
-    } else {
-        items.push(["CEO","Not Found"]);
-        items.push(["Employees", "Not Found"]);
-        items.push(["Listed", "Not Found"]);
-    }
-    
-    items.push(["Market Cap", formatLargeNumber(MarketCapitalization, 3)]);
-    items.push(["Headquarters", formatCityAndState(Address)]);
-    items.push(["Price-Earnings Ratio", formatPERatio(PERatio)]);
-    items.push(["Dividend Yield", formatDividendYield(DividendYield)]);
-    
-    const prevVol = getPrevTickerVolume(state, ticker);
-    items.push(["Prev. Day Volume", formatLargeNumber(prevVol)]);
+const getCEO = (state, ticker) => getCEOs(state)[ticker];
 
-    items.push(["High Today", formatToDollar(getOneDayHigh(state, ticker))]);
-    items.push(["Low Today", formatToDollar(getOneDayLow(state, ticker))]);
-    items.push(["Open Price", formatToDollar(getOneDayOpen(state, ticker))]);
-    items.push(["Volume", formatLargeNumber(getCurVolume(state, ticker))]);
-    items.push(["52 Week High", formatToDollar(getOneYearHigh(state, ticker))]);
-    items.push(["52 Week Low", formatToDollar(getOneYearLow(state, ticker))]);
+const getAllAboutItems = (state) => getAssetInformation(state).aboutItems;
 
-    return items;
-}
+const getAboutItems = (state, ticker) => getAllAboutItems(state)[ticker];
+
+export const formatAboutItems = (state, ticker) => (
+    Array.from(getAboutItems(state, ticker).entries())
+);
 
 export const getAPIDebounceStartTime = state=>getUI(state).apiDebounceStartTime;
 

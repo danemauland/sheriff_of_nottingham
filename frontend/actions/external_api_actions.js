@@ -1,8 +1,7 @@
 import {
     pricesAreLoaded,
     assetIsInitialized,
-    companyOverviewIsLoaded,
-    tickerDataIsLoaded,
+    aboutItemsAreLoaded,
     ONE_DAY,
     ONE_WEEK,
     ONE_MONTH,
@@ -12,6 +11,10 @@ import {
     inMarketHours,
     convertToCents,
     getEndTime,
+    formatLargeNumber,
+    formatToDollar,
+    formatDividendYield,
+    formatPERatio,
 } from "../util/dashboard_calcs";
 import * as externalAPIUtil from "../util/external_api_util"
 import {
@@ -23,8 +26,6 @@ import {DateTime} from "luxon";
 export const FETCH_CANDLES = "FETCH_CANDLES";
 export const FETCH_QUOTE = "FETCH_QUOTE";
 export const FETCH_COMPANY_OVERVIEW = "FETCH_COMPANY_OVERVIEW";
-export const FETCH_TICKER_DATA = "FETCH_TICKER_DATA";
-export const RECEIVE_TICKER_DATA = "RECEIVE_TICKER_DATA";
 export const FETCH_COMPANY_NEWS = "FETCH_COMPANY_NEWS";
 export const RECEIVE_COMPANY_NEWS = "RECEIVE_COMPANY_NEWS";
 export const FETCH_MARKET_NEWS = "FETCH_MARKET_NEWS";
@@ -38,6 +39,8 @@ export const RECEIVE_QUOTE = "RECEIVE_QUOTE";
 export const INITIALIZE_ASSETS = "INITIALIZE_ASSETS";
 export const INITIALIZE_ASSET = "INITIALIZE_ASSET";
 export const FLUSH_ASSET = "FLUSH_ASSET";
+export const RECEIVE_COMPANY_NAME = "RECEIVE_COMPANY_NAME";
+export const RECEIVE_COMPANY_DESCRIPTION = "RECEIVE_COMPANY_DESCRIPTION";
 export const DAILY_RESOLUTION = 5;
 export const WEEKLY_RESOLUTION = 15;
 export const MONTHLY_RESOLUTION = 60;
@@ -50,6 +53,10 @@ const ANNUAL_RESOLUTION = "D";
 const FETCH_ONE_DAY_PRICES = "FETCH_ONE_DAY_PRICES";
 const FETCH_SEARCH_RESULTS = "FETCH_SEARCH_RESULTS";
 export const RECEIVE_SEARCH_RESULTS = "RECEIVE_SEARCH_RESULTS";
+export const RECEIVE_CEO = "RECEIVE_CEO";
+const FETCH_COMPANY_PROFILE = "FETCH_COMPANY_PROFILE";
+export const RECEIVE_IPO_DATE = "RECEIVE_IPO_DATE";
+export const RECEIVE_ABOUT_ITEMS = "RECEIVE_ABOUT_ITEMS";
 
 const receiveSearchResults = ({bestMatches: results}) => {
     results = results.filter(result => result["4. region"] === "United States");
@@ -97,18 +104,18 @@ const convertStrToCents = str => {
     return convertToCents(n);
 };
 
-const receiveIntradayPrices = (data, ticker) => {
-    let test = data.split("\n");
+const formatFromCSV = data => {
+    let arr = data.split("\n");
     let timeSeries = [];
-    test.forEach((val, i) => {
+    arr.forEach((val, i) => {
         if (i) {
             const arr = val.split(",").map((value, i) => {
                 // if value is the volume
                 if (i === 5) return parseInt(value);
-
+    
                 // if value is not the timestamp
                 if (i) return convertStrToCents(value);
-
+    
                 return value;
             });
             const time = DateTime.fromSQL(arr[0], {zone: "America/New_York"}).toSeconds();
@@ -118,6 +125,39 @@ const receiveIntradayPrices = (data, ticker) => {
     })
     timeSeries.sort((a, b) => a[0] - b[0]);
 
+    return timeSeries;
+};
+
+const receiveOneDayAboutItems = (timeSeries, ticker) => {
+    const volumes = timeSeries.map(series => series[5]);
+    const items = [
+        ["Open Price", formatToDollar(timeSeries[0][1])],
+        ["High Today", formatToDollar(Math.max(...timeSeries.map(series => series[2])))],
+        ["Low Today", formatToDollar(Math.min(...timeSeries.map(series => series[3])))],
+        ["Volume", formatLargeNumber(volumes.reduce((total, num) => total += num))],
+    ];
+    return {
+        type: RECEIVE_ABOUT_ITEMS,
+        items,
+        ticker,
+    }
+};
+
+// const receiveIntradayAboutItems = (timeSeries, ticker) => {
+//     const items = [
+//         ["Prev. Day Volume", timeSeries[timeSeries.length - 2][5]]
+//         ["Open Price", timeSeries[0][1]],
+//         ["High Today", Math.max(...timeSeries.map(series => series[2]))],
+//         ["Low Today", Math.min(...timeSeries.map(series => series[3]))],
+//     ];
+//     return {
+//         type: RECEIVE_ABOUT_ITEMS,
+//         items,
+//         ticker,
+//     }
+// };
+
+const receiveIntradayPrices = (timeSeries, ticker) => {
     const oneWeekStartTime = Date.parse(getStartTime(ONE_WEEK)) / 1000;
     const oneWeek = timeSeries.filter(series => series[0] >= oneWeekStartTime && series[0] % (WEEKLY_RESOLUTION * 60) === 0);
     const oneWeekTimes = [];
@@ -159,21 +199,43 @@ const receiveIntradayPrices = (data, ticker) => {
     });
 };
 
-const receiveOneDayPrices = (timeSeries, ticker) => {
-    const oneDayTimes = [];
-    const oneDayPrices = [];
-    for(let i = 0; i < timeSeries.t.length; i++) {
-        oneDayTimes.push(timeSeries.t[i]);
-        oneDayPrices.push(convertToCents(timeSeries.o[i]));
+const formatOneDayTimeSeries = data => {
+    // const oneDayTimes = [];
+    // const oneDayPrices = [];
+    const timeSeries = [];
+    for(let i = 0; i < data.t.length; i++) {
+        const newArr = [];
+        newArr.push(data.t[i]);
+        newArr.push(convertToCents(data.o[i]));
+        newArr.push(convertToCents(data.h[i]));
+        newArr.push(convertToCents(data.l[i]));
+        newArr.push(convertToCents(data.c[i]));
+        newArr.push(data.v[i]);
+        // oneDayTimes.push(data.t[i]);
+        // oneDayPrices.push(convertToCents(data.o[i]));
+        timeSeries.push(newArr);
     }
+    validateOneDayTimeSeries(timeSeries);
+
+    return timeSeries;
+    // if (oneDayTimes.length < 79) {
+    //     oneDayTimes.push(Date.parse(new Date) / 1000);
+    //     oneDayPrices.push(convertToCents(data.c.last()));
+    // }
+
+}
+
+const receiveOneDayPrices = (timeSeries, ticker) => {
+    const oneDayTimes = timeSeries.map(series => series[0]);
+    const oneDayPrices = timeSeries.map(series => series[1]);
+
     if (oneDayTimes.length < 79) {
         oneDayTimes.push(Date.parse(new Date) / 1000);
-        oneDayPrices.push(convertToCents(timeSeries.c.last()));
+        oneDayPrices.push(timeSeries.last()[4]);
     }
-    validateOneDayTimesAndPrices(oneDayTimes, oneDayPrices);
+
     const times = {oneDay: oneDayTimes};
     const prices = {oneDay: {[ticker]: oneDayPrices}};
-    // if (ticker==="GOOG") debugger;
     return ({
         type: RECEIVE_ONE_DAY_PRICES,
         ticker,
@@ -185,26 +247,30 @@ const receiveOneDayPrices = (timeSeries, ticker) => {
 
 // Yes, the below code "makes up" prices but I'm not willing to pay $100/month
 // for a more reliable API provider
-const validateOneDayTimesAndPrices = (times, prices) => {
+const validateOneDayTimeSeries = timeSeries => {
     const startTime = Date.parse(getStartTime(ONE_DAY)) / 1000;
-    if (startTime !== times[0]) {
-        times.unshift(startTime);
-        prices.unshift(prices[0]);
+    if (startTime !== timeSeries[0][0]) {
+        timeSeries.unshift([...timeSeries[0]]);
+        timeSeries[0][0] = startTime;
     }
-    for(let i = 1; i < times.length - 1; i++) {
-        const newTime = times[i - 1] + DAILY_RESOLUTION * 60;
-        if (times[i] !== newTime) {
-            times.splice(i, 0, newTime);
-            prices.splice(i, 0, (prices[i - 1] + prices[i]) / 2);
+    for(let i = 1; i < timeSeries.length - 1; i++) {
+        const newTime = timeSeries[i - 1][0] + DAILY_RESOLUTION * 60;
+        if (timeSeries[i][0] !== newTime) {
+            const newSeries = [newTime];
+            for (let j = 1; j < timeSeries[i].length; j++) {
+                newSeries.push((timeSeries[i - 1][j] + timeSeries[i][j]) / 2);
+            }
+            timeSeries.splice(i, 0, newSeries);
         }
     }
 }
 
-const receiveDailyPrices = (data, ticker) => {
-    let timeSeries = [];
+const formatDailyTimeseries = data => {
+    const timeSeries = [];
     const oneYearStartTime = Date.parse(getStartTime(ONE_YEAR)) / 1000;
     for(let pair of Object.entries(data["Time Series (Daily)"])) {
-        const [key, vals] = pair;
+        const key = pair[0];
+        const vals = Object.values(pair[1]);
         const time = DateTime.fromSQL(key, {zone: "America/New_York"}).toSeconds();
         
         // DATES MAY BE OUT OF ORDER, CANNOT JUST BSEARCH FOR ONE YEAR START
@@ -214,9 +280,32 @@ const receiveDailyPrices = (data, ticker) => {
         // series.push(convertStrToCents(vals["4. close"]));
         // series.push(parseInt(vals["5. volume"]));
         // series.push(vals);
-        timeSeries.push([time, ...Object.values(vals)]);
+        const values = [];
+        const unadjustedClose = parseFloat(vals[3]);
+        const adjustedClose = parseFloat(vals[4]);
+        const adjustmentScalar = adjustedClose / unadjustedClose;
+        for(let i = 0; i < 4; i++) values.push(Math.round(convertStrToCents(vals[i]) * adjustmentScalar));
+        values.push(parseInt(vals[5]));
+        timeSeries.push([time, ...values]);
     }
     timeSeries.sort((a, b) => a[0] - b[0]);
+    return timeSeries;
+}
+
+const receiveDailyAboutItems = (timeSeries, ticker) => {
+    const volumes = timeSeries.map(series => series.last());
+    const avgVolume = Math.round(volumes.reduce((total, num) => total += num) / volumes.length);
+    const items = [
+        ["Average Volume", formatLargeNumber(avgVolume)],
+    ];
+    return {
+        type: RECEIVE_ABOUT_ITEMS,
+        items,
+        ticker,
+    }
+}
+
+const receiveDailyPrices = (timeSeries, ticker) => {
     
     let threeMonthStartTime = Date.parse(getStartTime(THREE_MONTH)) / 1000;
     const threeMonth = timeSeries.filter(series => series[0] >= threeMonthStartTime);
@@ -224,14 +313,14 @@ const receiveDailyPrices = (data, ticker) => {
     const threeMonthPrices = [];
     for(let i = 0; i < threeMonth.length; i++) {
         threeMonthTimes.push(threeMonth[i][0]);
-        threeMonthPrices.push(convertStrToCents(threeMonth[i][5]));
+        threeMonthPrices.push(threeMonth[i][4]);
     }
     const oneYearTimes = [];
     const oneYearPrices = [];
     
     for(let i = 0; i < timeSeries.length; i++) {
         oneYearTimes.push(timeSeries[i][0]);
-        oneYearPrices.push(convertStrToCents(timeSeries[i][5]));
+        oneYearPrices.push(timeSeries[i][4]);
     }
     
     const times = {};
@@ -242,9 +331,9 @@ const receiveDailyPrices = (data, ticker) => {
     prices.threeMonth[ticker] = threeMonthPrices;
     prices.oneYear[ticker] = oneYearPrices;
     const startPrices = {
-        oneDay: {[ticker]: oneYearPrices[oneYearPrices.length - 2]},
-        oneYear: {[ticker]: convertStrToCents(timeSeries[0][1])},
-        threeMonth: {[ticker]: convertStrToCents(threeMonth[0][1])},
+        oneDay: {[ticker]: oneYearPrices[oneYearPrices.length - (inMarketHours() ? 1 : 2)]},
+        oneYear: {[ticker]: timeSeries[0][1]},
+        threeMonth: {[ticker]: threeMonth[0][1]},
     };
     return ({
         type: RECEIVE_DAILY_PRICES,
@@ -268,17 +357,21 @@ const receiveQuote = (ticker, quote) => ({
     quote
 });
 
-const receiveCompanyOverview = (ticker, companyOverview) => ({
-    type: RECEIVE_COMPANY_OVERVIEW,
-    ticker,
-    companyOverview,
-});
-
-const receiveTickerData = (ticker, tickerData) => ({
-    type: RECEIVE_TICKER_DATA,
-    ticker,
-    tickerData,
-});
+const receiveCompanyOverview = companyOverview => {
+    const {MarketCapitalization, PERatio, DividendYield, FullTimeEmployees, Symbol} = companyOverview;
+    const items = [
+        ["52 Week High", formatToDollar(convertStrToCents(companyOverview["52WeekHigh"]))],
+        ["52 Week Low", formatToDollar(convertStrToCents(companyOverview["52WeekLow"]))],
+        ["Market Cap", formatLargeNumber(MarketCapitalization)],
+        ["Price-Earnings Ratio", formatPERatio(PERatio)],
+        ["Dividend Yield", formatDividendYield(DividendYield)],
+        ["Employees", parseInt(FullTimeEmployees).toLocaleString()],
+    ];
+    return ({
+    type: RECEIVE_ABOUT_ITEMS,
+    ticker: Symbol,
+    items,
+})};
 
 const receiveCompanyNews = (ticker, companyNews) => ({
     type: RECEIVE_COMPANY_NEWS,
@@ -311,21 +404,33 @@ const qFunc = action => {
 
         case FETCH_INTRADAY_PRICES:
             externalAPIUtil.fetchIntradayPrices(ticker).then(
-                data => action.dispatch(receiveIntradayPrices(data, ticker)),
+                data => {
+                    const timeSeries = formatFromCSV(data);
+                    action.dispatch(receiveIntradayPrices(timeSeries, ticker));
+                    // action.dispatch(receiveIntradayAboutItems(timeSeries, ticker));
+                },
                 err => console.log(err)
             );
             break;
 
         case FETCH_ONE_DAY_PRICES:
             externalAPIUtil.fetchOneDayPrices(ticker).then(
-                data => action.dispatch(receiveOneDayPrices(data, ticker)),
+                data => {
+                    const timeSeries = formatOneDayTimeSeries(data);
+                    action.dispatch(receiveOneDayPrices(timeSeries, ticker));
+                    action.dispatch(receiveOneDayAboutItems(timeSeries, ticker));
+                },
                 err => console.log(err)
             );
             break;
 
         case FETCH_DAILY_PRICES:
             externalAPIUtil.fetchDailyPrices(ticker).then(
-                data => action.dispatch(receiveDailyPrices(data, ticker)),
+                data => {
+                    const timeSeries = formatDailyTimeseries(data);
+                    action.dispatch(receiveDailyPrices(timeSeries, ticker));
+                    action.dispatch(receiveDailyAboutItems(timeSeries, ticker));
+                },
                 err => console.log(err)
             );
             break;
@@ -342,21 +447,27 @@ const qFunc = action => {
                 error => console.log(error),
             );
             break;
+        case FETCH_COMPANY_PROFILE:
+            externalAPIUtil.fetchCompanyProfile(ticker).then(
+                resp => {
+                    action.dispatch(receiveCompanyProfile(resp));
+                    action.dispatch(receiveCompanyName(resp));
+                }
+            );
+            break;
+
         case FETCH_QUOTE:
             // finnhubClient.quote(ticker, (error, data, response) => {
             //     console.log(error);
             //     action.dispatch(receiveQuote(ticker, data))
             // })
             break;
-        case FETCH_TICKER_DATA:
-            externalAPIUtil.fetchTickerData(ticker).then(
-                tickerData => action.dispatch(receiveTickerData(ticker, tickerData)),
-                () => action.dispatch(receiveTickerData(ticker, []))
-            );
-            break;
         case FETCH_COMPANY_OVERVIEW:
             externalAPIUtil.fetchCompanyOverview(ticker).then(
-                companyOverview => action.dispatch(receiveCompanyOverview(ticker, companyOverview))
+                companyOverview => {
+                    action.dispatch(receiveCompanyOverview(companyOverview));
+                    action.dispatch(receiveCompanyDescription(companyOverview));
+                }
             );
             break;
         case FETCH_COMPANY_NEWS:
@@ -372,6 +483,22 @@ const qFunc = action => {
             break;
         default:
             break;
+    }
+};
+
+const receiveCompanyName = ({name, ticker}) => {
+    return {
+        type: RECEIVE_COMPANY_NAME,
+        name,
+        ticker,
+    }
+};
+
+const receiveCompanyDescription = ({Description, Symbol}) => {
+    return {
+        type: RECEIVE_COMPANY_DESCRIPTION,
+        description: Description,
+        ticker: Symbol,
     }
 };
 
@@ -527,15 +654,6 @@ export const fetchCompanyOverview = (ticker, dispatch) => {
     alphaQ.push({...action});
 }
 
-export const fetchTickerData = (ticker, dispatch) => {
-    const action = {
-        type: FETCH_TICKER_DATA,
-        ticker,
-        dispatch,
-    }
-    polygonQ.push({ ...action });
-}
-
 function formatDate(date) {
     const year = date.getUTCFullYear().toString();
     const month = (1 + date.getUTCMonth()).toString().padStart(2, "0");
@@ -576,37 +694,37 @@ export const fetchAllCandles = (tickers, dispatch) => {
     }
 }
 
-export const fetchAllInfo = (tickers, dispatch) => {
-    if (typeof tickers === "string") tickers = [tickers];
-    fetchAllCandles(tickers, dispatch);
-    for(let ticker of tickers) {
-        fetchCompanyOverview(ticker, dispatch);
-        fetchTickerData(ticker, dispatch);
-    }
-}
+// export const fetchAllInfo = (tickers, dispatch) => {
+//     if (typeof tickers === "string") tickers = [tickers];
+//     fetchAllCandles(tickers, dispatch);
+//     for(let ticker of tickers) {
+//         fetchCompanyOverview(ticker, dispatch);
+//         fetchTickerData(ticker, dispatch);
+//     }
+// }
 
 export const fetchNeededInfo = (
     tickersToFetch,
-    {tickers, prices, companyOverviews, tickerData},
+    assetInformation,
     dispatch
 ) => {
+    let {tickers, prices} = assetInformation;
     tickers = Set.convert(tickers);
     tickersToFetch = Array.convert(tickersToFetch);
     for(let ticker of tickersToFetch) {
         if (!assetIsInitialized(ticker, tickers)) {
             dispatch(initializeAsset(ticker));
-            fetchAllInfo(ticker, dispatch);
-            continue;
+            // fetchAllInfo(ticker, dispatch);
+            // continue;
         }
 
         if (!pricesAreLoaded(ticker, prices)) {
             fetchAllCandles(ticker, dispatch);
         }
-        if (!companyOverviewIsLoaded(ticker, companyOverviews)) {
+        if (!aboutItemsAreLoaded({newEntities: {assetInformation}}, ticker)) {
             fetchCompanyOverview(ticker, dispatch);
-        }
-        if (!tickerDataIsLoaded(ticker, tickerData)) {
-            fetchTickerData(ticker, dispatch);
+            fetchIEXAboutItems(ticker, dispatch);
+            fetchCompanyProfile(ticker, dispatch);
         }
     }
 }
@@ -614,3 +732,35 @@ export const fetchNeededInfo = (
 const isIterable = variable => (
     typeof variable[Symbol.iterator] === "function"
 );
+
+const receiveIEXAboutItems = ({CEO, city, state, symbol}) => {
+    const headquarters = city.split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ") + ", " + state;
+    const items = [
+        ["Headquarters", headquarters],
+        ["CEO", CEO],
+    ];
+    return ({
+        type: RECEIVE_ABOUT_ITEMS,
+        items,
+        ticker: symbol,
+    })
+};
+
+export const fetchIEXAboutItems = (ticker, dispatch) => {
+    externalAPIUtil.fetchIEXAboutItems(ticker).then(res => dispatch(receiveIEXAboutItems(res)));
+};
+
+export const fetchCompanyProfile = (ticker, dispatch) => {
+    const action = {
+        type: FETCH_COMPANY_PROFILE,
+        ticker,
+        dispatch,
+    };
+    finnhubQ.push(action);
+};
+
+const receiveCompanyProfile = ({ticker, ipo}) => ({
+    type: RECEIVE_ABOUT_ITEMS,
+    ticker,
+    items: [["IPO Year", ipo.slice(0,4)]],
+});

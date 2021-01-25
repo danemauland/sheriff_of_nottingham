@@ -1,4 +1,3 @@
-import { times } from "async";
 import {
     DAILY_RESOLUTION,
     WEEKLY_RESOLUTION,
@@ -10,13 +9,8 @@ import {
 
 import {
     getMarketCloseHour,
-    getStartTime,
-    convertToCents,
-    camelCase,
     ONE_DAY,
     ONE_WEEK,
-    ONE_MONTH,
-    THREE_MONTH,
     ONE_YEAR,
 } from "./dashboard_calcs";
 
@@ -48,19 +42,10 @@ export const defaultState = Object.freeze({
             threeMonth: {},
             oneYear: {},
         },
-        historicPrices: {
-            oneDayHigh: {},
-            oneDayLow: {},
-            oneDayOpen: {},
-            oneYearHigh: {},
-            oneYearLow: {},
-        },
-        currentPrices: {},
-        companyOverviews: {},
-        tickerData: {},
+        names: {},
+        descriptions: {},
+        aboutItems: {},
         companyNews: {},
-        prevVolume: {},
-        curVolume: {},
         trades: {},
         positionCosts: {},
     },
@@ -775,3 +760,14 @@ const calcPositionCost = (trades, sharesOwned) => {
     }
     return cost;
 };
+
+
+export const newDefaultAboutItems = () => {
+    const defaultAboutItems = new Map();
+    const keys = ["CEO", "Employees", "Headquarters", "IPO Year", "Market Cap",
+    "Price-Earnings Ratio", "Dividend Yield", "Average Volume", "High Today",
+    "Low Today", "Open Price", "Volume", "52 Week High", "52 Week Low"
+    ];
+    for (let title of keys) defaultAboutItems.set(title, null);
+    return defaultAboutItems;
+}

@@ -86,7 +86,7 @@ const getLabelsArray = function(times, type) {
     }
 }
 
-const getDatasets = function(values, type, times) {
+const getDatasets = function(values, type, times, oneDayStart) {
     const vals = values[camelCase(type)];
     const newTimes = [...times[camelCase(type)]];
     let prevDayCloseArray = [];
@@ -95,8 +95,7 @@ const getDatasets = function(values, type, times) {
 
     switch (type) {
         case ONE_DAY:
-            const prevClose = values.oneYear.last() / 100;
-            prevDayCloseArray = new Array(79).fill(prevClose);
+            prevDayCloseArray = new Array(79).fill(oneDayStart / 100);
             while (newTimes.length < prevDayCloseArray.length) {
                 newTimes.push(newTimes.last() + 5 * 60);
             }
@@ -340,12 +339,12 @@ const updateScale = (chart, newDatasets) => {
     ticks.min = min;
 };
 
-export const refreshChartData = (chart, times, values, chartSelected)=>{
+export const refreshChartData = (chart, times, values, chartSelected, oneDayStart)=>{
     const data = chart.data;
 
     resetChartData(data);
 
-    const newDatasets = getDatasets(values, chartSelected, times);
+    const newDatasets = getDatasets(values, chartSelected, times, oneDayStart);
     const newLabels = getLabelsArray(newDatasets.last(), chartSelected);
     fillChartData(data, newLabels, newDatasets);
     updateScale(chart.chart, newDatasets);
