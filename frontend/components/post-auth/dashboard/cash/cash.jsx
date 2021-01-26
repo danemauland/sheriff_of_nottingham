@@ -20,16 +20,6 @@ const mapDispatchToProps = dispatch => ({
     cashFlashed: () => dispatch(cashFlashed())
 });
 
-<<<<<<< HEAD
-=======
-const toggleClasses = () => {
-    $(".cash-form-div").toggleClass("no-height");
-    $(".cash-form-div").toggleClass("cash-form-div-expanded");
-    $(".cash-container").toggleClass("cash-container-expanded");
-    $(".cash-expander-button").toggleClass("cash-button-expanded");
-};
-
->>>>>>> 7de0a1ba50fb79fe20c65ef889d79d0123f5b5ac
 class Cash extends React.Component {
     constructor(props) {
         super(props);
