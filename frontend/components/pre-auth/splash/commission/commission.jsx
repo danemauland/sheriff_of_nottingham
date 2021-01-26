@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {openModal} from "../../../../actions/modal_actions";
+import {openModal} from "../../../../actions/ui_actions";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {Link} from "react-router-dom"
 

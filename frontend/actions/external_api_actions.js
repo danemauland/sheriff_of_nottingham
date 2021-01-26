@@ -20,7 +20,7 @@ import * as externalAPIUtil from "../util/external_api_util"
 import {
     setAPIDebounceStartTime,
     removeAPIDebounceStartTime,
-} from "./api_debounce_start_time_actions";
+} from "./ui_actions";
 import {DateTime} from "luxon";
 
 export const FETCH_CANDLES = "FETCH_CANDLES";

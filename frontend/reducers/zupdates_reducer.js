@@ -3,7 +3,7 @@ import {
     REMOVE_CASH_TRANSACTIONS,
 } from "../actions/cash_transactions_actions";
 import {RECEIVE_TRADE} from "../actions/trade_actions";
-import { UPDATE_CHART, CHART_UPDATED } from "../actions/chart_selected_actions";
+import { UPDATE_CHART, CHART_UPDATED } from "../actions/zchart_selected_actions";
 
 const defaultState = {
     cashHistory: false,
