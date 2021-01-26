@@ -27,6 +27,7 @@ const CashFormOptions = ({color, setState, amount, datetimeError,
     };
 
     const generateDatetimeChangeHandler = type => ({currentTarget:{value}}) => {
+        debugger;
         setState({[type]: value});
     };
     

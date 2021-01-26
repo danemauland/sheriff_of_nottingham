@@ -339,3 +339,12 @@ export const getEndTime = () => {
     }
     return now;
 };
+
+export const cashFormIsOpen = () => !$(".cash-form-div").hasClass("no-height");
+
+export const toggleCashForm = () => {
+    $(".cash-form-div").toggleClass("no-height");
+    $(".cash-form-div").toggleClass("cash-form-div-expanded");
+    $(".cash-container").toggleClass("cash-container-expanded");
+    $(".cash-expander-button").toggleClass("cash-button-expanded");
+}

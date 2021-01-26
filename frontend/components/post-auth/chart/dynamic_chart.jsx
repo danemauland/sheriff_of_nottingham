@@ -35,6 +35,8 @@ class DynamicChart extends React.Component {
             this.props.valueIncreased,
             this.setState.bind(this),
         ));
+        
+        ctx.data("lineChart", this.lineChart);
 
         this.handleChartChange();
         this.resetHeader();

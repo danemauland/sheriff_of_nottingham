@@ -6,6 +6,10 @@ import {connect} from "react-redux";
 import {CASH_AMOUNTS} from "../../../../util/cash_utils";
 import CashToggles from "./cash_toggles";
 import CashFormOptions from "./cash_form_options";
+import {
+    cashFormIsOpen,
+    toggleCashForm,
+} from "../../../../util/dashboard_calcs";
 
 const DATETIME_ERROR = "You can only travel backwards in time, not forwards";
 
@@ -46,6 +50,7 @@ class Cash extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.generateCashButton = this.generateCashButton.bind(this);
         this.setState = this.setState.bind(this);
+        this.updateTimeFromChart = this.updateTimeFromChart.bind(this);
     }
 
     generateClickHandler(field) {
@@ -59,6 +64,28 @@ class Cash extends React.Component {
                 created_at: new Date().getTime(),
             });
         }
+    }
+
+    updateTimeFromChart(e) {
+        const activePoints = this.lineChart.getElementsAtXAxis(e);
+        const i = activePoints[0]._index;
+        const seconds = this.lineChart.config.data.datasets[2].data[i];
+        const dateTime = new Date(seconds * 1000);
+        const year = dateTime.getFullYear().toString();
+        const month = (dateTime.getMonth() + 1).toString().padStart(2, "0");
+        const day = dateTime.getDate().toString().padStart(2, "0");
+        const hours = dateTime.getHours().toString().padStart(2, "0");
+        const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+        const date = `${year}-${month}-${day}`;
+        const time = `${hours}:${minutes}`;
+        this.setState({date, time});
+        if (!cashFormIsOpen()) toggleCashForm();
+    }
+
+    componentDidMount() {
+        const chart = $("#myChart");
+        this.lineChart = chart.data("lineChart");
+        chart.click(this.updateTimeFromChart);
     }
 
     handleSubmit(e) {
