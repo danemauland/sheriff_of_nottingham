@@ -19,8 +19,8 @@ export default user => {
     const trades = [...user.trades].sort(sortOrder);
     const cashTransactions = [...user.cashTransactions].sort(sortOrder);
 
-    convertTimestampsToSeconds(trades);
-    convertTimestampsToSeconds(cashTransactions);
+    // convertTimestampsToSeconds(trades);
+    // convertTimestampsToSeconds(cashTransactions);
 
     // calculates stocks owned at any given point in time based off the trades
     const ownershipHistories = getOwnershipHistories(trades);

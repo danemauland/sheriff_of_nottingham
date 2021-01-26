@@ -51,9 +51,9 @@ export default (state = defaultState, action) => {
         case RECEIVE_CASH_TRANSACTION:
             newState = merge({}, state);
             ({assetInformation, portfolioHistory, times} = newState);
-            portfolioHistory.cashTransactions.push(action.cashTransaction);
+            portfolioHistory.cashTransactions = [...portfolioHistory.cashTransactions, action.cashTransaction];
             portfolioHistory.cashTransactions.sort(sortOrder);
-            portfolioHistory.cashHistory = getCashHistoy(portfolioHistory.cashTransactions, portfolioHistory.trades);
+            portfolioHistory.cashHistory = getCashHistoy([...portfolioHistory.cashTransactions], portfolioHistory.trades);
             updatePortfolioValuations(
                 assetInformation,
                 portfolioHistory,

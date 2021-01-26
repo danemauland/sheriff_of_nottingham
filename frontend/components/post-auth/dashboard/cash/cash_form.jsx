@@ -14,12 +14,12 @@ import {
 const DATETIME_ERROR = "You can only travel backwards in time, not forwards";
 
 const convertDateAndTimeToMS = (date, time) => {
-    const timezoneOffset = new Date().getTimezoneOffset();
+    const timezoneOffset = new Date(date).getTimezoneOffset();
 
-    const hours = +time.slice(0,2) + timezoneOffset;
+    const hours = +time.slice(0,2) + timezoneOffset / 60;
     const minutes = +time.slice(3);
     
-    const timeAsMS = (hours * 60 + minutes) * 60 * 1000
+    const timeAsMS = (hours * 60 + minutes) * 60 * 1000;
 
     const dateAsMS = Date.parse(date);
 
@@ -59,9 +59,19 @@ class Cash extends React.Component {
         return e => {
             e.preventDefault();
 
+            let createdAt = new Date().getTime();
+            if (this.state.expandedOptions) {
+                const ms = convertDateAndTimeToMS(this.state.date, this.state.time);
+                if (createdAt < ms) {
+                    this.handleDatetimeError();
+                    return;
+                }
+                createdAt = ms;
+            }
+
             this.props.postCashTransaction({
                 amount: amount * (this.state.isDeposit ? 1 : -1),
-                created_at: new Date().getTime(),
+                created_at: createdAt,
             });
         }
     }
@@ -78,6 +88,7 @@ class Cash extends React.Component {
         const minutes = dateTime.getMinutes().toString().padStart(2, "0");
         const date = `${year}-${month}-${day}`;
         const time = `${hours}:${minutes}`;
+        debugger;
         this.setState({date, time});
         if (!cashFormIsOpen()) toggleCashForm();
         if (!this.state.expandedOptions) $("#cash-options-toggle").click();
