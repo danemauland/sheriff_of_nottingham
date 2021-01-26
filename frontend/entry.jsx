@@ -11,7 +11,6 @@
 // history
 // error handler for APIs
 // add watch lists
-// clicking cash reroutes to dashboard and expands cash
 
 import React from "react";
 import ReactDOM from "react-dom";
