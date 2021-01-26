@@ -68,7 +68,7 @@ class Cash extends React.Component {
 
     updateTimeFromChart(e) {
         const activePoints = this.lineChart.getElementsAtXAxis(e);
-        const i = activePoints[0]._index;
+        const i = Math.min(activePoints[0]._index, this.lineChart.config.data.datasets[0].data.length - 1);
         const seconds = this.lineChart.config.data.datasets[2].data[i];
         const dateTime = new Date(seconds * 1000);
         const year = dateTime.getFullYear().toString();
@@ -80,12 +80,14 @@ class Cash extends React.Component {
         const time = `${hours}:${minutes}`;
         this.setState({date, time});
         if (!cashFormIsOpen()) toggleCashForm();
+        if (!this.state.expandedOptions) $("#cash-options-toggle").click();
     }
 
     componentDidMount() {
         const chart = $("#myChart");
         this.lineChart = chart.data("lineChart");
         chart.click(this.updateTimeFromChart);
+        chart.addClass("pointer-hover");
     }
 
     handleSubmit(e) {
