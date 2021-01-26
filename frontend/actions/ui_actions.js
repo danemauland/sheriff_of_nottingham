@@ -41,5 +41,5 @@ export const flashCash = () => ({
 });
 
 export const cashFlashed = () => ({
-    type: cashFlashed,
+    type: CASH_FLASHED,
 });

@@ -5,9 +5,16 @@ import { connect } from "react-redux";
 import {
     getValueIncreased,
 } from "../../../util/extract_from_state_utils";
+import {
+    flashCash,
+} from "../../../actions/ui_actions";
 
 const mapStateToProps = state => ({
     color: getValueIncreased(state) ? "dark-green" : "red",
+});
+
+const mapDispatchToProps = dispatch => ({
+    flashCash: () => dispatch(flashCash()),
 });
 
 const removeClasses = tar => {
@@ -23,7 +30,6 @@ class NavLinks extends React.Component {
     constructor(props) {
         super(props);
         this.toggleHidden = this.toggleHidden.bind(this);
-        this.highlightCash = this.highlightCash.bind(this);
     }
 
     toggleHidden(e) {
@@ -57,24 +63,9 @@ class NavLinks extends React.Component {
         }
     }
 
-    highlightCash() {
-        const cashContainer = $(".cash-container");
-        const cashExpanderButton = $(".cash-expander-button");
-
-        if (!cashContainer.hasClass("cash-container-expanded")) {
-            cashExpanderButton.trigger("click");
-        }
-
-        cashContainer.addClass("flash");
-
-        window.setTimeout(() => {
-            cashContainer.removeClass("flash")
-        }, 1000);
-    }
-
     genClickHandler(name) {
         if (name === "Account") return this.toggleHidden;
-        if (name === "Cash") return this.highlightCash;
+        if (name === "Cash") return this.props.flashCash;
 
         return e => e.preventDefault();
     }
@@ -103,4 +94,4 @@ class NavLinks extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(NavLinks);
+export default connect(mapStateToProps, mapDispatchToProps)(NavLinks);
