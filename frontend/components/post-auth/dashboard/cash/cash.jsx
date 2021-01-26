@@ -3,16 +3,25 @@ import {formatToDollar} from "../../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 import CashForm from "./cash_form.jsx";
 import {getCashBalance} from "../../../../util/extract_from_state_utils";
+import {
+    cashFlashed,
+} from "../../../../actions/ui_actions";
 
-const mapStateToProps = state => ({cashBal: getCashBalance(state)});
+const mapStateToProps = state => ({
+    cashBal: getCashBalance(state),
+    doFlashCash: state.ui.flashCash,
+});
+
+const mapDispatchToProps = dispatch => ({
+    cashFlashed: () => dispatch(cashFlashed())
+});
 
 const toggleClasses = () => {
     $(".cash-form-div").toggleClass("no-height");
     $(".cash-form-div").toggleClass("cash-form-div-expanded");
     $(".cash-container").toggleClass("cash-container-expanded");
     $(".cash-expander-button").toggleClass("cash-button-expanded");
-
-}
+};
 
 class Cash extends React.Component {
     constructor(props) {
@@ -21,7 +30,7 @@ class Cash extends React.Component {
             expanded: false,
         }
         this.handleClick = this.handleClick.bind(this);
-        this.flash = this.flash.bind(this);
+        this.highlight = this.highlight.bind(this);
     }
     
     handleClick(e) {
@@ -34,7 +43,33 @@ class Cash extends React.Component {
         });
     }
 
-    flash(e) {
+    componentDidMount() {
+        this.componentDidUpdate({doFlashCash: false});
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.doFlashCash && !prevProps.doFlashCash) {
+            this.flashCash();
+            this.props.cashFlashed();
+        }
+    }
+
+    flashCash() {
+        const cashContainer = $(".cash-container");
+        const cashExpanderButton = $(".cash-expander-button");
+
+        if (!cashContainer.hasClass("cash-container-expanded")) {
+            cashExpanderButton.trigger("click");
+        }
+
+        cashContainer.addClass("flash");
+
+        window.setTimeout(() => {
+            cashContainer.removeClass("flash")
+        }, 1000);
+    }
+
+    highlight(e) {
         e.preventDefault();
 
         const tar = $(e.currentTarget);
@@ -60,7 +95,7 @@ class Cash extends React.Component {
                 <div className="cash-container">
                     <button className="cash-expander-button"
                         onClick={this.handleClick}
-                        onMouseDown={this.flash}
+                        onMouseDown={this.highlight}
                     >
                         <div className="cash-button-text-container">
                             <span>Buying Power</span>
@@ -75,4 +110,4 @@ class Cash extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(Cash)
+export default connect(mapStateToProps, mapDispatchToProps)(Cash);

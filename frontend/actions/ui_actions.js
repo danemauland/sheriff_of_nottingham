@@ -31,3 +31,15 @@ export const setAPIDebounceStartTime = startTime => ({
 export const removeAPIDebounceStartTime = () => ({
     type: REMOVE_API_DEBOUNCE_START_TIME,
 });
+
+// Cash Flash actions
+export const FLASH_CASH = "FLASH_CASH";
+export const CASH_FLASHED = "CASH_FLASHED";
+
+export const flashCash = () => ({
+    type: FLASH_CASH,
+});
+
+export const cashFlashed = () => ({
+    type: CASH_FLASHED,
+});
