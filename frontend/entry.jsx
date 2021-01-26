@@ -9,8 +9,9 @@
 // ADD SEPARATE SIGNUP PAGE
 // Add in messages/trade confirms
 // history
-// reflect changes in cash balance outside market hours for the day
 // error handler for APIs
+// add watch lists
+// clicking cash reroutes to dashboard and expands cash
 
 import React from "react";
 import ReactDOM from "react-dom";
