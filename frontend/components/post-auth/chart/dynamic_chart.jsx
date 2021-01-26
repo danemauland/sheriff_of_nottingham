@@ -43,9 +43,13 @@ class DynamicChart extends React.Component {
     componentDidUpdate(prevProps) {
         this.updateStrChange();
 
+        
+        if (prevProps.values !== this.props.values) {
+            this.resetHeader(this.handleChartChange.bind(this));
+        };
+
         const valueWasInc = prevProps.valueIncreased;
         const valueInc = this.props.valueIncreased;
-
         if (valueWasInc !== valueInc) updateLineColor(this.lineChart, valueInc);
     }
 
@@ -57,11 +61,11 @@ class DynamicChart extends React.Component {
         this.checkValueIncreased();
     }
 
-    resetHeader() {
+    resetHeader(callback) {
         this.setState({
             dataPointIndex: -1,
             displayVal: this.props.mostRecentVal,
-        });
+        }, callback);
     }
 
     calcStrChange() {
@@ -73,7 +77,6 @@ class DynamicChart extends React.Component {
         const changeIsPositive = this.calcStrChange()[0] === "+";
         const valueInc = this.props.valueIncreased;
         const updateValueInc = this.props.updateValueIncreased;
-
         if (changeIsPositive !== valueInc) updateValueInc(!valueInc);
     }
 

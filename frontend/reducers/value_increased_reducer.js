@@ -1,4 +1,4 @@
-import { UPDATE_VALUE_INCREASED } from "../actions/value_increased_actions";
+import { UPDATE_VALUE_INCREASED } from "../actions/ui_actions";
 
 const defaultState = true;
 export default (state = defaultState, action) => {

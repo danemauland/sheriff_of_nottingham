@@ -1,7 +1,7 @@
 import {
     SET_API_DEBOUNCE_START_TIME,
     REMOVE_API_DEBOUNCE_START_TIME,
-} from "../actions/api_debounce_start_time_actions";
+} from "../actions/ui_actions";
 
 const defaultState = null;
 export default (state = defaultState, action) => {

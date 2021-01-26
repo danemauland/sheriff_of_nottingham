@@ -9,6 +9,7 @@ import {
 
 import {
     getMarketCloseHour,
+    inMarketHours,
     ONE_DAY,
     ONE_WEEK,
     ONE_YEAR,
@@ -500,11 +501,13 @@ export const updatePortfolioValuations = (
     // times.oneYear.push(times.oneDay.last());
     // valuations.oneWeek.push(valuations.oneDay.last());
     // valuations.oneYear.push(valuations.oneDay.last());
-    startValuations.oneDay = valuations.oneYear.last();
-    startValuations.oneWeek = valuations.oneYear[valuations.oneYear.length - 4];
-    startValuations.oneMonth = valuations.oneYear[valuations.oneYear.length - Math.floor(times.oneMonth.length / 6) - 2];
-    startValuations.threeMonth = valuations.oneYear[valuations.oneYear.length - times.threeMonth.length - 1];
-    startValuations.oneYear = valuations.oneYear[0];
+    const oneYearValuations = valuations.oneYear; 
+    const marketHourAdjustment = inMarketHours() ? 0 : 1;
+    startValuations.oneDay = oneYearValuations[oneYearValuations.length - 1 - marketHourAdjustment];
+    startValuations.oneWeek = oneYearValuations[oneYearValuations.length - 4 - marketHourAdjustment];
+    startValuations.oneMonth = oneYearValuations[oneYearValuations.length - Math.floor(times.oneMonth.length / 6) - 2 - marketHourAdjustment];
+    startValuations.threeMonth = oneYearValuations[oneYearValuations.length - times.threeMonth.length - 1 - marketHourAdjustment];
+    startValuations.oneYear = oneYearValuations[0];
 }
 
 const mergeHistories = (
@@ -535,9 +538,8 @@ const mergeHistories = (
         valuesPointer++;
     }
 
-    while (cashPointer < cashTimes.length - 1) {
-        totals.push(values.last() + cashBalances[cashPointer]);
-        cashPointer++;
+    if (cashPointer < cashTimes.length - 1) {
+        totals[totals.length - 1] = (values.last() + cashBalances.last());
     }
 
     return totals;
@@ -770,4 +772,6 @@ export const newDefaultAboutItems = () => {
     ];
     for (let title of keys) defaultAboutItems.set(title, null);
     return defaultAboutItems;
-}
+};
+
+export const sortOrder = (a, b) => a.createdAt - b.createdAt;

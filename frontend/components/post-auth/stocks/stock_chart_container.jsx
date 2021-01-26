@@ -1,4 +1,4 @@
-import { updateValueIncreased } from "../../../actions/value_increased_actions";
+import { updateValueIncreased } from "../../../actions/ui_actions";
 import DynamicChart from "../chart/dynamic_chart"
 import { connect } from "react-redux";
 import {
