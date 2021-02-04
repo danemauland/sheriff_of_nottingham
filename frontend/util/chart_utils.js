@@ -11,6 +11,8 @@ import {
     getPreviousEndingValue,
     camelCase,
     inMarketHours,
+    formatDateTime,
+    formatTime,
 } from "../util/dashboard_calcs";
 
 export const GRAPH_VIEWS = [ONE_DAY,ONE_WEEK,ONE_MONTH,THREE_MONTH,ONE_YEAR];
@@ -36,32 +38,6 @@ export const getStrChange = function(startVal, currentVal) {
     delta = Math.abs(delta);
     
     return `${sign}${formatToDollar(delta)} (${formatPercentage(percentage)})`;
-}
-
-const formatTime = function(date) {
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-
-    const ampm = (hours > 11 ? "PM" : "AM")
-
-    if (minutes < 10) minutes = `0${minutes}`;
-    if (hours > 12) hours = hours % 12;
-
-    return `${hours}:${minutes} ${ampm}`
-}
-
-const MONTHS = [
-    "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"
-];
-
-export const parseMonth = date => MONTHS[date.getMonth()];
-
-const formatDateTime = function (date, toggleYear) {
-    const month = parseMonth(date);
-    const day = date.getDate();
-
-    if (toggleYear) return `${month} ${day}, ${date.getFullYear()}`;
-    return `${month} ${day}, ${formatTime(date)}`;
 }
 
 const getLabelsArray = function(times, type) {

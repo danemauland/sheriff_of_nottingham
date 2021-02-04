@@ -3,6 +3,7 @@ import {
     formatToDollar,
     parseDollarInput,
     parseIntegerInput,
+    formatDateTime,
 } from "../../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 import {createTrade} from "../../../../actions/trade_actions";
@@ -73,7 +74,6 @@ class Sidebar extends React.Component {
         let hours = new Date(createdAt * 1000).getUTCHours();
         if (hours === 4 || hours === 5) createdAt += 16 * 60 * 60;
         const price = this.lineChart.config.data.datasets[0].data[i] * 100;
-        debugger;
         this.setState({createdAt, price});
     }
 
@@ -231,6 +231,20 @@ class Sidebar extends React.Component {
         return `order-button ${col}-background light-${col}-background-hover`;
     }
 
+    get orderDate() {
+        if (!this.state.createdAt) return <></>;
+
+        return <div>
+            <span>
+                Order Time
+            </span>
+
+            <span>
+                {formatDateTime(this.state.createdAt)}
+            </span>
+        </div>
+    }
+
     render() {
         const {isDollarOrder, price} = this.state;
         return (
@@ -253,6 +267,8 @@ class Sidebar extends React.Component {
                             {formatToDollar(price)}
                         </span>
                     </div>
+
+                    {this.orderDate}
 
                     <div>
                         <span>

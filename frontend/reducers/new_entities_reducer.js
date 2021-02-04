@@ -16,6 +16,9 @@ import {
     RECEIVE_CASH_TRANSACTION,
 } from "../actions/cash_transactions_actions";
 import {
+    RECEIVE_TRADE,
+} from "../actions/trade_actions";
+import {
     LOGOUT_CURRENT_USER
 } from "../actions/session_actions";
 import {
@@ -29,6 +32,10 @@ import {
     newDefaultAboutItems,
     getCashHistoy,
     sortOrder,
+    getOwnershipHistories,
+    getTradesByTicker,
+    calcPositionCosts,
+    updateStockValuationsForTicker,
 } from "../util/new_entities_util";
 var merge = require('lodash.merge');
 
@@ -58,6 +65,26 @@ export default (state = defaultState, action) => {
                 assetInformation,
                 portfolioHistory,
                 times
+            );
+            return newState;
+
+        case RECEIVE_TRADE:
+            newState = merge({}, state);
+            const tickers = newState.assetInformation.tickers;
+            if (!tickers.has(action.trade.ticker)) tickers.add(action.trade.ticker);
+            let trades = newState.portfolioHistory.trades;
+            trades.push(action.trade);
+            trades = trades.sort((a, b) => a.createdAt - b.createdAt);
+            newState.portfolioHistory.trades = trades;
+            newState.assetInformation.ownershipHistories = getOwnershipHistories(trades);
+            newState.assetInformation.trades = getTradesByTicker(trades);
+            newState.assetInformation.positionCosts = calcPositionCosts(tickers, newState.assetInformation.trades, newState.assetInformation.ownershipHistories.numShares);
+            newState.portfolioHistory.cashHistory = getCashHistoy(newState.portfolioHistory.cashTransactions, trades);
+            updateStockValuationsForTicker(action, newState.assetInformation, newState.times);
+            updatePortfolioValuations(
+                newState.assetInformation,
+                newState.portfolioHistory,
+                newState.times
             );
             return newState;
 

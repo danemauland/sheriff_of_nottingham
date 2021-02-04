@@ -2,7 +2,6 @@ import {
     defaultState,
     getCashHistoy,
     getOwnershipHistories,
-    convertTimestampsToSeconds,
     getTradesByTicker,
     calcPositionCosts,
     sortOrder,

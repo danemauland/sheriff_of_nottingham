@@ -348,3 +348,30 @@ export const toggleCashForm = () => {
     $(".cash-container").toggleClass("cash-container-expanded");
     $(".cash-expander-button").toggleClass("cash-button-expanded");
 }
+
+export const formatDateTime = function (date, toggleYear) {
+    if (typeof date === "number") date = new Date(date * 1000);
+    const month = parseMonth(date);
+    const day = date.getDate();
+
+    if (toggleYear) return `${month} ${day}, ${date.getFullYear()}`;
+    return `${month} ${day}, ${formatTime(date)}`;
+}
+
+const MONTHS = [
+    "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"
+];
+
+export const parseMonth = date => MONTHS[date.getMonth()];
+
+export const formatTime = function(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+
+    const ampm = (hours > 11 ? "PM" : "AM")
+
+    if (minutes < 10) minutes = `0${minutes}`;
+    if (hours > 12) hours = hours % 12;
+
+    return `${hours}:${minutes} ${ampm}`
+}
