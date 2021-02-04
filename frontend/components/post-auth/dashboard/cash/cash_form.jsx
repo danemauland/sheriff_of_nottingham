@@ -88,7 +88,6 @@ class Cash extends React.Component {
         const minutes = dateTime.getMinutes().toString().padStart(2, "0");
         const date = `${year}-${month}-${day}`;
         const time = `${hours}:${minutes}`;
-        debugger;
         this.setState({date, time});
         if (!cashFormIsOpen()) toggleCashForm();
         if (!this.state.expandedOptions) $("#cash-options-toggle").click();

@@ -41,6 +41,7 @@ class Sidebar extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleReset = this.handleReset.bind(this);
+        this.updateOrderFormFromChart = this.updateOrderFormFromChart.bind(this);
         // this.graphClickListener = this.graphClickListener.bind(this);
     }
 
@@ -60,6 +61,21 @@ class Sidebar extends React.Component {
     //     const createdAt = lineChart.tooltip._data.datasets[4].data[index];
     //     this.setState({price: price*100,createdAt: createdAt * 1000});
     // }
+
+    componentDidMount() {
+        const chart = $("#myChart");
+        this.lineChart = chart.data("lineChart");
+        chart.click(this.updateOrderFormFromChart);
+        chart.addClass("pointer-hover");
+    }
+
+    updateOrderFormFromChart(e) {
+        const activePoints = this.lineChart.getElementsAtXAxis(e);
+        const i = Math.min(activePoints[0]._index, this.lineChart.config.data.datasets[0].data.length - 1);
+        const createdAt = this.lineChart.config.data.datasets[2].data[i];
+        const price = this.lineChart.config.data.datasets[0].data[i] * 100;
+        this.setState({createdAt, price});
+    }
 
     resetState() {
         this.setState({

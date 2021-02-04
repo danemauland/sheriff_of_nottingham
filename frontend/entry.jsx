@@ -11,6 +11,7 @@
 // history
 // error handler for APIs
 // add watch lists
+// add charts for sidebar stocks
 
 import React from "react";
 import ReactDOM from "react-dom";
