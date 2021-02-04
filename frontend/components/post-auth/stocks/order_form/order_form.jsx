@@ -45,9 +45,6 @@ class Sidebar extends React.Component {
         // this.graphClickListener = this.graphClickListener.bind(this);
     }
 
-    // TODO: REFACTOR AS EVENT HANDLER PASSED TO CHART THAT DISPATCHES TO STORE
-    // ON CLICK
-
     // componentDidMount() {
     //     document.getElementById("myChart").addEventListener("click", this.graphClickListener)
     // }
@@ -72,8 +69,11 @@ class Sidebar extends React.Component {
     updateOrderFormFromChart(e) {
         const activePoints = this.lineChart.getElementsAtXAxis(e);
         const i = Math.min(activePoints[0]._index, this.lineChart.config.data.datasets[0].data.length - 1);
-        const createdAt = this.lineChart.config.data.datasets[2].data[i];
+        let createdAt = this.lineChart.config.data.datasets[2].data[i];
+        let hours = new Date(createdAt * 1000).getUTCHours();
+        if (hours === 4 || hours === 5) createdAt += 16 * 60 * 60;
         const price = this.lineChart.config.data.datasets[0].data[i] * 100;
+        debugger;
         this.setState({createdAt, price});
     }
 
