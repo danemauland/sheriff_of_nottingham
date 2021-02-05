@@ -19,7 +19,7 @@ import {
     RECEIVE_TRADE,
 } from "../actions/trade_actions";
 import {
-    LOGOUT_CURRENT_USER
+    LOGOUT_CURRENT_USER, RECEIVE_CURRENT_USER
 } from "../actions/session_actions";
 import {
     defaultState,
@@ -37,12 +37,17 @@ import {
     calcPositionCosts,
     updateStockValuationsForTicker,
 } from "../util/new_entities_util";
+import generateStateFromUser from "../util/preloaded_state_util.js";
 var merge = require('lodash.merge');
 
 export default (state = defaultState, action) => {
     Object.freeze(state);
     let newState, assetInformation, portfolioHistory, times;
     switch (action.type) {
+        case RECEIVE_CURRENT_USER: 
+            newState = generateStateFromUser(action.user).newEntities;
+            return newState;
+
         case REMOVE_CASH_TRANSACTIONS:
             newState = merge({}, state);
             ({assetInformation, portfolioHistory, times} = newState);
