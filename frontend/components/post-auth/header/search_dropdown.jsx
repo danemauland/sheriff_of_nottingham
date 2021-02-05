@@ -86,8 +86,8 @@ class SearchDropdown extends React.Component {
     }
 
     render() {
-        if (this.props.isLoading) return <Loading />;
-        if (this.props.focused && this.props.results) {
+        if (this.props.isLoading && this.props.input) return <Loading />;
+        if (this.props.focused && this.props.results && this.props.input) {
             const results = this.getSearchResults();
             return (
                 <div className="seach-dropdown-container">

@@ -17,7 +17,7 @@ const mapToSlices = (str, substr, color) => {
 
     let i = upCasedStr.indexOf(upCasedSubstr);
     
-    while (i > -1) {
+    while (i > -1 && substr) {
         spans.push(
             <span key={key++}>
                 {str.slice(0,i)}
