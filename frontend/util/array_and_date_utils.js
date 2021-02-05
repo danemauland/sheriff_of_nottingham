@@ -1,4 +1,4 @@
-import {parseMonth} from "./chart_utils";
+import {parseMonth} from "./dashboard_calcs";
 
 Date.prototype.stdTimezoneOffset = function () {
     const jan = new Date(this.getFullYear(), 0, 1);

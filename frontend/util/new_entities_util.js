@@ -482,7 +482,6 @@ export const updatePortfolioValuations = (
     const needToUpdate = allPrices.every(prices => {
         return Object.keys(prices).length === tickers.size;
     });
-
     if (!needToUpdate) return;
 
     let aggPositionValues = calcAggPositionValues(
@@ -576,6 +575,16 @@ const calcTimeFrameTotals = (times, valuations, aggValues, tickers) => {
     }
 }
 
+export const updateStockValuationsForTicker = (
+    {trade},
+    assetInformation,
+    times,
+) => {
+    updateStockValuations({ticker: trade.ticker, type: RECEIVE_ONE_DAY_PRICES}, assetInformation, times);
+    updateStockValuations({ticker: trade.ticker, type: RECEIVE_INTRADAY_PRICES}, assetInformation, times);
+    updateStockValuations({ticker: trade.ticker, type: RECEIVE_DAILY_PRICES}, assetInformation, times);
+}
+
 export const updateStockValuations = (
     {ticker, type},
     {ownershipHistories, prices, valuations},
@@ -587,7 +596,6 @@ export const updateStockValuations = (
     if (!ownershipShares) return;
 
     const ownershipTimes = ownershipHistories.times[ticker];
-
     switch (type) {
         case RECEIVE_ONE_DAY_PRICES:
             valuations.oneDay[ticker] = calcValuations(
@@ -735,6 +743,7 @@ export const calcPositionCosts = (tickers, trades, numShares) => {
     const posCosts = {};
 
     tickers.forEach(ticker => {
+        if (!numShares[ticker]) return;
         const sharesOwned = numShares[ticker].last();
         posCosts[ticker] = calcPositionCost(trades[ticker], sharesOwned);
     });

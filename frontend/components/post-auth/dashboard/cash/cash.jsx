@@ -1,5 +1,9 @@
 import React from "react";
-import {formatToDollar} from "../../../../util/dashboard_calcs";
+import {
+    formatToDollar,
+    cashFormIsOpen,
+    toggleCashForm,
+} from "../../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 import CashForm from "./cash_form.jsx";
 import {getCashBalance} from "../../../../util/extract_from_state_utils";
@@ -16,19 +20,12 @@ const mapDispatchToProps = dispatch => ({
     cashFlashed: () => dispatch(cashFlashed())
 });
 
-const toggleClasses = () => {
-    $(".cash-form-div").toggleClass("no-height");
-    $(".cash-form-div").toggleClass("cash-form-div-expanded");
-    $(".cash-container").toggleClass("cash-container-expanded");
-    $(".cash-expander-button").toggleClass("cash-button-expanded");
-};
-
 class Cash extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            expanded: false,
-        }
+        // this.state = {
+        //     expanded: false,
+        // }
         this.handleClick = this.handleClick.bind(this);
         this.highlight = this.highlight.bind(this);
     }
@@ -36,11 +33,11 @@ class Cash extends React.Component {
     handleClick(e) {
         e.preventDefault();
 
-        toggleClasses();
+        toggleCashForm();
         
-        this.setState({
-            expanded: !this.state.expanded
-        });
+        // this.setState({
+        //     expanded: !this.state.expanded
+        // });
     }
 
     componentDidMount() {
@@ -74,7 +71,7 @@ class Cash extends React.Component {
 
         const tar = $(e.currentTarget);
         
-        if (!this.state.expanded) {
+        if (!cashFormIsOpen()) {
             tar.addClass("darkish-gray-background");
             tar.addClass("darkish-gray-background-hover");
 

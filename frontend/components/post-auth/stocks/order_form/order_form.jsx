@@ -3,6 +3,7 @@ import {
     formatToDollar,
     parseDollarInput,
     parseIntegerInput,
+    formatDateTime,
 } from "../../../../util/dashboard_calcs";
 import {connect} from "react-redux";
 import {createTrade} from "../../../../actions/trade_actions";
@@ -41,11 +42,9 @@ class Sidebar extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleReset = this.handleReset.bind(this);
+        this.updateOrderFormFromChart = this.updateOrderFormFromChart.bind(this);
         // this.graphClickListener = this.graphClickListener.bind(this);
     }
-
-    // TODO: REFACTOR AS EVENT HANDLER PASSED TO CHART THAT DISPATCHES TO STORE
-    // ON CLICK
 
     // componentDidMount() {
     //     document.getElementById("myChart").addEventListener("click", this.graphClickListener)
@@ -60,6 +59,23 @@ class Sidebar extends React.Component {
     //     const createdAt = lineChart.tooltip._data.datasets[4].data[index];
     //     this.setState({price: price*100,createdAt: createdAt * 1000});
     // }
+
+    componentDidMount() {
+        const chart = $("#myChart");
+        this.lineChart = chart.data("lineChart");
+        chart.click(this.updateOrderFormFromChart);
+        chart.addClass("pointer-hover");
+    }
+
+    updateOrderFormFromChart(e) {
+        const activePoints = this.lineChart.getElementsAtXAxis(e);
+        const i = Math.min(activePoints[0]._index, this.lineChart.config.data.datasets[0].data.length - 1);
+        let createdAt = this.lineChart.config.data.datasets[2].data[i];
+        let hours = new Date(createdAt * 1000).getUTCHours();
+        if (hours === 4 || hours === 5) createdAt += 16 * 60 * 60;
+        const price = this.lineChart.config.data.datasets[0].data[i] * 100;
+        this.setState({createdAt, price});
+    }
 
     resetState() {
         this.setState({
@@ -215,6 +231,20 @@ class Sidebar extends React.Component {
         return `order-button ${col}-background light-${col}-background-hover`;
     }
 
+    get orderDate() {
+        if (!this.state.createdAt) return <></>;
+
+        return <div>
+            <span>
+                Order Time
+            </span>
+
+            <span>
+                {formatDateTime(this.state.createdAt)}
+            </span>
+        </div>
+    }
+
     render() {
         const {isDollarOrder, price} = this.state;
         return (
@@ -237,6 +267,8 @@ class Sidebar extends React.Component {
                             {formatToDollar(price)}
                         </span>
                     </div>
+
+                    {this.orderDate}
 
                     <div>
                         <span>

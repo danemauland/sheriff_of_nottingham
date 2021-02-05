@@ -359,13 +359,15 @@ const receiveQuote = (ticker, quote) => ({
 
 const receiveCompanyOverview = companyOverview => {
     const {MarketCapitalization, PERatio, DividendYield, FullTimeEmployees, Symbol} = companyOverview;
+    let employees = parseInt(FullTimeEmployees).toLocaleString();
+    if (employees === "0") employees = "N/A";
     const items = [
         ["52 Week High", formatToDollar(convertStrToCents(companyOverview["52WeekHigh"]))],
         ["52 Week Low", formatToDollar(convertStrToCents(companyOverview["52WeekLow"]))],
         ["Market Cap", formatLargeNumber(MarketCapitalization)],
         ["Price-Earnings Ratio", formatPERatio(PERatio)],
         ["Dividend Yield", formatDividendYield(DividendYield)],
-        ["Employees", parseInt(FullTimeEmployees).toLocaleString()],
+        ["Employees", employees],
     ];
     return ({
     type: RECEIVE_ABOUT_ITEMS,

@@ -224,12 +224,10 @@ const getPrevDayClose = (state, ticker) => (
 );
 
 export const getDayPercentChange = (state, ticker) => (
-    (getLastPrice(state, ticker) / getPrevDayClose(state, ticker)) - 1
+    (getLastPrice(state, ticker) / getOneDayStartPrice(state, ticker)) - 1
 );
 
-export const getTimes = state => (
-    getNewEntities(state).times
-);
+export const getTimes = state => getNewEntities(state).times;
 
 export const getStartPrices = (state, ticker) => {
     const allStartPrices = getAllStartPrices(state);
@@ -241,6 +239,10 @@ export const getStartPrices = (state, ticker) => {
         oneYear: allStartPrices.oneYear[ticker],
     }
 }
+
+const getOneDayStartPrice = (state, ticker) => (
+    getStartPrices(state, ticker).oneDay
+);
 
 const getAllStartPrices = state => getAssetInformation(state).startPrices;
 
